@@ -2,6 +2,7 @@
 #define NN_FFL_H_
 
 #include <nn/ffl/FFLCharModel.h>
+#include <nn/ffl/FFLCreateID.h>
 #include <nn/ffl/FFLExpression.h>
 #include <nn/ffl/FFLFontRegion.h>
 #include <nn/ffl/FFLGlobal.h>
