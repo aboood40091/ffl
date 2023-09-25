@@ -9,9 +9,8 @@ private:
     u32 _0;                 // Bitfield
     
     u8  _4[8];
-    
-    u8  _c[10];             // Wstring
-    u8  _padding1[2];       // (For null-terminator?)
+    u8  _c[10];
+    u8  _padding1[2];       // ?
     
     u16 _18;                // Bitfield
     
