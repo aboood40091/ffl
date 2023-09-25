@@ -1,7 +1,7 @@
 #ifndef FFL_RESULT_H_
 #define FFL_RESULT_H_
 
-#include <nn/types.h>
+#include <nn/ffl/types.h>
 
 #ifdef __cplusplus
 extern "C" {
