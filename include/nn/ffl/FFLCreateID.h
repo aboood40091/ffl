@@ -3,6 +3,10 @@
 
 #include <nn/ffl/types.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define FFL_CREATE_ID_SIZE  (10)
 
 struct FFLCreateID
@@ -14,5 +18,9 @@ struct FFLCreateID
     };
 };
 NN_STATIC_ASSERT(sizeof(FFLCreateID) == FFL_CREATE_ID_SIZE);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // FFL_CREATE_ID_H_
