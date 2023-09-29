@@ -1,7 +1,9 @@
 #ifndef FFLI_MANAGER_H_
 #define FFLI_MANAGER_H_
 
+#include <nn/ffl/FFLColor.h>
 #include <nn/ffl/FFLInitDesc.h>
+#include <nn/ffl/FFLResult.h>
 
 #include <nn/ffl/FFLiCharModelCreateParam.h>
 #include <nn/ffl/FFLiDatabaseManager.h>
@@ -58,5 +60,17 @@ private:
     u8                          _29ad;
 };
 NN_STATIC_ASSERT(sizeof(FFLiManager) == 0x29B0);
+
+// --------------------------------------------------------------------------
+
+struct FFLResourceDesc;
+
+FFLResult FFLiInitResEx(void* pBuffer, const FFLInitDesc* pInitDesc, const FFLResourceDesc* pResDesc);
+void FFLiInitResGPUStep();
+u32 FFLiGetWorkSize(const FFLInitDesc* pInitDesc);
+FFLResult FFLiFlushQuota(bool force);
+FFLResult FFLiExit();
+bool FFLiIsAvailable();
+const FFLColor& FFLiGetFavoriteColor(s32 index);
 
 #endif // FFLI_MANAGER_H_
