@@ -8,6 +8,7 @@
 #include <nn/ffl/FFLiDatabaseFileAccessor.h>
 #include <nn/ffl/FFLiDatabaseRandom.h>
 
+struct  FFLiCharInfo;
 class   FFLiSystemContext;
 
 class FFLiDatabaseManager
@@ -16,6 +17,15 @@ public:
     FFLiDatabaseManager(FFLiDatabaseFile* pFile, FFLiFileWriteBuffer* pWriteBuffer, FFLiSystemContext* pContext, FFLiFsClient* pClient, FFLiAllocator* pAllocator);
     ~FFLiDatabaseManager();
 
+    FFLiDatabaseFileAccessor& GetDatabaseFileAccessor()
+    {
+        return m_DatabaseFileAccessor;
+    }
+
+    void EnableSpecialMii(u32 key);
+    bool IsEnabledSpecialMii() const;
+
+    FFLResult PickupCharInfo(FFLiCharInfo* pCharInfo, FFLDataSource dataSource, const void* pBuffer, u16 index);
     FFLResult GetStoreData(FFLiStoreDataCFL* pStoreDataCFL, FFLDataSource dataSource, u16 index);
 
 private:

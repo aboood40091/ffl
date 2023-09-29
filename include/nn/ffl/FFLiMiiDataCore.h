@@ -230,4 +230,12 @@ struct FFLiStoreDataCFL : FFLStoreData
 NN_STATIC_ASSERT_IS_POD(FFLiStoreDataCFL);
 NN_STATIC_ASSERT(sizeof(FFLiStoreDataCFL) == FFL_STOREDATA_SIZE);
 
+class FFLiMiiDataHidden : public FFLiMiiDataCore
+{
+private:
+    u32 _48[12 / sizeof(u32)];  // Actual type unknown
+};
+NN_STATIC_ASSERT_IS_POD(FFLiMiiDataHidden);
+NN_STATIC_ASSERT(sizeof(FFLiMiiDataHidden) == 0x54);
+
 #endif // FFLI_MIIDATA_CORE_H_

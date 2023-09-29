@@ -14,6 +14,11 @@ public:
     FFLiDatabaseFileAccessor(FFLiFsClient* pClient, FFLiDatabaseFile* pFile, FFLiFileWriteBuffer* pWriteBuffer, FFLiAllocator* pAllocator);
     ~FFLiDatabaseFileAccessor();
 
+    FFLiDatabaseFile* GetDatabaseFile() const
+    {
+        return m_pDatabaseFile;
+    }
+
 private:
     FFLiFsClient*           m_pFsClient;
     FFLiFsCommand           m_FsCommand;

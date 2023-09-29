@@ -35,6 +35,11 @@ public:
         return m_ShaderCallback;
     }
 
+    const FFLInitDesc& GetInitDesc() const
+    {
+        return m_InitDesc;
+    }
+
 private:
     FFLiAllocator               m_Allocator;
     FFLiSystemContext           m_SystemContext;
