@@ -9,14 +9,15 @@ extern "C" {
 
 #define FFL_CREATE_ID_SIZE  (10)
 
-struct FFLCreateID
+typedef struct FFLCreateID
 {
     union
     {
         u8 data[FFL_CREATE_ID_SIZE];
         u16 value16[FFL_CREATE_ID_SIZE / sizeof(u16)];
     };
-};
+}
+FFLCreateID;
 NN_STATIC_ASSERT(sizeof(FFLCreateID) == FFL_CREATE_ID_SIZE);
 
 #ifdef __cplusplus

@@ -11,14 +11,15 @@
 extern "C" {
 #endif
 
-struct FFLInitDesc
+typedef struct FFLInitDesc
 {
     const void*             pShaderData;
     FSStateChangeParams*    pChangeParams;
     FFLFontRegion           fontRegion;
     BOOL                    _c;
     BOOL                    _10;
-};
+}
+FFLInitDesc;
 NN_STATIC_ASSERT(sizeof(FFLInitDesc) == 0x14);
 
 #ifdef __cplusplus
