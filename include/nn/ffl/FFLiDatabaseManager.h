@@ -1,6 +1,9 @@
 #ifndef FFLI_DATABASE_MANAGER_H_
 #define FFLI_DATABASE_MANAGER_H_
 
+#include <nn/ffl/FFLDataSource.h>
+#include <nn/ffl/FFLResult.h>
+
 #include <nn/ffl/FFLiDatabaseDefault.h>
 #include <nn/ffl/FFLiDatabaseFileAccessor.h>
 #include <nn/ffl/FFLiDatabaseRandom.h>
@@ -12,6 +15,8 @@ class FFLiDatabaseManager
 public:
     FFLiDatabaseManager(FFLiDatabaseFile* pFile, FFLiFileWriteBuffer* pWriteBuffer, FFLiSystemContext* pContext, FFLiFsClient* pClient, FFLiAllocator* pAllocator);
     ~FFLiDatabaseManager();
+
+    FFLResult GetStoreData(FFLiStoreDataCFL* pStoreDataCFL, FFLDataSource dataSource, u16 index);
 
 private:
     FFLiSystemContext*          m_pSystemContext;

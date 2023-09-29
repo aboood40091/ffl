@@ -25,6 +25,11 @@ public:
     static FFLiManager* GetInstance();
 
 public:
+    FFLiDatabaseManager& GetDatabaseManager()
+    {
+        return m_DatabaseManager;
+    }
+
     const FFLiShaderCallback& GetShaderCallback() const
     {
         return m_ShaderCallback;
