@@ -2,6 +2,7 @@
 #define FFLI_MIIDATA_CORE_H_
 
 #include <nn/ffl/FFLCreateID.h>
+#include <nn/ffl/FFLStandard.h>
 
 #include <nn/ffl/FFLiAuthorID.h>
 
@@ -211,5 +212,22 @@ private:
 };
 NN_STATIC_ASSERT_IS_POD(FFLiMiiDataOfficial);
 NN_STATIC_ASSERT(sizeof(FFLiMiiDataOfficial) == 0x5C);
+
+#define FFL_STOREDATA_SIZE  (0x60)
+
+class FFLiStoreData : public FFLiMiiDataOfficial
+{
+private:
+    u16 _5c;
+    u16 m_Crc;
+};
+NN_STATIC_ASSERT_IS_POD(FFLiStoreData);
+NN_STATIC_ASSERT(sizeof(FFLiStoreData) == FFL_STOREDATA_SIZE);
+
+struct FFLiStoreDataCFL : FFLStoreData
+{
+};
+NN_STATIC_ASSERT_IS_POD(FFLiStoreDataCFL);
+NN_STATIC_ASSERT(sizeof(FFLiStoreDataCFL) == FFL_STOREDATA_SIZE);
 
 #endif // FFLI_MIIDATA_CORE_H_
