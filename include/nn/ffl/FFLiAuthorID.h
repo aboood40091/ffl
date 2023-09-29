@@ -16,6 +16,7 @@ struct FFLiAuthorID
 NN_STATIC_ASSERT_IS_POD(FFLiAuthorID);
 NN_STATIC_ASSERT(sizeof(FFLiAuthorID) == FFLI_AUTHOR_ID_SIZE);
 
+bool FFLiIsSameAuthorID(const FFLiAuthorID* a, const FFLiAuthorID* b);
 bool FFLiIsHomeAuthorID(const FFLiAuthorID* pAuthorID);
 
 #endif // FFLI_AUTHOR_ID_H_
