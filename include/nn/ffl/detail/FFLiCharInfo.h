@@ -65,7 +65,7 @@ struct FFLiCharInfo
     u32             favoriteColor;
     bool            favoriteMii;
     bool            copyable;
-    bool            ngWord;
+    u8              ngWord;
     bool            localOnly;
     u32             regionMove;
     FFLFontRegion   fontRegion;
