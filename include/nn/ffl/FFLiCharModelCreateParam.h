@@ -3,6 +3,8 @@
 
 #include <nn/ffl/FFLiCoordinate.h>
 
+struct FFLCharModelDesc;
+
 class FFLiDatabaseManager;
 class FFLiResourceManager;
 class FFLiShaderCallback;
@@ -12,6 +14,9 @@ class FFLiCharModelCreateParam
 public:
     FFLiCharModelCreateParam(FFLiDatabaseManager* pDatabaseManager, FFLiResourceManager* pResourceManager, FFLiShaderCallback* pCallback, bool isShaderAvailable);
     ~FFLiCharModelCreateParam();
+
+    u32 GetBufferSize(const FFLCharModelDesc* pDesc) const;
+    u32 GetTempBufferSize(const FFLCharModelDesc* pDesc) const;
 
 private:
     FFLiDatabaseManager*    mp_DatabaseManager;

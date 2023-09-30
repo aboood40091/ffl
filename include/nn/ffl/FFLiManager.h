@@ -37,10 +37,22 @@ public:
         return m_ShaderCallback;
     }
 
+    FFLiCharModelCreateParam& GetCharModelCreateParam()
+    {
+        return m_CharModelCreateParam;
+    }
+
+    const FFLiCharModelCreateParam& GetCharModelCreateParam() const
+    {
+        return m_CharModelCreateParam;
+    }
+
     const FFLInitDesc& GetInitDesc() const
     {
         return m_InitDesc;
     }
+
+    bool CanInitCharModel() const;
 
 private:
     FFLiAllocator               m_Allocator;
