@@ -1,6 +1,8 @@
 #ifndef FFLI_CHAR_MODEL_CREATE_PARAM_H_
 #define FFLI_CHAR_MODEL_CREATE_PARAM_H_
 
+#include <nn/ffl/FFLResolution.h>
+
 #include <nn/ffl/FFLiCoordinate.h>
 
 struct FFLCharModelDesc;
@@ -15,8 +17,14 @@ public:
     FFLiCharModelCreateParam(FFLiDatabaseManager* pDatabaseManager, FFLiResourceManager* pResourceManager, FFLiShaderCallback* pCallback, bool isShaderAvailable);
     ~FFLiCharModelCreateParam();
 
+    static u32 GetResolution(FFLResolution resolution);
+    static bool IsEnabledMipMap(FFLResolution resolution);
+
+    static bool CheckModelDesc(const FFLCharModelDesc* pDesc, bool isShaderAvailable);
+
     u32 GetBufferSize(const FFLCharModelDesc* pDesc) const;
     u32 GetTempBufferSize(const FFLCharModelDesc* pDesc) const;
+    u32 GetCompressBufferSize(const FFLCharModelDesc* pDesc) const;
 
 private:
     FFLiDatabaseManager*    mp_DatabaseManager;

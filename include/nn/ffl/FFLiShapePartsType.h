@@ -1,0 +1,23 @@
+#ifndef FFLI_SHAPE_PARTS_TYPE_H_
+#define FFLI_SHAPE_PARTS_TYPE_H_
+
+#include <nn/ffl/types.h>
+
+enum FFLiShapePartsType
+{
+    FFLI_SHAPE_PARTS_TYPE_0     =  0,
+    FFLI_SHAPE_PARTS_TYPE_1     =  1,
+    FFLI_SHAPE_PARTS_TYPE_2     =  2,
+    FFLI_SHAPE_PARTS_TYPE_3     =  3,
+    FFLI_SHAPE_PARTS_TYPE_4     =  4,
+    FFLI_SHAPE_PARTS_TYPE_5     =  5,
+    FFLI_SHAPE_PARTS_TYPE_6     =  6,
+    FFLI_SHAPE_PARTS_TYPE_7     =  7,
+    FFLI_SHAPE_PARTS_TYPE_8     =  8,
+    FFLI_SHAPE_PARTS_TYPE_9     =  9,
+    FFLI_SHAPE_PARTS_TYPE_10    = 10,
+    FFLI_SHAPE_PARTS_TYPE_11    = 11,
+    FFLI_SHAPE_PARTS_TYPE_MAX   = 12
+};
+
+#endif // FFLI_SHAPE_PARTS_TYPE_H_

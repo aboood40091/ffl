@@ -1,0 +1,22 @@
+#ifndef FFLI_TEXTURE_PARTS_TYPE_H_
+#define FFLI_TEXTURE_PARTS_TYPE_H_
+
+#include <nn/ffl/types.h>
+
+enum FFLiTexturePartsType
+{
+    FFLI_TEXTURE_PARTS_TYPE_0     =  0,
+    FFLI_TEXTURE_PARTS_TYPE_1     =  1,
+    FFLI_TEXTURE_PARTS_TYPE_2     =  2,
+    FFLI_TEXTURE_PARTS_TYPE_3     =  3,
+    FFLI_TEXTURE_PARTS_TYPE_4     =  4,
+    FFLI_TEXTURE_PARTS_TYPE_5     =  5,
+    FFLI_TEXTURE_PARTS_TYPE_6     =  6,
+    FFLI_TEXTURE_PARTS_TYPE_7     =  7,
+    FFLI_TEXTURE_PARTS_TYPE_8     =  8,
+    FFLI_TEXTURE_PARTS_TYPE_9     =  9,
+    FFLI_TEXTURE_PARTS_TYPE_10    = 10,
+    // ...
+};
+
+#endif // FFLI_TEXTURE_PARTS_TYPE_H_

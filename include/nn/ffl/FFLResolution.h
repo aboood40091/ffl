@@ -7,8 +7,12 @@
 extern "C" {
 #endif
 
-// TODO
-typedef u32 FFLResolution;
+typedef enum FFLResolution
+{
+    FFL_RESOLUTION_MASK                 = 0x3fffffff,
+    FFL_RESOLUTION_MIP_MAP_ENABLE_MASK  = 1 << 30
+}
+FFLResolution;
 
 #ifdef __cplusplus
 }
