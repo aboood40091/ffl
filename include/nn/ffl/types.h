@@ -10,7 +10,16 @@ extern "C" {
 
 enum
 {
-    FFL_PATH_MAX_LEN = 256
+    FFL_PATH_MAX_LEN = 256,
+
+    FFLI_FACELINE_COLOR_NUM = 6,
+    FFLI_HAIR_COLOR_NUM     = 8,
+    FFLI_EYE_COLOR_R_NUM    = 3,
+    FFLI_EYE_COLOR_B_NUM    = 6,
+    FFLI_GLASS_COLOR_NUM    = 6,
+    FFLI_MOUTH_COLOR_R_NUM  = 5,
+    FFLI_MOUTH_COLOR_G_NUM  = 5,
+    FFLI_FAVORITE_COLOR_NUM = 12
 };
 
 #ifdef __cplusplus
