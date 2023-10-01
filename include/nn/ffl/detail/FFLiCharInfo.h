@@ -34,8 +34,8 @@ struct FFLiCharInfo
         u32         eyebrowSpacingX;
         u32         eyebrowPositionY;
         u32         noseType;
-        u32         noseScale;
-        u32         nosePositionY;
+        s32         noseScale;
+        s32         nosePositionY;
         u32         mouthType;
         u32         mouthColor;
         u32         mouthScaleX;
@@ -43,13 +43,13 @@ struct FFLiCharInfo
         u32         mouthPositionY;
         u32         mustacheType;
         u32         beardType;
-        u32         beardColor;
+        s32         beardColor;
         u32         mustacheScale;
         u32         mustachePositionY;
         u32         glassType;
         u32         glassColor;
-        u32         glassScale;
-        u32         glassPositionY;
+        s32         glassScale;
+        s32         glassPositionY;
         u32         moleType;
         u32         moleScale;
         u32         molePositionX;

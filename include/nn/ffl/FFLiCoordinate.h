@@ -3,11 +3,16 @@
 
 #include <nn/ffl/types.h>
 
+struct FFLVec3;
+
 class FFLiCoordinate
 {
 public:
     FFLiCoordinate();
     ~FFLiCoordinate();
+
+    void Transform(FFLVec3* pVec) const;
+    void TransformWithoutScale(FFLVec3* pVec) const;
 
 private:
     u8      m_SwizzleY;

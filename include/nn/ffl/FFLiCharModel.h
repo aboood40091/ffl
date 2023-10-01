@@ -1,6 +1,7 @@
 #ifndef FFLI_CHAR_MODEL_H_
 #define FFLI_CHAR_MODEL_H_
 
+#include <nn/ffl/FFLBoundingBox.h>
 #include <nn/ffl/FFLCharModelDesc.h>
 #include <nn/ffl/FFLDrawParam.h>
 #include <nn/ffl/FFLExpression.h>
@@ -10,45 +11,32 @@
 
 #include <nn/ffl/FFLiMaskTextures.h>
 #include <nn/ffl/FFLiRenderTexture.h>
+#include <nn/ffl/FFLiShapeType.h>
 
 #include <nn/ffl/detail/FFLiCharInfo.h>
 
+struct FFLiTextureTempObject;
+
 struct FFLiCharModel
 {
-    FFLiCharInfo        charInfo;
-    FFLCharModelDesc    charModelDesc;
-    u32                 _134;
-    u32                 _138;
-    FFLExpression       expression;
-    void*               pMaskTexturesTempObject;
-    union
-    {
-        struct
-        {
-            FFLDrawParam    drawParamOpaBeard;
-            FFLDrawParam    drawParamOpaFaceline;
-            FFLDrawParam    drawParamOpaHair1;
-            FFLDrawParam    drawParamOpaForehead1;
-            FFLDrawParam    drawParamXluMask;
-            FFLDrawParam    drawParamXluNoseLine;
-            FFLDrawParam    drawParamOpaNose;
-            FFLDrawParam    drawParamOpaCap1;
-            FFLDrawParam    drawParamXluGlass;
-            FFLDrawParam    drawParamOpaHair2;
-            FFLDrawParam    drawParamOpaForehead2;
-            FFLDrawParam    drawParamOpaCap2;
-        };
-        FFLDrawParam    drawParam[12];
-    };
-    FFLiRenderTexture   facelineRenderTexture;
-    FFLiRenderTexture*  pCapRenderTexture;
-    FFLiRenderTexture*  pGlassRenderTexture;
-    FFLiRenderTexture*  pNoselineRenderTexture;
-    FFLiMaskTextures    maskTextures;
-    u32                 _718[36 / sizeof(u32)];
-    FFLPartsTransform   partsTransform;
-    FFLModelType        modelType;
-    u32                 _794[72 / sizeof(u32)];
+    FFLiCharInfo            charInfo;
+    FFLCharModelDesc        charModelDesc;
+    void*                   pBuffer;
+    u32                     bufferSize;
+    FFLExpression           expression;
+    FFLiTextureTempObject*  pTextureTempObject;
+    FFLDrawParam            drawParam[FFLI_SHAPE_TYPE_MAX];
+    FFLiRenderTexture       facelineRenderTexture;
+    GX2Texture*             pCapTexture;
+    GX2Texture*             pGlassTexture;
+    GX2Texture*             pNoselineTexture;
+    FFLiMaskTextures        maskTextures;
+    FFLVec3                 beardPos;
+    FFLVec3                 hairPos;
+    FFLVec3                 faceCenterPos;  // Used to calculate nose(line) and glass position
+    FFLPartsTransform       partsTransform;
+    FFLModelType            modelType;
+    FFLBoundingBox          boundingBox[3];
 };
 NN_STATIC_ASSERT(sizeof(FFLiCharModel) == 0x7DC);
 

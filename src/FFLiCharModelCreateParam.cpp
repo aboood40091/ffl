@@ -6,12 +6,13 @@
 #include <nn/ffl/FFLiResourceManager.h>
 #include <nn/ffl/FFLiResourceUncompressBuffer.h>
 #include <nn/ffl/FFLiTexture.h>
+#include <nn/ffl/FFLiTextureTempObject.h>
 #include <nn/ffl/FFLiUtil.h>
 
 FFLiCharModelCreateParam::FFLiCharModelCreateParam(FFLiDatabaseManager* pDatabaseManager, FFLiResourceManager* pResourceManager, FFLiShaderCallback* pCallback, bool isShaderAvailable)
-    : mp_DatabaseManager(pDatabaseManager)
-    , mp_ResourceManager(pResourceManager)
-    , mp_ShaderCallback(pCallback)
+    : m_pDatabaseManager(pDatabaseManager)
+    , m_pResourceManager(pResourceManager)
+    , m_pShaderCallback(pCallback)
     , m_IsShaderAvailable(isShaderAvailable)
 {
 }
@@ -62,17 +63,17 @@ u32 FFLiCharModelCreateParam::GetBufferSize(const FFLCharModelDesc* pDesc) const
     FFLResourceType resourceType = pDesc->resourceType;
     u32 bufferSize = 0;
 
-    if (!mp_ResourceManager->IsValid(resourceType))
+    if (!m_pResourceManager->IsValid(resourceType))
         return 0;
 
     for (u32 shapePartsType = 0; shapePartsType < FFLI_SHAPE_PARTS_TYPE_MAX; ++shapePartsType)
-        bufferSize += mp_ResourceManager->GetShapeAlignedMaxSize(resourceType, FFLiShapePartsType(shapePartsType));
+        bufferSize += m_pResourceManager->GetShapeAlignedMaxSize(resourceType, FFLiShapePartsType(shapePartsType));
 
     bufferSize += FFLiGetBufferSizeFacelineTexture(resolution, isEnabledMipMap, pDesc->enableCompressorParam);
     bufferSize += FFLiGetBufferSizeMaskTextures(pDesc->expressionFlag, resolution, isEnabledMipMap, pDesc->enableCompressorParam);
-    bufferSize += FFLiGetTextureMaxSizeWithAlign(mp_ResourceManager, resourceType, FFLI_TEXTURE_PARTS_TYPE_1);
-    bufferSize += FFLiGetTextureMaxSizeWithAlign(mp_ResourceManager, resourceType, FFLI_TEXTURE_PARTS_TYPE_10);
-    bufferSize += FFLiGetTextureMaxSizeWithAlign(mp_ResourceManager, resourceType, FFLI_TEXTURE_PARTS_TYPE_6);
+    bufferSize += FFLiGetTextureMaxSizeWithAlign(m_pResourceManager, resourceType, FFLI_TEXTURE_PARTS_TYPE_CAP);
+    bufferSize += FFLiGetTextureMaxSizeWithAlign(m_pResourceManager, resourceType, FFLI_TEXTURE_PARTS_TYPE_NOSELINE);
+    bufferSize += FFLiGetTextureMaxSizeWithAlign(m_pResourceManager, resourceType, FFLI_TEXTURE_PARTS_TYPE_GLASS);
 
     return bufferSize;
 }
@@ -88,14 +89,14 @@ u32 FFLiCharModelCreateParam::GetTempBufferSize(const FFLCharModelDesc* pDesc) c
     
     FFLResourceType resourceType = pDesc->resourceType;
 
-    if (!mp_ResourceManager->IsValid(resourceType))
+    if (!m_pResourceManager->IsValid(resourceType))
         return 0;
 
-    u32 bufferSize = FFLiGetTempBufferSizeMaskTextures(pDesc->expressionFlag, resolution, isEnabledMipMap, pDesc->enableCompressorParam, mp_ResourceManager, resourceType);
-    bufferSize += 0x220;    // TODO: Figure out this 0x220
-    bufferSize += FFLiGetTempBufferSizeFacelineTexture(resolution, isEnabledMipMap, pDesc->enableCompressorParam, mp_ResourceManager, resourceType);
+    u32 bufferSize = FFLiGetTempBufferSizeMaskTextures(pDesc->expressionFlag, resolution, isEnabledMipMap, pDesc->enableCompressorParam, m_pResourceManager, resourceType);
+    bufferSize += sizeof(FFLiTextureTempObject);
+    bufferSize += FFLiGetTempBufferSizeFacelineTexture(resolution, isEnabledMipMap, pDesc->enableCompressorParam, m_pResourceManager, resourceType);
     bufferSize += GetCompressBufferSize(pDesc);
-    bufferSize += FFLiResourceUncompressBuffer::GetBufferSize(mp_ResourceManager, resourceType);
+    bufferSize += FFLiResourceUncompressBuffer::GetBufferSize(m_pResourceManager, resourceType);
 
     return bufferSize;
 }

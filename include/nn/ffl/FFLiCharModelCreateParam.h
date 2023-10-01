@@ -22,14 +22,29 @@ public:
 
     static bool CheckModelDesc(const FFLCharModelDesc* pDesc, bool isShaderAvailable);
 
+    FFLiDatabaseManager* GetDatabaseManager() const
+    {
+        return m_pDatabaseManager;
+    }
+
+    FFLiResourceManager* GetResourceManager() const
+    {
+        return m_pResourceManager;
+    }
+
+    const FFLiCoordinate& GetCoordinate() const
+    {
+        return m_Coordinate;
+    }
+
     u32 GetBufferSize(const FFLCharModelDesc* pDesc) const;
     u32 GetTempBufferSize(const FFLCharModelDesc* pDesc) const;
     u32 GetCompressBufferSize(const FFLCharModelDesc* pDesc) const;
 
 private:
-    FFLiDatabaseManager*    mp_DatabaseManager;
-    FFLiResourceManager*    mp_ResourceManager;
-    FFLiShaderCallback*     mp_ShaderCallback;
+    FFLiDatabaseManager*    m_pDatabaseManager;
+    FFLiResourceManager*    m_pResourceManager;
+    FFLiShaderCallback*     m_pShaderCallback;
     FFLiCoordinate          m_Coordinate;
     bool                    m_IsShaderAvailable;
 };

@@ -52,7 +52,7 @@ void FFLiSetExpression(FFLiCharModel* pModel, FFLExpression expression)
     if (1 << (expression & 0x3f) & pModel->charModelDesc.expressionFlag)
     {
         pModel->expression = expression;
-        FFLiInitModulateShapeMask(&pModel->drawParamXluMask.modulateParam, pModel->maskTextures.renderTextures[expression]->gx2Texture);
+        FFLiInitModulateShapeMask(&pModel->drawParam[FFLI_SHAPE_TYPE_XLU_MASK].modulateParam, pModel->maskTextures.renderTextures[expression]->gx2Texture);
     }
 }
 
@@ -77,39 +77,39 @@ void FFLiSetViewModelType(FFLiCharModel* pModel, FFLModelType type)
 
 const FFLDrawParam* FFLiGetDrawParamOpaFacelineFromCharModel(const FFLiCharModel* pModel)
 {
-    return &pModel->drawParamOpaFaceline;
+    return &(pModel->drawParam[FFLI_SHAPE_TYPE_OPA_FACELINE]);
 }
 
 const FFLDrawParam* FFLiGetDrawParamOpaBeardFromCharModel(const FFLiCharModel* pModel)
 {
-    return &pModel->drawParamOpaBeard;
+    return &(pModel->drawParam[FFLI_SHAPE_TYPE_OPA_BEARD]);
 }
 
 const FFLDrawParam* FFLiGetDrawParamOpaNoseFromCharModel(const FFLiCharModel* pModel)
 {
-    return &pModel->drawParamOpaNose;
+    return &(pModel->drawParam[FFLI_SHAPE_TYPE_OPA_NOSE]);
 }
+
+namespace {
 
 struct FFLiShapeTypeInfo
 {
-    u32 hairIndex;
-    u32 foreheadIndex;
-    u32 capIndex;
+    FFLiShapeType   hairIndex;
+    FFLiShapeType   foreheadIndex;
+    FFLiShapeType   capIndex;
 };
 
 static const FFLiShapeTypeInfo s_ShapeTypeInfo_0 = {
-    2,
-    3,
-    7
+    FFLI_SHAPE_TYPE_OPA_HAIR_1,
+    FFLI_SHAPE_TYPE_OPA_FOREHEAD_1,
+    FFLI_SHAPE_TYPE_OPA_CAP_1
 };
 
 static const FFLiShapeTypeInfo s_ShapeTypeInfo_1 = {
-    9,
-    10,
-    11
+    FFLI_SHAPE_TYPE_OPA_HAIR_2,
+    FFLI_SHAPE_TYPE_OPA_FOREHEAD_2,
+    FFLI_SHAPE_TYPE_OPA_CAP_2
 };
-
-namespace {
 
 const FFLiShapeTypeInfo& GetShapeTypeInfo(FFLModelType type)
 {
@@ -150,7 +150,7 @@ const FFLDrawParam* FFLiGetDrawParamOpaHairFromCharModel(const FFLiCharModel* pM
 
 const FFLDrawParam* FFLiGetDrawParamOpaCapFromCharModel(const FFLiCharModel* pModel)
 {
-    if (pModel->modelType == FFL_MODEL_TYPE_2 || pModel->pCapRenderTexture == NULL)
+    if (pModel->modelType == FFL_MODEL_TYPE_2 || pModel->pCapTexture == NULL)
         return NULL;
 
     const FFLDrawParam* drawParam = pModel->drawParam;
@@ -159,21 +159,21 @@ const FFLDrawParam* FFLiGetDrawParamOpaCapFromCharModel(const FFLiCharModel* pMo
 
 const FFLDrawParam* FFLiGetDrawParamXluMaskFromCharModel(const FFLiCharModel* pModel)
 {
-    return &pModel->drawParamXluMask;
+    return &(pModel->drawParam[FFLI_SHAPE_TYPE_XLU_MASK]);
 }
 
 const FFLDrawParam* FFLiGetDrawParamXluNoseLineFromCharModel(const FFLiCharModel* pModel)
 {
     return
-        pModel->pNoselineRenderTexture == NULL
+        pModel->pNoselineTexture == NULL
             ? NULL
-            : &pModel->drawParamXluNoseLine;
+            : &(pModel->drawParam[FFLI_SHAPE_TYPE_XLU_NOSELINE]);
 }
 
 const FFLDrawParam* FFLiGetDrawParamXluGlassFromCharModel(const FFLiCharModel* pModel)
 {
     return
-        pModel->pGlassRenderTexture == NULL
+        pModel->pGlassTexture == NULL
             ? NULL
-            : &pModel->drawParamXluGlass;
+            : &(pModel->drawParam[FFLI_SHAPE_TYPE_XLU_GLASS]);
 }

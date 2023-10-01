@@ -52,6 +52,21 @@ public:
         return m_InitDesc;
     }
 
+    FFLiCompressor* GetCompressor() const
+    {
+        return m_pCompressor;
+    }
+
+    FFLiCopySurface& GetCopySurface()
+    {
+        return m_CopySurface;
+    }
+
+    const FFLiCopySurface& GetCopySurface() const
+    {
+        return m_CopySurface;
+    }
+
     bool CanInitCharModel() const;
 
 private:

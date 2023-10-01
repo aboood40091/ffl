@@ -3,6 +3,8 @@
 
 #include <nn/ffl/types.h>
 
+#include <cafe/mat.h>
+
 struct FFLDrawParam;
 struct FFLShaderCallback;
 
@@ -19,7 +21,9 @@ public:
 
     void Set(const FFLShaderCallback* pCallback);
 
+    void CallSetMatrix(const Mat44& mat) const;
     void CallDraw(const FFLDrawParam& drawParam) const;
+    void CallSetContextState() const;
 
 private:
     const FFLShaderCallback*    m_pShaderCallback;
