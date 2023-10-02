@@ -1,15 +1,15 @@
 #include <nn/ffl/FFLiCreateID.h>
 
 static inline
-const FFLiCreateID* GetCreateID(const FFLCreateID* pCreateID)
+FFLiCreateID* GetCreateID(FFLCreateID* pCreateID)
 {
-    return reinterpret_cast<const FFLiCreateID*>(pCreateID);
+    return reinterpret_cast<FFLiCreateID*>(pCreateID);
 }
 
 static inline
-const FFLCreateID* GetCreateID(const FFLiCreateID* pCreateID)
+const FFLiCreateID* GetCreateID(const FFLCreateID* pCreateID)
 {
-    return reinterpret_cast<const FFLCreateID*>(pCreateID);
+    return reinterpret_cast<const FFLiCreateID*>(pCreateID);
 }
 
 BOOL FFLiIsNullMiiID(const FFLCreateID* pCreateID)
@@ -42,7 +42,7 @@ void FFLiGetTemporaryMiiID(FFLCreateID* pCreateID)
         0x20
     };
 
-    *pCreateID = *GetCreateID(&temporaryMiiID);
+    *GetCreateID(pCreateID) = temporaryMiiID;
 }
 
 BOOL FFLiIsNormalMiiID(const FFLCreateID* pCreateID)
