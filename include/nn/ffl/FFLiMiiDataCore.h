@@ -9,23 +9,63 @@
 // TODO: The order of all bitfields here might be reversed,
 //       further investigation is needed whenever I get to decompiling the Mii Data functions
 
+enum FFLiBirthPlatform
+{
+    FFLI_BIRTH_PLATFORM_WII     = 1,
+    FFLI_BIRTH_PLATFORM_NTR     = 2,
+    FFLI_BIRTH_PLATFORM_CTR     = 3,
+    FFLI_BIRTH_PLATFORM_WII_U   = 4
+};
+
 class FFLiMiiDataCore
 {
+public:
+    FFLiBirthPlatform BirthPlatform() const
+    {
+        return FFLiBirthPlatform(m_BirthPlatform);
+    }
+
+    void SetBirthPlatform(FFLiBirthPlatform platform)
+    {
+        m_BirthPlatform = platform;
+    }
+
+    bool Copyable() const
+    {
+        return m_Copyable;
+    }
+
+    void SetCopyable(bool enable)
+    {
+        m_Copyable = enable;
+    }
+
+    FFLCreateID& GetCreateID()
+    {
+        return m_CreateID;
+    }
+
+    const FFLCreateID& GetCreateID() const
+    {
+        return m_CreateID;
+    }
+
 private:
     union
     {
         struct
         {
-            u32  m_MiiVersion    : 8;
-            u32  m_Copyable      : 1;    // bool
-            u32  m_NgWord        : 1;    // bool
-            u32  m_RegionMove    : 2;
-            u32  m_FontRegion    : 2;
-            u32                  : 2;    // Unused
-            u32  m_PageIndex     : 4;
-            u32  m_SlotIndex     : 4;
-            u32  _0_24_27        : 4;
-            u32  m_BirthPlatform : 3;
+            u32                 : 1;    // Unused (MSB)
+            u32 m_BirthPlatform : 3;
+            u32 _0_24_27        : 4;
+            u32 m_SlotIndex     : 4;
+            u32 m_PageIndex     : 4;
+            u32                 : 2;    // Unused
+            u32 m_FontRegion    : 2;
+            u32 m_RegionMove    : 2;
+            u32 m_NgWord        : 1;    // bool
+            u32 m_Copyable      : 1;    // bool
+            u32 m_MiiVersion    : 8;    // (LSB)
         };
 
         u32 _0;
@@ -240,5 +280,27 @@ private:
 };
 NN_STATIC_ASSERT_IS_POD(FFLiMiiDataHidden);
 NN_STATIC_ASSERT(sizeof(FFLiMiiDataHidden) == 0x54);
+
+class FFLiMiiDataCoreRFL
+{
+public:
+    u16 m_Flag;
+    u16 m_Name[10];
+    u8  m_Height;
+    u8  m_Build;
+    u8  m_CreateID[4];
+    u8  m_SystemID[4];
+    u16 m_FaceFlag;
+    u16 m_HairFlag;
+    u16 m_EyebrowFlag[2];
+    u16 m_EyeFlag[2];
+    u16 m_NoseFlag;
+    u16 m_MouthFlag;
+    u16 m_GlassFlag;
+    u16 m_BeardFlag;
+    u16 m_MoleFlag;
+};
+NN_STATIC_ASSERT_IS_POD(FFLiMiiDataCoreRFL);
+NN_STATIC_ASSERT(sizeof(FFLiMiiDataCoreRFL) == 0x36);
 
 #endif // FFLI_MIIDATA_CORE_H_
