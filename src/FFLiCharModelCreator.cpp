@@ -34,9 +34,9 @@ union F32BitCast
     u32 u;
     struct
     {
-        u32 mantissa    : 23;
-        u32 exponent    : 8;
         u32 sign        : 1;
+        u32 exponent    : 8;
+        u32 mantissa    : 23;
     };
 };
 NN_STATIC_ASSERT(sizeof(F32BitCast) == 4);
@@ -44,9 +44,7 @@ NN_STATIC_ASSERT(sizeof(F32BitCast) == 4);
 static bool IsNaN(f32 value)
 {
     F32BitCast x = { value };
-    // Basically:
-    // return x.exponent == 0xff && x.mantissa > 0;
-    return (x.u << 1) > 0xff000000;
+    return x.exponent == 0xff && x.mantissa > 0;
 }
 
 FFLiCharModelCreator::FFLiCharModelCreator(FFLiCharModelCreateParam* pParam, FFLiManager* pManager)
