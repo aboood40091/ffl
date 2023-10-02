@@ -18,7 +18,7 @@ typedef struct FFLAdditionalInfo
     {
         struct
         {
-            u32 gender          : 1;
+            u32 gender          : 1;    // (MSB)
             u32 birthMonth      : 4;
             u32 birthDay        : 5;
             u32 favoriteColor   : 4;
@@ -26,7 +26,7 @@ typedef struct FFLAdditionalInfo
             u32 build           : 7;
             u32 ngWord          : 1;
             u32 fontRegion      : 2;
-            u32 hairDir         : 1;
+            u32 hairDir         : 1;    // (LSB)
         };
 
         u32 flags;

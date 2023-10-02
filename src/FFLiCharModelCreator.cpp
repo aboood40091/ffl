@@ -34,9 +34,9 @@ union F32BitCast
     u32 u;
     struct
     {
-        u32 sign        : 1;
+        u32 sign        : 1;    // (MSB)
         u32 exponent    : 8;
-        u32 mantissa    : 23;
+        u32 mantissa    : 23;   // (LSB)
     };
 };
 NN_STATIC_ASSERT(sizeof(F32BitCast) == 4);

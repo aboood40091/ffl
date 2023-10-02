@@ -36,10 +36,10 @@ NN_STATIC_ASSERT(sizeof(FFLVec4) == 0x10);
 
 typedef struct FFLiSnorm10_10_10_2
 {
-    u32 w   :  2;
+    u32 w   :  2;   // (MSB)
     u32 z   : 10;
     u32 y   : 10;
-    u32 x   : 10;
+    u32 x   : 10;   // (LSB)
 }
 FFLiSnorm10_10_10_2;
 NN_STATIC_ASSERT(sizeof(FFLiSnorm10_10_10_2) == 4);
