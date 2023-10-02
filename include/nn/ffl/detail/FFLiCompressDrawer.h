@@ -9,7 +9,7 @@ class FFLiCompressDrawer
 {
 public:
     FFLiCompressDrawer();
-    ~FFLiCompressDrawer();
+    ~FFLiCompressDrawer();  // Deleted in NSMBU
 
     static u32 GetBufferSize();
 

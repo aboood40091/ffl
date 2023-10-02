@@ -19,7 +19,7 @@ class FFLiCompressorImpl
 {
 public:
     FFLiCompressorImpl(FFLiBufferAllocator* pAllocator, const void* pShaderData, u32 shaderIndex);
-    ~FFLiCompressorImpl();
+    ~FFLiCompressorImpl();  // Deleted in NSMBU
 
     static u32 GetBufferSize(const void* pShaderData, u32 shaderIndex);
     static u32 GetTextureBufferSize(u32 width, u32 height, u32 numMips);
@@ -86,15 +86,12 @@ template <typename T>
 bool FFLiCompressorImpl<T>::SetupCPU(const void* pShaderData, u32 shaderIndex)
 {
     m_ContextState.Initialize(&m_BufferAllocator);
-    if (m_CompressShader.SetupCPU(pShaderData, shaderIndex, &m_BufferAllocator))
-    {
-        m_CompressDrawer.SetupCPU(&m_BufferAllocator);
-        return true;
-    }
-    else
-    {
+
+    if (!m_CompressShader.SetupCPU(pShaderData, shaderIndex, &m_BufferAllocator))
         return false;
-    }
+
+    m_CompressDrawer.SetupCPU(&m_BufferAllocator);
+    return true;
 }
 
 template <typename T>

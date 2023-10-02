@@ -12,11 +12,13 @@ class FFLiCompressShader
 {
 public:
     FFLiCompressShader();
-    ~FFLiCompressShader();
+    ~FFLiCompressShader();  // Deleted in NSMBU
 
     bool UseUB() const;
 
-    static u32 GetBufferSize(const void* pShaderData, u32 shaderIndex);
+    bool SetupLocation();
+    bool SetupLocationForUR();
+    bool SetupLocationForUB();
 
     bool SetupCPU(const void* pShaderData, u32 shaderIndex, FFLiBufferAllocator* pAllocator);
     void SetupGPU();
@@ -24,7 +26,12 @@ public:
     void Bind() const;
 
     void SetTexture(const GX2Texture* pGX2Texture) const;
+
     void SetUniform(const FFLiCompressUniform* pUniform) const;
+    void SetUniformUR(const FFLiCompressUniform* pUniform) const;
+    void SetUniformUB(const FFLiCompressUniform* pUniform) const;
+
+    static u32 GetBufferSize(const void* pShaderData, u32 shaderIndex);
 
 private:
     FFLiUtilShader::FetchShader m_FetchShader;

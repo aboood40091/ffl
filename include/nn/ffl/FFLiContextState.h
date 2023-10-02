@@ -11,7 +11,7 @@ class FFLiContextState
 {
 public:
     FFLiContextState();
-    ~FFLiContextState();
+    ~FFLiContextState();    // Deleted in NSMBU
 
     static u32 GetBufferSize();
 
