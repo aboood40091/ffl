@@ -3,12 +3,20 @@
 
 bool FFLiIsSameAuthorID(const FFLiAuthorID* a, const FFLiAuthorID* b)
 {
-    // TODO: This function is implemented without a loop somehow
-
     const u32 count = FFLI_AUTHOR_ID_SIZE / sizeof(u16);
-    for (u32 i = 0; i < count; i++)
-        if (a->value16[i] != b->value16[i])
-            return false;
+    NN_STATIC_ASSERT(count == 4);
+
+    if (a->value16[0] != b->value16[0])
+        return false;
+
+    if (a->value16[1] != b->value16[1])
+        return false;
+
+    if (a->value16[2] != b->value16[2])
+        return false;
+
+    if (a->value16[3] != b->value16[3])
+        return false;
 
     return true;
 }
