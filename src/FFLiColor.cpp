@@ -442,7 +442,7 @@ void InitializeColorContainerIfUninitialized()
     if (!s_IsIntializedColorContainer)
     {
         SetupColorContainer(s_ColorContainer[FFLI_CONTAINER_TYPE_NORMAL]);
-        
+
         SetupColorContainer(s_ColorContainer[FFLI_CONTAINER_TYPE_SRGB]);
         DegammaColorContainer(s_ColorContainer[FFLI_CONTAINER_TYPE_SRGB]);
 

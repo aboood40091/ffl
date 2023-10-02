@@ -59,7 +59,7 @@ u32 FFLiCharModelCreateParam::GetBufferSize(const FFLCharModelDesc* pDesc) const
     FFLResolution _resolution = pDesc->resolution;
     u32 resolution = GetResolution(_resolution);
     bool isEnabledMipMap = IsEnabledMipMap(_resolution);
-    
+
     FFLResourceType resourceType = pDesc->resourceType;
     u32 bufferSize = 0;
 
@@ -86,7 +86,7 @@ u32 FFLiCharModelCreateParam::GetTempBufferSize(const FFLCharModelDesc* pDesc) c
     FFLResolution _resolution = pDesc->resolution;
     u32 resolution = GetResolution(_resolution);
     bool isEnabledMipMap = IsEnabledMipMap(_resolution);
-    
+
     FFLResourceType resourceType = pDesc->resourceType;
 
     if (!m_pResourceManager->IsValid(resourceType))
@@ -111,7 +111,7 @@ u32 FFLiCharModelCreateParam::GetCompressBufferSize(const FFLCharModelDesc* pDes
 
         u32 bufferSize  = FFLiMax(FFLiGetCompressBufferSizeFacelineTexture  (resolution, isEnabledMipMap), 0u);
         bufferSize      = FFLiMax(FFLiGetCompressBufferSizeMaskTexture      (resolution, isEnabledMipMap), bufferSize);
-        
+
         return bufferSize;
     }
     return 0;

@@ -24,21 +24,21 @@ private:
             u32  _0_24_27        : 4;
             u32  m_BirthPlatform : 3;
         };
-        
+
         u32 _0;
     };
 
     union
     {
         FFLiAuthorID    m_AuthorID;
-        
+
         u8  _4[8];
     };
 
     union
     {
         FFLCreateID m_CreateID;
-        
+
         u8  _C[0xA];
     };
     u8  _padding1[2];
@@ -56,9 +56,9 @@ private:
 
         u16 _18;
     };
-    
+
     u16 m_Name[10]; // Wstring
-    
+
     u8  m_Height;
     u8  m_Build;
 
@@ -72,7 +72,7 @@ private:
             u16 m_FaceLine      : 4;
             u16 m_FaceMakeup    : 4;
         };
-        
+
         u16 _30;
     };
     union
@@ -83,7 +83,7 @@ private:
             u16 m_HairColor : 3;
             u16 m_HairDir   : 1;
         };
-        
+
         u16 _32;
     };
     union
@@ -95,7 +95,7 @@ private:
             u16 m_EyeScaleX : 4;
             u16 m_EyeScaleY : 3;
         };
-        
+
         u16 _34;
     };
     union
@@ -106,7 +106,7 @@ private:
             u16 m_EyeSpacingX       : 4;
             u16 m_EyePositionY      : 5;
         };
-        
+
         u16 _36;
     };
     union
@@ -118,7 +118,7 @@ private:
             u16 m_EyebrowScaleX : 4;
             u16 m_EyebrowScaleY : 3;
         };
-        
+
         u16 _38;
     };
     union
@@ -129,7 +129,7 @@ private:
             u16 m_EyebrowSpacingX       : 4;
             u16 m_EyebrowPositionY      : 5;
         };
-        
+
         u16 _3A;
     };
     union
@@ -140,7 +140,7 @@ private:
             u16 m_NoseScale     : 4;
             u16 m_NosePositionY : 5;
         };
-        
+
         u16 _3C;
     };
     union
@@ -152,7 +152,7 @@ private:
             u16 m_MouthScaleX   : 4;
             u16 m_MouthScaleY   : 3;
         };
-        
+
         u16 _3E;
     };
     union
@@ -162,7 +162,7 @@ private:
             u16 m_MouthPositionY    : 5;
             u16 m_MustacheType      : 3;
         };
-        
+
         u16 _40;
     };
     union
@@ -174,7 +174,7 @@ private:
             u16 m_MustacheScale     : 4;
             u16 m_MustachePositionY : 5;
         };
-        
+
         u16 _42;
     };
     union
@@ -186,7 +186,7 @@ private:
             u16 m_GlassScale        : 4;
             u16 m_GlassPositionY    : 5;
         };
-        
+
         u16 _44;
     };
     union
@@ -198,7 +198,7 @@ private:
             u16 m_MolePositionX : 5;
             u16 m_MolePositionY : 5;
         };
-        
+
         u16 _46;
     };
 };

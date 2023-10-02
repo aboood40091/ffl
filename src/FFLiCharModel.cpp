@@ -120,7 +120,7 @@ const FFLiShapeTypeInfo& GetShapeTypeInfo(FFLModelType type)
     case FFL_MODEL_TYPE_1:
         return s_ShapeTypeInfo_1;
     }
-    
+
     return s_ShapeTypeInfo_0;
 }
 

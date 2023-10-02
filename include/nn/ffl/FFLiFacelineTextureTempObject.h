@@ -17,7 +17,7 @@ struct FFLiFacelineTextureTempObject
     GX2Texture*             pTextureBeard;
     FFLDrawParam            drawParamBeard;
     FFLiRenderTexture*      pRenderTexture;
-    FFLiCompressorParam*    pCompressorParam;   
+    FFLiCompressorParam*    pCompressorParam;
 };
 NN_STATIC_ASSERT(sizeof(FFLiFacelineTextureTempObject) == 0x14C);
 

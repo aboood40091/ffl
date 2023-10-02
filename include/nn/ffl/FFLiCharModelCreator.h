@@ -21,7 +21,7 @@ public:
     ~FFLiCharModelCreator();
 
     FFLResult ExecuteCPUStep(FFLiCharModel* pModel, const FFLCharModelSource* pSource, const FFLCharModelDesc* pDesc, FFLCharModelBuffer* pBuffer);
-    void ExecuteGPUStep(FFLiCharModel* pModel, const FFLShaderCallback* pCallback);   
+    void ExecuteGPUStep(FFLiCharModel* pModel, const FFLShaderCallback* pCallback);
     void AfterExecuteGPUStep(FFLiCharModel* pModel);
 
     void InvalidateShapes(FFLiCharModel* pModel);

@@ -55,6 +55,6 @@ void FFLiEnableSpecialMii(u32 key)
 {
     if (!FFLiManager::IsConstruct())
         return;
-    
+
     FFLiManager::GetInstance()->GetDatabaseManager().EnableSpecialMii(key);
 }

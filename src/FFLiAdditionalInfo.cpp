@@ -95,10 +95,10 @@ void FFLiGetAdditionalInfo(FFLAdditionalInfo* pAdditionalInfo, const FFLiCharInf
 
     u8 height = pCharInfo->height;
     u8 build = pCharInfo->build;
-    
+
     if (height > 127)
         height = 127;
-    
+
     if (build > 127)
         build = 127;
 
