@@ -5,11 +5,26 @@
 
 #include <cafe/gx2.h>
 
+class FFLiBufferAllocator;
+class FFLiCompressUniform;
+
 class FFLiCompressShader
 {
 public:
     FFLiCompressShader();
     ~FFLiCompressShader();
+
+    bool UseUB() const;
+
+    static u32 GetBufferSize(const void* pShaderData, u32 shaderIndex);
+
+    bool SetupCPU(const void* pShaderData, u32 shaderIndex, FFLiBufferAllocator* pAllocator);
+    void SetupGPU();
+
+    void Bind() const;
+
+    void SetTexture(const GX2Texture* pGX2Texture) const;
+    void SetUniform(const FFLiCompressUniform* pUniform) const;
 
 private:
     FFLiUtilShader::FetchShader m_FetchShader;

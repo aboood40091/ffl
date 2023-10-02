@@ -5,14 +5,22 @@
 
 #include <cafe/gx2.h>
 
+class FFLiBufferAllocator;
+
 class FFLiContextState
 {
 public:
     FFLiContextState();
     ~FFLiContextState();
 
+    static u32 GetBufferSize();
+
+    void Initialize(FFLiBufferAllocator* pAllocator);
+    void Setup();
+    void Bind(bool setup = true);
+
 private:
-    bool                _0;
+    bool                m_IsSetup;
     GX2ContextState*    m_pGX2ContextState;
 
 };

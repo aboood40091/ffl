@@ -3,11 +3,21 @@
 
 #include <nn/ffl/FFLVec.h>
 
+class FFLiBufferAllocator;
+
 class FFLiCompressDrawer
 {
 public:
     FFLiCompressDrawer();
     ~FFLiCompressDrawer();
+
+    static u32 GetBufferSize();
+
+    void SetupCPU(FFLiBufferAllocator* pAllocator);
+    void SetupGPU();
+
+    void SetAttributeBuffer(u32 positionBufferIndex, u32 texCoordBufferIndex);
+    void Draw();
 
 private:
     FFLVec3*    m_pPositionBuffer;
