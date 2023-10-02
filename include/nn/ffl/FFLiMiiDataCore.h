@@ -6,6 +6,9 @@
 
 #include <nn/ffl/FFLiAuthorID.h>
 
+// TODO: The order of all bitfields here might be reversed,
+//       further investigation is needed whenever I get to decompiling the Mii Data functions
+
 class FFLiMiiDataCore
 {
 private:
