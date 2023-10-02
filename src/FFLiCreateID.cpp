@@ -39,7 +39,7 @@ BOOL FFLiIsNullMiiID(const FFLCreateID* pCreateID)
 void FFLiGetTemporaryMiiID(FFLCreateID* pCreateID)
 {
     static const FFLiCreateID temporaryMiiID = {
-        0x20
+        FFLI_CREATE_ID_FLAG_TEMPORARY
     };
 
     *GetCreateID(pCreateID) = temporaryMiiID;
@@ -60,10 +60,10 @@ BOOL FFLiIsNTRMiiID(const FFLCreateID* pCreateID)
 {
     u8 flags = GetCreateID(pCreateID)->flags;
     
-    if (flags & FFLI_CREATE_ID_FLAG_UNKNOWN)
+    if (flags & FFLI_CREATE_ID_FLAG_UNKNOWN_0)
         return false;
     
-    if (!(flags & FFLI_CREATE_ID_FLAG_NTR))
+    if (!(flags & FFLI_CREATE_ID_FLAG_UNKNOWN_2))
         return false;
     
     return true;

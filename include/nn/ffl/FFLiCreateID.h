@@ -21,9 +21,9 @@ typedef struct FFLiCreateIDBase
 FFLiCreateIDBase;
 NN_STATIC_ASSERT(sizeof(FFLiCreateIDBase) == FFLI_CREATE_ID_BASE_SIZE);
 
-#define FFLI_CREATE_ID_FLAG_UNKNOWN     (1 << 4)
+#define FFLI_CREATE_ID_FLAG_UNKNOWN_0   (1 << 4)
 #define FFLI_CREATE_ID_FLAG_TEMPORARY   (1 << 5)
-#define FFLI_CREATE_ID_FLAG_NTR         (1 << 6)
+#define FFLI_CREATE_ID_FLAG_UNKNOWN_2   (1 << 6)
 #define FFLI_CREATE_ID_FLAG_NORMAL      (1 << 7)
 
 typedef struct FFLiCreateID
