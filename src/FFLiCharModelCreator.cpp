@@ -44,7 +44,9 @@ NN_STATIC_ASSERT(sizeof(F32BitCast) == 4);
 static bool IsNaN(f32 value)
 {
     F32BitCast x = { value };
-    return x.exponent == 0xff && x.mantissa > 0;
+    // Basically:
+    // return x.exponent == 0xff && x.mantissa > 0;
+    return (x.u << 1) > 0xff000000;
 }
 
 FFLiCharModelCreator::FFLiCharModelCreator(FFLiCharModelCreateParam* pParam, FFLiManager* pManager)
