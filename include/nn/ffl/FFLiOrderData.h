@@ -5,6 +5,25 @@
 
 class FFLiOrderData
 {
+public:
+    void Init();
+
+    /*
+    Deleted functions:
+
+    void Clear();
+
+    bool IsLinkedNext() const;
+    bool IsLinkedPrev() const;
+    bool IsUnlinked() const;
+
+    void SetNextIndex(u16 index);
+    void SetPrevIndex(u16 index);
+    */
+
+   u16 NextIndex() const;
+   u16 PrevIndex() const;
+
 private:
     u16                 m_NextIndex;
     u16                 m_PrevIndex;
