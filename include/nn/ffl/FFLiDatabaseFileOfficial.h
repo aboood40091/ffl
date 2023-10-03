@@ -8,8 +8,22 @@
 class FFLiDatabaseFileOfficial
 {
 public:
+    struct AdjustRegularBuffer
+    {
+        u32         size;           // Count of used create IDs
+        FFLCreateID createID[3000];
+    };
+    NN_STATIC_ASSERT(sizeof(AdjustRegularBuffer) == 0x7534);
+
+public:
+    void Init();
+
+    bool IsValid() const;
+
     bool IsAvailable(u16 miiDataIndex, bool, bool) const;
     bool IsRegular(u16 miiDataIndex, bool, bool) const;
+
+    bool AdjustRegularList(AdjustRegularBuffer* pBuffer);
 
 private:
     u32                 m_Magic;

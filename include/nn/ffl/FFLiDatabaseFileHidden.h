@@ -6,6 +6,12 @@
 
 class FFLiDatabaseFileHidden
 {
+public:
+    void Init();
+    void UpdateCrc();
+
+    bool IsValid() const;
+
 private:
     u32                 m_Magic;
     u16                 m_StartIndex;

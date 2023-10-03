@@ -11,6 +11,8 @@ public:
     FFLiFsClient();
     ~FFLiFsClient();
 
+    bool IsValid() const;
+
 private:
     FSClient    m_FSClient;
     bool        m_IsValid;

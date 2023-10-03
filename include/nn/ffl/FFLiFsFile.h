@@ -13,6 +13,15 @@ public:
     FFLiFsFile(FFLiFsCommand* pCommand);
     ~FFLiFsFile();
 
+    FSStatus Open(const char* path, const char* mode, FSRetFlag errHandling);
+    FSStatus Close(FSRetFlag errHandling = FS_RET_NO_ERROR);
+    
+    FSStatus Read(void* dst, u32 size, u32 count = 1, FSRetFlag errHandling = FS_RET_NO_ERROR, FSFlag flag = 0);
+
+    FSStatus Write(const void* src, u32 size, u32 count = 1, FSRetFlag errHandling = FS_RET_NO_ERROR, FSFlag flag = 0);
+
+    static FSStatus FlushQuota(FFLiFsCommand* pCommand, const char* path, FSRetFlag errHandling = FS_RET_NO_ERROR);
+
 private:
     FFLiFsCommand*  m_pFsCommand;
     FSFileHandle    m_Handle;

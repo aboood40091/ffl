@@ -19,6 +19,27 @@ public:
         return m_pDatabaseFile;
     }
 
+    void Init();
+
+    FFLResult AfterConstruct(u64 titleID);
+    FFLResult BootLoad();
+    FFLResult BootLoadImpl(FFLiFsCommand* pCommand);
+    FFLResult AdjustRegularListOfficial();
+
+    FFLResult BeforeDestruct();
+
+    FFLResult BeforeFlushQuota();
+    FFLResult SaveHidden();
+    FFLResult BackupOfficial();
+
+    FFLResult FlushQuota(bool force);
+
+    const char* GetPathOfficial() const;
+    const char* GetPathBackup() const;
+    const char* GetPathHidden() const;
+
+    bool IsExistFile(const char* pPath);
+
 private:
     FFLiFsClient*           m_pFsClient;
     FFLiFsCommand           m_FsCommand;

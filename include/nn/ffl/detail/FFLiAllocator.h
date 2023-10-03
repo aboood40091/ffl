@@ -11,6 +11,13 @@ public:
     FFLiAllocator();
     ~FFLiAllocator();
 
+    void Init(void* pBuffer, u32 size);
+
+    bool IsValid() const;
+
+    void* Allocate(u32 size, u32 alignment = 4);
+    void Free(void* ptr);
+
 private:
     MEMHeapHandle   m_HeapHandle;
 };
