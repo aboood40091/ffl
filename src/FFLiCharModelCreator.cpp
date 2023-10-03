@@ -223,7 +223,7 @@ void UpdateBoundingBox(FFLBoundingBox* pDst, const FFLBoundingBox* pSrc)
     }
 }
 
-static const bool s_UpdateBoundingBox[FFLI_SHAPE_PARTS_TYPE_MAX][3] = {
+static const bool UPDATE_BOUNDING_BOX[FFLI_SHAPE_PARTS_TYPE_MAX][3] = {
     {  true,  true,  true },
     {  true, false, false },
     { false,  true, false },
@@ -241,7 +241,7 @@ static const bool s_UpdateBoundingBox[FFLI_SHAPE_PARTS_TYPE_MAX][3] = {
 void CalcluateBoundingBox(FFLBoundingBox* pDst, const FFLBoundingBox* pSrc, FFLiShapePartsType partsType)
 {
     for (u32 i = 0; i < 3; i++)
-        if (s_UpdateBoundingBox[partsType][i])
+        if (UPDATE_BOUNDING_BOX[partsType][i])
             UpdateBoundingBox(&(pDst[i]), pSrc);
 }
 
@@ -414,13 +414,13 @@ struct FFLiShapeTypeInfo
     FFLiShapeType   capIndex;
 };
 
-static const FFLiShapeTypeInfo s_ShapeTypeInfo_0 = {
+static const FFLiShapeTypeInfo SHAPE_TYPE_INFO_0 = {
     FFLI_SHAPE_TYPE_OPA_HAIR_1,
     FFLI_SHAPE_TYPE_OPA_FOREHEAD_1,
     FFLI_SHAPE_TYPE_OPA_CAP_1
 };
 
-static const FFLiShapeTypeInfo s_ShapeTypeInfo_1 = {
+static const FFLiShapeTypeInfo SHAPE_TYPE_INFO_1 = {
     FFLI_SHAPE_TYPE_OPA_HAIR_2,
     FFLI_SHAPE_TYPE_OPA_FOREHEAD_2,
     FFLI_SHAPE_TYPE_OPA_CAP_2
@@ -431,15 +431,15 @@ const FFLiShapeTypeInfo& GetShapeTypeInfo(FFLModelType type)
     switch (type)
     {
     case FFL_MODEL_TYPE_0:
-        return s_ShapeTypeInfo_0;
+        return SHAPE_TYPE_INFO_0;
     case FFL_MODEL_TYPE_1:
-        return s_ShapeTypeInfo_1;
+        return SHAPE_TYPE_INFO_1;
     }
 
-    return s_ShapeTypeInfo_0;
+    return SHAPE_TYPE_INFO_0;
 }
 
-static const FFLModelType s_ModelTypes[2] = {
+static const FFLModelType MODEL_TYPE[2] = {
     FFL_MODEL_TYPE_0,
     FFL_MODEL_TYPE_1
 };
@@ -462,9 +462,9 @@ void SetupDrawParam(FFLiCharModel* pModel)
 
     for (u32 i = 0; i < 2; i++)
     {
-        if (pModel->charModelDesc.modelFlag & 1 << (s_ModelTypes[i] & 0x3f))
+        if (pModel->charModelDesc.modelFlag & 1 << (MODEL_TYPE[i] & 0x3f))
         {
-            const FFLiShapeTypeInfo& shapeTypeInfo = GetShapeTypeInfo(s_ModelTypes[i]);
+            const FFLiShapeTypeInfo& shapeTypeInfo = GetShapeTypeInfo(MODEL_TYPE[i]);
 
             FFLDrawParam& drawParamForehead = pModel->drawParam[shapeTypeInfo.foreheadIndex];
             drawParamForehead._54 = v0;

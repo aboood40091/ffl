@@ -8,7 +8,7 @@ FFLiCreateID* GetCreateID(FFLCreateID* pCreateID)
     return reinterpret_cast<FFLiCreateID*>(pCreateID);
 }
 
-static const FFLiMiiDataCoreRFL s_MiiDataCoreRFL[6] = {
+static const FFLiMiiDataCoreRFL MII_DATA_CORE_RFL[6] = {
     {
         0x0008,
         { L'n', L'o', L' ', L'n', L'a', L'm', L'e' },
@@ -116,7 +116,7 @@ static const FFLiMiiDataCoreRFL s_MiiDataCoreRFL[6] = {
 FFLiDatabaseDefault::FFLiDatabaseDefault()
 {
     for (u32 i = 0; i < 6; i++)
-        InitElement(&(m_MiiDataOfficial[i]), &(s_MiiDataCoreRFL[i]), i);
+        InitElement(&(m_MiiDataOfficial[i]), &(MII_DATA_CORE_RFL[i]), i);
 }
 
 FFLiDatabaseDefault::~FFLiDatabaseDefault()

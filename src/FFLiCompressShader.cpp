@@ -36,13 +36,38 @@ bool FFLiCompressShader::UseUB() const
     return m_pVertexShader->shaderMode == GX2_SHADER_MODE_UNIFORM_BLOCK;
 }
 
-static const char* s_Samplers[1] = {
+namespace {
+
+const char* TEXTURE_SAMPLER_NAME[1] = {
     "cTexture"
 };
 
+const char* VERTEX_UNIFORM_TEX_SIZE_NAME[1] = {
+    "cTexSizeRCP"
+};
+
+const char* PIXEL_UNIFORM_REFRER_LEVEL_NAME[1] = {
+    "cReferLevel"
+};
+
+const char* VERTEX_UNIFORM_BLOCK_NAME[1] = {
+    "cVertexBlock"
+};
+
+const char* PIXEL_UNIFORM_BLOCK_NAME[1] = {
+    "cPixelBlock"
+};
+
+FFLiUtilShader::AttributeStreamDesc FETCH_SHADER_DESC[2] = {
+    { "aPosition", 0, 0, GX2_ATTRIB_FORMAT_32_32_32_FLOAT },
+    { "aTexCoord", 1, 0, GX2_ATTRIB_FORMAT_32_32_FLOAT }
+};
+
+}
+
 bool FFLiCompressShader::SetupLocation()
 {
-    if (!FFLiUtilShader::GetSamplerLocation(&m_SamplerLocation, m_pPixelShader, s_Samplers[0]))
+    if (!FFLiUtilShader::GetSamplerLocation(&m_SamplerLocation, m_pPixelShader, TEXTURE_SAMPLER_NAME[0]))
         return false;
 
     if (UseUB())
@@ -51,46 +76,25 @@ bool FFLiCompressShader::SetupLocation()
     return SetupLocationForUR();
 }
 
-static const char* s_VertexUniforms[1] = {
-    "cTexSizeRCP"
-};
-
-static const char* s_PixelUniforms[1] = {
-    "cReferLevel"
-};
-
 bool FFLiCompressShader::SetupLocationForUR()
 {
-    if (!FFLiUtilShader::GetUniformLocation(&m_VertexUniformLocation, m_pVertexShader, s_VertexUniforms[0]))
+    if (!FFLiUtilShader::GetUniformLocation(&m_VertexUniformLocation, m_pVertexShader, VERTEX_UNIFORM_TEX_SIZE_NAME[0]))
         return false;
 
-    FFLiUtilShader::GetUniformLocation(&m_PixelUniformLocation, m_pPixelShader, s_PixelUniforms[0]);
+    FFLiUtilShader::GetUniformLocation(&m_PixelUniformLocation, m_pPixelShader, PIXEL_UNIFORM_REFRER_LEVEL_NAME[0]);
     return true;
 }
-
-static const char* s_VertexUniformBlocks[1] = {
-    "cVertexBlock"
-};
-
-static const char* s_PixelUniformBlocks[1] = {
-    "cPixelBlock"
-};
 
 bool FFLiCompressShader::SetupLocationForUB()
 {
-    if (!FFLiUtilShader::GetUniformBlockLocation(&m_VertexUniformLocation, m_pVertexShader, s_VertexUniformBlocks[0]))
+    if (!FFLiUtilShader::GetUniformBlockLocation(&m_VertexUniformLocation, m_pVertexShader, VERTEX_UNIFORM_BLOCK_NAME[0]))
         return false;
 
-    if (!FFLiUtilShader::GetUniformBlockLocation(&m_PixelUniformLocation, m_pPixelShader, s_PixelUniformBlocks[0]))
+    if (!FFLiUtilShader::GetUniformBlockLocation(&m_PixelUniformLocation, m_pPixelShader, PIXEL_UNIFORM_BLOCK_NAME[0]))
         return false;
 
     return true;
 }
-
-static FFLiUtilShader::AttributeStreamDesc s_Attributes[2] = {
-    { "aPosition", 0, 0, GX2_ATTRIB_FORMAT_32_32_32_FLOAT },
-    { "aTexCoord", 1, 0, GX2_ATTRIB_FORMAT_32_32_FLOAT }
-};
 
 bool FFLiCompressShader::SetupCPU(const void* pShaderData, u32 shaderIndex, FFLiBufferAllocator* pAllocator)
 {
@@ -102,7 +106,7 @@ bool FFLiCompressShader::SetupCPU(const void* pShaderData, u32 shaderIndex, FFLi
     if (!FFLiUtilShader::BuildShader(&m_pPixelShader, &shaderAllocator, pShaderData, shaderIndex, false))
         return false;
 
-    if (!FFLiUtilShader::BuildShader(&m_FetchShader, m_pVertexShader, &shaderAllocator, s_Attributes, 2, false))
+    if (!FFLiUtilShader::BuildShader(&m_FetchShader, m_pVertexShader, &shaderAllocator, FETCH_SHADER_DESC, 2, false))
         return false;
 
     GX2InitSampler(&m_Sampler, GX2_TEX_CLAMP_MIRROR, GX2_TEX_XY_FILTER_POINT);
