@@ -3,8 +3,6 @@
 
 #include <nn/ffl/FFLResourceType.h>
 
-#include <nn/util/util_StaticAssert.h>
-
 class FFLiResourceCache
 {
 public:

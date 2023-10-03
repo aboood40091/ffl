@@ -3,8 +3,6 @@
 
 #include <nn/ffl/FFLFontRegion.h>
 
-#include <nn/util/util_StaticAssert.h>
-
 #include <cafe/fs.h>
 
 #ifdef __cplusplus
