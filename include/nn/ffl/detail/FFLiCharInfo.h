@@ -84,6 +84,8 @@ struct FFLiCharInfo
 NN_STATIC_ASSERT_IS_POD(FFLiCharInfo);
 NN_STATIC_ASSERT(sizeof(FFLiCharInfo) == 0x120);
 
+BOOL FFLiiVerifyCharInfo(const FFLiCharInfo* pCharInfo, BOOL verifyName);
+
 extern "C" {
 
 #else

@@ -3,6 +3,8 @@
 
 #include <nn/ffl/types.h>
 
+class FFLiMiddleDB;
+
 class FFLiRandomContext;
 
 class FFLiDatabaseRandom
@@ -10,6 +12,8 @@ class FFLiDatabaseRandom
 public:
     FFLiDatabaseRandom(FFLiRandomContext* pContext);
     ~FFLiDatabaseRandom();
+
+    FFLResult UpdateMiddleDB(FFLiMiddleDB* pMiddleDB);
 
 private:
     FFLiRandomContext*  m_pRandomContext;

@@ -10,6 +10,13 @@ public:
     FFLiSystemContext();
     ~FFLiSystemContext();
 
+    FFLiRandomContext* RandomContext()
+    {
+        return &m_RandomContext;
+    }
+
+    u64 TitleID() const;
+
 private:
     FFLiRandomContext   m_RandomContext;
     FFLiAuthorID        m_AuthorID;

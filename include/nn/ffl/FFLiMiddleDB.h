@@ -41,8 +41,9 @@ private:
 NN_STATIC_ASSERT_IS_POD(FFLiMiddleDBNetParam);
 NN_STATIC_ASSERT(sizeof(FFLiMiddleDBNetParam) == FFLI_MIDDLE_DB_PARAM_SIZE);
 
-class FFLiMiiDataHidden;
-class FFLiMiiDataOfficial;
+struct  FFLiCharInfo;
+class   FFLiMiiDataHidden;
+class   FFLiMiiDataOfficial;
 
 class FFLiMiddleDB
 {
@@ -51,11 +52,15 @@ public:
 
     FFLMiddleDBType Type() const;
 
+    void ClearData();
+
     const FFLiMiddleDBHiddenParam& HiddenParam() const;
 
     bool IsFull() const;
 
     void Add(const FFLiMiiDataHidden& miiDataHidden);
+
+    FFLResult GetCharInfo(FFLiCharInfo* pCharInfo, u16 index) const;
 
 private:
     u32                     m_Magic;
