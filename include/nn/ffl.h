@@ -17,6 +17,7 @@
 #include <nn/ffl/FFLGender.h>
 #include <nn/ffl/FFLGlobal.h>
 #include <nn/ffl/FFLInitDesc.h>
+#include <nn/ffl/FFLMiddleDBType.h>
 #include <nn/ffl/FFLModelType.h>
 #include <nn/ffl/FFLModulateParam.h>
 #include <nn/ffl/FFLPartsTransform.h>
