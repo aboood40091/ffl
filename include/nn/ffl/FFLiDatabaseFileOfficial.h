@@ -5,6 +5,8 @@
 
 #include <nn/ffl/FFLiMiiDataCore.h>
 
+struct FFLiCharInfo;
+
 class FFLiDatabaseFileOfficial
 {
 public:
@@ -15,13 +17,23 @@ public:
     };
     NN_STATIC_ASSERT(sizeof(AdjustRegularBuffer) == 0x7534);
 
+private:
+    const FFLiMiiDataOfficial& GetImpl(u16 index) const;
+
+    bool FindRegularList(u32* pIndex, const FFLCreateID* pCreateID) const;
+
 public:
     void Init();
+    void UpdateCrc();
 
+    bool IsValidCrc() const;
+    bool IsValidIdentifier() const;
     bool IsValid() const;
 
-    bool IsAvailable(u16 miiDataIndex, bool, bool) const;
-    bool IsRegular(u16 miiDataIndex, bool, bool) const;
+    bool Get(FFLiCharInfo* pCharInfo, u16 miiDataIndex, bool checkSpecial, bool allowSpecial) const;
+    bool IsAvailable(u16 miiDataIndex, bool checkSpecial, bool allowSpecial) const;
+    bool Search(u16* pMiiDataIndex, const FFLCreateID& createID) const;
+    bool IsRegular(u16 miiDataIndex, bool checkSpecial, bool allowSpecial) const;
 
     bool AdjustRegularList(AdjustRegularBuffer* pBuffer);
 

@@ -1,6 +1,10 @@
 #ifndef FFLI_CHARINFO_H_
 #define FFLI_CHARINFO_H_
 
+#include <nn/ffl/types.h>
+
+#ifdef __cplusplus
+
 #include <nn/ffl/FFLCreateID.h>
 #include <nn/ffl/FFLFontRegion.h>
 #include <nn/ffl/FFLGender.h>
@@ -77,6 +81,21 @@ struct FFLiCharInfo
     u32             _114;   // Set to FFLiMiiDataCore._0_24_27
     FFLiAuthorID    authorID;
 };
+NN_STATIC_ASSERT_IS_POD(FFLiCharInfo);
 NN_STATIC_ASSERT(sizeof(FFLiCharInfo) == 0x120);
+
+extern "C" {
+
+#else
+
+typedef struct FFLiCharInfo FFLiCharInfo;
+
+#endif
+
+BOOL FFLiVerifyCharInfo(const FFLiCharInfo* pCharInfo, BOOL verifyName);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // FFLI_CHARINFO_H_
