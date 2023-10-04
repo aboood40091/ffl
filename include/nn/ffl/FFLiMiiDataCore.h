@@ -2,6 +2,7 @@
 #define FFLI_MIIDATA_CORE_H_
 
 #include <nn/ffl/FFLCreateID.h>
+#include <nn/ffl/FFLGender.h>
 #include <nn/ffl/FFLStandard.h>
 
 #include <nn/ffl/FFLiAuthorID.h>
@@ -20,24 +21,24 @@ enum FFLiBirthPlatform
 class FFLiMiiDataCore
 {
 public:
-    FFLiBirthPlatform BirthPlatform() const
-    {
-        return FFLiBirthPlatform(m_BirthPlatform);
-    }
-
     void SetBirthPlatform(FFLiBirthPlatform platform)
     {
         m_BirthPlatform = platform;
     }
 
-    bool Copyable() const
+    FFLiBirthPlatform BirthPlatform() const
     {
-        return m_Copyable;
+        return FFLiBirthPlatform(m_BirthPlatform);
     }
 
     void SetCopyable(bool enable)
     {
         m_Copyable = enable;
+    }
+
+    bool Copyable() const
+    {
+        return m_Copyable;
     }
 
     FFLCreateID& GetCreateID()
@@ -48,6 +49,16 @@ public:
     const FFLCreateID& GetCreateID() const
     {
         return m_CreateID;
+    }
+
+    void SetGender(FFLGender gender)
+    {
+        m_Gender = gender;
+    }
+
+    FFLGender Gender() const
+    {
+        return FFLGender(m_Gender);
     }
 
 private:
@@ -90,11 +101,12 @@ private:
     {
         struct
         {
-            u16 m_Gender        : 1;
-            u16 m_BirthMonth    : 4;
-            u16 m_BirthDay      : 5;
-            u16 m_FavoriteColor : 4;
+            u16                 : 1;    // Unused (MSB)
             u16 m_FavoriteMii   : 1;    // bool
+            u16 m_FavoriteColor : 4;
+            u16 m_BirthDay      : 5;
+            u16 m_BirthMonth    : 4;
+            u16 m_Gender        : 1;    // (LSB)
         };
 
         u16 _18;

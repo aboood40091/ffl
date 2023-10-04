@@ -11,7 +11,7 @@ typedef enum FFLResult
 {
     FFL_RESULT_OK                       =  0,
     FFL_RESULT_ERROR                    =  1,
-  //FFL_RESULT_                         =  2,
+    FFL_RESULT_UNKNOWN_2                =  2,
   //FFL_RESULT_                         =  3,
     FFL_RESULT_MANAGER_NOT_CONSTRUCT    =  4,   // I think
     FFL_RESULT_DB_FILE_LOAD_ERROR       =  5,

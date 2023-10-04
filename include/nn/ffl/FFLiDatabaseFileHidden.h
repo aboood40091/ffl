@@ -1,6 +1,8 @@
 #ifndef FFLI_DATABASE_FILE_HIDDEN_H_
 #define FFLI_DATABASE_FILE_HIDDEN_H_
 
+#include <nn/ffl/FFLResult.h>
+
 #include <nn/ffl/FFLiMiiDataCore.h>
 
 class FFLiOrderData
@@ -25,19 +27,34 @@ public:
    u16 PrevIndex() const;
 
 private:
-    u16                 m_NextIndex;
-    u16                 m_PrevIndex;
+    u16 m_NextIndex;
+    u16 m_PrevIndex;
 };
 NN_STATIC_ASSERT_IS_POD(FFLiOrderData);
 NN_STATIC_ASSERT(sizeof(FFLiOrderData) == 4);
 
+class FFLiAllocator;
+class FFLiMiddleDB;
+
 class FFLiDatabaseFileHidden
 {
+private:
+    const FFLiMiiDataHidden& GetImpl(u16 index) const;
+
+    u16 NumOfGenderWithIndex(u16* pIndices, FFLGender gender) const;
+
+    FFLResult UpdateMiddleDBRandom(FFLiMiddleDB* pMiddleDB, FFLiAllocator* pAllocator) const;
+    FFLResult UpdateMiddleDBTime(FFLiMiddleDB* pMiddleDB, bool reverse) const;
+
 public:
     void Init();
     void UpdateCrc();
 
+    bool IsValidCrc() const;
+    bool IsValidIdentifier() const;
     bool IsValid() const;
+
+    FFLResult UpdateMiddleDB(FFLiMiddleDB* pMiddleDB, FFLiAllocator* pAllocator) const;
 
 private:
     u32                 m_Magic;
