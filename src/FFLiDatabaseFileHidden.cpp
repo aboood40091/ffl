@@ -166,7 +166,7 @@ FFLResult FFLiDatabaseFileHidden::UpdateMiddleDBTime(FFLiMiddleDB* pMiddleDB, bo
     }
     
     return
-        pMiddleDB->StoredSize() > 0
+        pMiddleDB->StoredSize() != 0
             ? FFL_RESULT_OK
             : FFL_RESULT_UNKNOWN_2;
 }
