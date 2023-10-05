@@ -146,7 +146,7 @@ void FFLiDatabaseDefault::InitElement(FFLiMiiDataOfficial* pMiiDataOfficial, con
     FFLiMiiDataCoreRFL2MiiDataCore(pMiiDataOfficial, *pMiiDataCoreRFL, true);
     GetDefaultCreateID(&pMiiDataOfficial->GetCreateID(), index);
     FFLiClearCreatorNameFromOfficial(pMiiDataOfficial);
-    pMiiDataOfficial->SetBirthPlatform(FFLI_BIRTH_PLATFORM_WII_U);
+    pMiiDataOfficial->SetBirthPlatform(FFL_BIRTH_PLATFORM_WII_U);
     pMiiDataOfficial->SetCopyable(true);
 }
 

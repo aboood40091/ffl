@@ -5,6 +5,9 @@
 
 class FFLiRandomContext
 {
+public:
+    u16 Random(u16 max);
+
 private:
     u32 m_RndX;
     u32 m_RndY;

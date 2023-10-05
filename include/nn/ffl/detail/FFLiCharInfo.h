@@ -5,6 +5,7 @@
 
 #ifdef __cplusplus
 
+#include <nn/ffl/FFLBirthPlatform.h>
 #include <nn/ffl/FFLCreateID.h>
 #include <nn/ffl/FFLFontRegion.h>
 #include <nn/ffl/FFLGender.h>
@@ -13,73 +14,73 @@
 
 struct FFLiCharInfo
 {
-    u32             miiVersion;
+    u32                 miiVersion;
     struct
     {
-        u32         faceType;
-        u32         facelineColor;
-        u32         faceLine;
-        u32         faceMakeup;
-        u32         hairType;
-        u32         hairColor;
-        u32         hairDir;
-        u32         eyeType;
-        u32         eyeColor;
-        u32         eyeScaleX;
-        u32         eyeScaleY;
-        u32         eyeRotateOffset;
-        u32         eyeSpacingX;
-        u32         eyePositionY;
-        u32         eyebrowType;
-        u32         eyebrowColor;
-        u32         eyebrowScaleX;
-        u32         eyebrowScaleY;
-        u32         eyebrowRotateOffset;
-        u32         eyebrowSpacingX;
-        u32         eyebrowPositionY;
-        u32         noseType;
-        s32         noseScale;
-        s32         nosePositionY;
-        u32         mouthType;
-        u32         mouthColor;
-        u32         mouthScaleX;
-        u32         mouthScaleY;
-        u32         mouthPositionY;
-        u32         mustacheType;
-        u32         beardType;
-        s32         beardColor;
-        u32         mustacheScale;
-        u32         mustachePositionY;
-        u32         glassType;
-        u32         glassColor;
-        s32         glassScale;
-        s32         glassPositionY;
-        u32         moleType;
-        u32         moleScale;
-        u32         molePositionX;
-        u32         molePositionY;
+        s32             faceType;
+        s32             facelineColor;
+        s32             faceLine;
+        s32             faceMakeup;
+        s32             hairType;
+        s32             hairColor;
+        s32             hairDir;
+        s32             eyeType;
+        s32             eyeColor;
+        s32             eyeScaleX;
+        s32             eyeScaleY;
+        s32             eyeRotateOffset;
+        s32             eyeSpacingX;
+        s32             eyePositionY;
+        s32             eyebrowType;
+        s32             eyebrowColor;
+        s32             eyebrowScaleX;
+        s32             eyebrowScaleY;
+        s32             eyebrowRotateOffset;
+        s32             eyebrowSpacingX;
+        s32             eyebrowPositionY;
+        s32             noseType;
+        s32             noseScale;
+        s32             nosePositionY;
+        s32             mouthType;
+        s32             mouthColor;
+        s32             mouthScaleX;
+        s32             mouthScaleY;
+        s32             mouthPositionY;
+        s32             mustacheType;
+        s32             beardType;
+        s32             beardColor;
+        s32             mustacheScale;
+        s32             mustachePositionY;
+        s32             glassType;
+        s32             glassColor;
+        s32             glassScale;
+        s32             glassPositionY;
+        s32             moleType;
+        s32             moleScale;
+        s32             molePositionX;
+        s32             molePositionY;
     } parts;
-    u32             height;
-    u32             build;
-    u16             name[10 + 1];
-    u16             creatorName[10 + 1];
-    FFLGender       gender;
-    u32             birthMonth;
-    u32             birthDay;
-    u32             favoriteColor;
-    bool            favoriteMii;
-    bool            copyable;
-    u8              ngWord;
-    bool            localOnly;
-    u32             regionMove;
-    FFLFontRegion   fontRegion;
-    u32             pageIndex;
-    u32             slotIndex;
-    u32             birthPlatform;
-    FFLCreateID     createID;
-    u16             _112;   // Set to zero
-    u32             _114;   // Set to FFLiMiiDataCore._0_24_27
-    FFLiAuthorID    authorID;
+    u32                 height;
+    u32                 build;
+    u16                 name[10 + 1];
+    u16                 creatorName[10 + 1];
+    FFLGender           gender;
+    u32                 birthMonth;
+    u32                 birthDay;
+    u32                 favoriteColor;
+    bool                favoriteMii;
+    bool                copyable;
+    u8                  ngWord;
+    bool                localOnly;
+    u32                 regionMove;
+    FFLFontRegion       fontRegion;
+    u32                 pageIndex;
+    u32                 slotIndex;
+    FFLBirthPlatform    birthPlatform;
+    FFLCreateID         createID;
+    u16                 _112;   // Set to zero
+    u32                 _114;   // Set to FFLiMiiDataCore._0_24_27
+    FFLiAuthorID        authorID;
 };
 NN_STATIC_ASSERT_IS_POD(FFLiCharInfo);
 NN_STATIC_ASSERT(sizeof(FFLiCharInfo) == 0x120);
@@ -97,7 +98,21 @@ typedef struct FFLiCharInfo FFLiCharInfo;
 BOOL FFLiVerifyCharInfo(const FFLiCharInfo* pCharInfo, BOOL verifyName);
 
 #ifdef __cplusplus
+
 }
+
+s32 FFLiiGetEyeRotateOffset(s32 type);
+s32 FFLiiGetEyebrowRotateOffset(s32 type);
+
+struct FFLAdditionalInfo;
+
+enum FFLiCompareCharInfoFlagsIn
+{
+    FFLI_COMPARE_CHAR_INFO_FLAGS_IN_COMPARE_PARTS = 1 << 0
+};
+
+bool FFLiCompareCharInfoWithAdditionalInfo(s32* pFlagsOut, s32 flagsIn, const FFLiCharInfo* pCharInfoA, const FFLiCharInfo* pCharInfoB, const FFLAdditionalInfo* pAdditionalInfoA, const FFLAdditionalInfo* pAdditionalInfoB);
+
 #endif
 
 #endif // FFLI_CHARINFO_H_

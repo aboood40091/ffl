@@ -1,6 +1,7 @@
 #ifndef FFLI_MIIDATA_CORE_H_
 #define FFLI_MIIDATA_CORE_H_
 
+#include <nn/ffl/FFLBirthPlatform.h>
 #include <nn/ffl/FFLCreateID.h>
 #include <nn/ffl/FFLGender.h>
 #include <nn/ffl/FFLStandard.h>
@@ -10,25 +11,17 @@
 // TODO: The order of all bitfields here might be reversed,
 //       further investigation is needed whenever I get to decompiling the Mii Data functions
 
-enum FFLiBirthPlatform
-{
-    FFLI_BIRTH_PLATFORM_WII     = 1,
-    FFLI_BIRTH_PLATFORM_NTR     = 2,
-    FFLI_BIRTH_PLATFORM_CTR     = 3,
-    FFLI_BIRTH_PLATFORM_WII_U   = 4
-};
-
 class FFLiMiiDataCore
 {
 public:
-    void SetBirthPlatform(FFLiBirthPlatform platform)
+    void SetBirthPlatform(FFLBirthPlatform platform)
     {
         m_BirthPlatform = platform;
     }
 
-    FFLiBirthPlatform BirthPlatform() const
+    FFLBirthPlatform BirthPlatform() const
     {
-        return FFLiBirthPlatform(m_BirthPlatform);
+        return FFLBirthPlatform(m_BirthPlatform);
     }
 
     void SetCopyable(bool enable)

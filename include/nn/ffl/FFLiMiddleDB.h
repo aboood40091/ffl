@@ -1,8 +1,10 @@
 #ifndef FFLI_MIDDLE_DB_H_
 #define FFLI_MIDDLE_DB_H_
 
+#include <nn/ffl/FFLAge.h>
 #include <nn/ffl/FFLGender.h>
 #include <nn/ffl/FFLMiddleDBType.h>
+#include <nn/ffl/FFLRace.h>
 
 #define FFLI_MIDDLE_DB_PARAM_SIZE   (4)
 
@@ -23,6 +25,22 @@ NN_STATIC_ASSERT(sizeof(FFLiMiddleDBHiddenParam) == FFLI_MIDDLE_DB_PARAM_SIZE);
 
 class FFLiMiddleDBRandomParam
 {
+public:
+    FFLGender Gender() const
+    {
+        return FFLGender(m_Gender);
+    }
+
+    FFLAge Age() const
+    {
+        return FFLAge(m_Age);
+    }
+
+    FFLRace Race() const
+    {
+        return FFLRace(m_Race);
+    }
+
 private:
     u8  m_Gender;
     u8  m_Age;
@@ -48,17 +66,22 @@ class   FFLiMiiDataOfficial;
 class FFLiMiddleDB
 {
 public:
-    u32 StoredSize() const;
+    s32 StoredSize() const;
 
     FFLMiddleDBType Type() const;
 
     void ClearData();
 
     const FFLiMiddleDBHiddenParam& HiddenParam() const;
+    const FFLiMiddleDBRandomParam& RandomParam() const;
 
     bool IsFull() const;
 
+    void Add(const FFLiCharInfo& charInfo);
     void Add(const FFLiMiiDataHidden& miiDataHidden);
+
+    const FFLiMiiDataOfficial& Get(u16 index) const;
+    FFLiMiiDataOfficial& Get(u16 index);
 
     FFLResult GetCharInfo(FFLiCharInfo* pCharInfo, u16 index) const;
 

@@ -2,6 +2,8 @@
 #define NN_FFL_H_
 
 #include <nn/ffl/FFLAdditionalInfo.h>
+#include <nn/ffl/FFLAge.h>
+#include <nn/ffl/FFLBirthPlatform.h>
 #include <nn/ffl/FFLBoundingBox.h>
 #include <nn/ffl/FFLCharModel.h>
 #include <nn/ffl/FFLCharModelBuffer.h>
@@ -21,6 +23,7 @@
 #include <nn/ffl/FFLModelType.h>
 #include <nn/ffl/FFLModulateParam.h>
 #include <nn/ffl/FFLPartsTransform.h>
+#include <nn/ffl/FFLRace.h>
 #include <nn/ffl/FFLResolution.h>
 #include <nn/ffl/FFLResourceType.h>
 #include <nn/ffl/FFLResult.h>

@@ -1,11 +1,15 @@
 #ifndef FFLI_DATABASE_RANDOM_H_
 #define FFLI_DATABASE_RANDOM_H_
 
-#include <nn/ffl/types.h>
+#include <nn/ffl/FFLResult.h>
 
-class FFLiMiddleDB;
+enum FFLAge;
+enum FFLGender;
+enum FFLRace;
 
-class FFLiRandomContext;
+struct  FFLiCharInfo;
+class   FFLiMiddleDB;
+class   FFLiRandomContext;
 
 class FFLiDatabaseRandom
 {
@@ -14,6 +18,10 @@ public:
     ~FFLiDatabaseRandom();
 
     FFLResult UpdateMiddleDB(FFLiMiddleDB* pMiddleDB);
+
+private:
+    void DetermineParam(FFLGender* pGender, FFLAge* pAge, FFLRace* pRace);
+    void Get(FFLiCharInfo* pCharInfo, FFLGender gender, FFLAge age, FFLRace race);
 
 private:
     FFLiRandomContext*  m_pRandomContext;
