@@ -19,6 +19,16 @@ public:
     FSStatus Shutdown(FSRetFlag errHandling = FS_RET_NO_ERROR);
     FSStatus ShutdownIfValid(FSRetFlag errHandling = FS_RET_NO_ERROR);
 
+    FSClient& GetFSClient()
+    {
+        return m_FSClient;
+    }
+
+    const FSClient& GetFSClient() const
+    {
+        return m_FSClient;
+    }
+
 private:
     FSClient    m_FSClient;
     bool        m_IsValid;

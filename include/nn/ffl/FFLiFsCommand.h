@@ -28,6 +28,21 @@ public:
     static FFLiFsCommand* PlacementNew(FFLiFsCommandBuffer* pBuffer, FFLiFsClient* pClient);
     static void PlacementDelete(FFLiFsCommand* pCommand);
 
+    FSCmdBlock& GetFSCmdBlock()
+    {
+        return m_FSCmdBlock;
+    }
+
+    const FSCmdBlock& GetFSCmdBlock() const
+    {
+        return m_FSCmdBlock;
+    }
+
+    FFLiFsClient* GetClient() const
+    {
+        return m_pFsClient;
+    }
+
 private:
     FSCmdBlock      m_FSCmdBlock;
     FFLiFsClient*   m_pFsClient;

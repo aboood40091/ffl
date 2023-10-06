@@ -372,7 +372,7 @@ FFLiFsResult ReadFile(void* pDst, u32 size, FFLiFsCommand* pCommand, const char*
         return result;
     }
 
-    status = file.Read(pDst, size);
+    status = file.Read(pDst, size, 1);
     if (status == 0)
     {
         file.Close();
