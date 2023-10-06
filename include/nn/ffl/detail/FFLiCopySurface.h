@@ -12,6 +12,9 @@ public:
     FFLiCopySurface(FFLiBufferAllocator* pAllocator);
     ~FFLiCopySurface();
 
+    void Begin();
+    void Execute(GX2Surface* pDstSurface, u32 dstMipLevel, const GX2Surface* pSrcSurface, u32 srcMipLevel);
+
 private:
     FFLiCopySurfaceShader   m_Shader;
     FFLiCopySurfaceDrawer   m_Drawer;

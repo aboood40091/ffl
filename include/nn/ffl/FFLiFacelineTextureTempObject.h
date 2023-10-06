@@ -10,12 +10,12 @@ struct  FFLiRenderTexture;
 
 struct FFLiFacelineTextureTempObject
 {
-    GX2Texture*             pTextureFaceline;
-    FFLDrawParam            drawParamFaceline;
-    GX2Texture*             pTextureFaceMakeup;
-    FFLDrawParam            drawParamFaceMakeup;
-    GX2Texture*             pTextureBeard;
-    FFLDrawParam            drawParamBeard;
+    GX2Texture*             pTextureFaceLine;
+    FFLDrawParam            drawParamFaceLine;
+    GX2Texture*             pTextureFaceMake;
+    FFLDrawParam            drawParamFaceMake;
+    GX2Texture*             pTextureFaceBeard;
+    FFLDrawParam            drawParamFaceBeard;
     FFLiRenderTexture*      pRenderTexture;
     FFLiCompressorParam*    pCompressorParam;
 };

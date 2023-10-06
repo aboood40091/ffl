@@ -7,6 +7,10 @@
 
 struct FFLModulateParam;
 
+void FFLiInitModulateFaceMake(FFLModulateParam* pParam, const GX2Texture& gx2Texture);
+void FFLiInitModulateFaceLine(FFLModulateParam* pParam, const GX2Texture& gx2Texture);
+void FFLiInitModulateFaceBeard(FFLModulateParam* pParam, s32 color, const GX2Texture& gx2Texture);
+
 void FFLiInitModulateShapeFaceline(FFLModulateParam* pParam, const GX2Texture& gx2Texture);
 void FFLiInitModulateShapeBeard(FFLModulateParam* pParam, s32 color);
 void FFLiInitModulateShapeNose(FFLModulateParam* pParam, s32 color);

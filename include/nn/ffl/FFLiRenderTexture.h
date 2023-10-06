@@ -11,4 +11,16 @@ struct FFLiRenderTexture
 };
 NN_STATIC_ASSERT(sizeof(FFLiRenderTexture) == 0x9C);
 
+u32 FFLiGetBufferRenderTexture(u32 width, u32 height, GX2SurfaceFormat format, u32 numMips);
+
+class   FFLiBufferAllocator;
+struct  FFLiRenderTextureBuffer;
+class   FFLiShaderCallback;
+
+void FFLiInitRenderTexture(FFLiRenderTexture* pRenderTexture, u32 width, u32 height, GX2SurfaceFormat format, u32 numMips, FFLiBufferAllocator* pAllocator);
+void FFLiInitByBufferRenderTexture(FFLiRenderTexture* pRenderTexture, u32 width, u32 height, GX2SurfaceFormat format, u32 numMips, FFLiRenderTextureBuffer* pRenderTextureBuffer);
+void FFLiInvalidateRenderTexture(FFLiRenderTexture* pRenderTexture);
+void FFLiSetupRenderTexture(FFLiRenderTexture* pRenderTexture, const FFLColor* pColor, void* pDepthBuffer, u32 viewMip, GX2SurfaceFormat format, const FFLiShaderCallback* pCallback);
+void FFLiFlushRenderTexture(FFLiRenderTexture* pRenderTexture);
+
 #endif // FFLI_RENDER_TEXTURE_H_

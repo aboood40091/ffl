@@ -107,19 +107,19 @@ FFLResult FFLiCharModelCreator::ExecuteCPUStep(FFLiCharModel* pModel, const FFLC
     FFLiRenderTextureBuffer renderTextureBuffer;
     SetupRenderTextureBuffer(renderTextureBuffer, pDesc, &tempAllocator);
 
-    pModel->expression = FFLiInitMaskTextures(&pModel->maskTextures, pDesc->expressionFlag, resolution, isEnabledMipMap, pDesc->enableCompressorParam, &allocator);
+    pModel->expression = FFLiInitMaskTextures(&pModel->maskTextures, pDesc->expressionFlag, resolution, isEnabledMipMap, pDesc->compressTexture, &allocator);
 
-    bool useCompressorUB = false;
+    bool compressUseUB = false;
     if (m_pManager->GetCompressor() != NULL)
-        useCompressorUB = m_pManager->GetCompressor()->UseUB();
+        compressUseUB = m_pManager->GetCompressor()->UseUB();
 
-    result = FFLiInitTempObjectMaskTextures(&pModel->pTextureTempObject->maskTextures, &pModel->maskTextures, &pModel->charInfo, pDesc->expressionFlag, resolution, isEnabledMipMap, pDesc->enableCompressorParam, useCompressorUB, &resLoader, &tempAllocator, &renderTextureBuffer);
+    result = FFLiInitTempObjectMaskTextures(&pModel->pTextureTempObject->maskTextures, &pModel->maskTextures, &pModel->charInfo, pDesc->expressionFlag, resolution, isEnabledMipMap, pDesc->compressTexture, compressUseUB, &resLoader, &tempAllocator, &renderTextureBuffer);
     if (result != FFL_RESULT_OK)
         return result;
 
-    FFLiInitFacelineTexture(&pModel->facelineRenderTexture, resolution, isEnabledMipMap, pDesc->enableCompressorParam, &allocator);
+    FFLiInitFacelineTexture(&pModel->facelineRenderTexture, resolution, isEnabledMipMap, pDesc->compressTexture, &allocator);
 
-    result = FFLiInitTempObjectFacelineTexture(&pModel->pTextureTempObject->facelineTexture, &pModel->facelineRenderTexture, &pModel->charInfo, resolution, isEnabledMipMap, pDesc->enableCompressorParam, useCompressorUB, &resLoader, &tempAllocator, &renderTextureBuffer);
+    result = FFLiInitTempObjectFacelineTexture(&pModel->pTextureTempObject->facelineTexture, &pModel->facelineRenderTexture, &pModel->charInfo, resolution, isEnabledMipMap, pDesc->compressTexture, compressUseUB, &resLoader, &tempAllocator, &renderTextureBuffer);
     if (result != FFL_RESULT_OK)
         return result;
 
@@ -446,19 +446,19 @@ static const FFLModelType MODEL_TYPE[2] = {
 
 void SetupDrawParam(FFLiCharModel* pModel)
 {
-    u32 v0 = 1;
+    u32 hairModulateType = 1;
 
-    pModel->drawParam[FFLI_SHAPE_TYPE_OPA_FACELINE]._54 = 1;
+    pModel->drawParam[FFLI_SHAPE_TYPE_OPA_FACELINE].modulateType = 1;
     FFLiInitModulateShapeFaceline(&pModel->drawParam[FFLI_SHAPE_TYPE_OPA_FACELINE].modulateParam, pModel->facelineRenderTexture.gx2Texture);
 
-    pModel->drawParam[FFLI_SHAPE_TYPE_OPA_BEARD]._54 = 1;
+    pModel->drawParam[FFLI_SHAPE_TYPE_OPA_BEARD].modulateType = 1;
     FFLiInitModulateShapeBeard(&pModel->drawParam[FFLI_SHAPE_TYPE_OPA_BEARD].modulateParam, pModel->charInfo.parts.beardColor);
 
-    pModel->drawParam[FFLI_SHAPE_TYPE_OPA_NOSE]._54 = 1;
+    pModel->drawParam[FFLI_SHAPE_TYPE_OPA_NOSE].modulateType = 1;
     FFLiInitModulateShapeNose(&pModel->drawParam[FFLI_SHAPE_TYPE_OPA_NOSE].modulateParam, pModel->charInfo.parts.facelineColor);
 
     if (pModel->charInfo.parts.hairDir > 0)
-        v0 = 2;
+        hairModulateType = 2;
 
     for (u32 i = 0; i < 2; i++)
     {
@@ -467,18 +467,18 @@ void SetupDrawParam(FFLiCharModel* pModel)
             const FFLiShapeTypeInfo& shapeTypeInfo = GetShapeTypeInfo(MODEL_TYPE[i]);
 
             FFLDrawParam& drawParamForehead = pModel->drawParam[shapeTypeInfo.foreheadIndex];
-            drawParamForehead._54 = v0;
+            drawParamForehead.modulateType = hairModulateType;
             FFLiInitModulateShapeForehead(&drawParamForehead.modulateParam, pModel->charInfo.parts.facelineColor);
 
             FFLDrawParam& drawParamHair = pModel->drawParam[shapeTypeInfo.hairIndex];
-            drawParamHair._54 = v0;
+            drawParamHair.modulateType = hairModulateType;
             FFLiInitModulateShapeHair(&drawParamHair.modulateParam, pModel->charInfo.parts.hairColor);
 
             const GX2Texture* pCapTexture = pModel->pCapTexture;
             if (pCapTexture != NULL)
             {
                 FFLDrawParam& drawParamCap = pModel->drawParam[shapeTypeInfo.capIndex];
-                drawParamCap._54 = v0;
+                drawParamCap.modulateType = hairModulateType;
                 FFLiInitModulateShapeCap(&drawParamCap.modulateParam, pModel->charInfo.favoriteColor, *pCapTexture);
             }
         }
@@ -487,21 +487,21 @@ void SetupDrawParam(FFLiCharModel* pModel)
     const FFLiRenderTexture* pMaskRenderTexture = pModel->maskTextures.renderTextures[pModel->expression];
     if (pMaskRenderTexture != NULL)
     {
-        pModel->drawParam[FFLI_SHAPE_TYPE_XLU_MASK]._54 = 1;
+        pModel->drawParam[FFLI_SHAPE_TYPE_XLU_MASK].modulateType = 1;
         FFLiInitModulateShapeMask(&pModel->drawParam[FFLI_SHAPE_TYPE_XLU_MASK].modulateParam, pMaskRenderTexture->gx2Texture);
     }
 
     const GX2Texture* pNoselineTexture = pModel->pNoselineTexture;
     if (pNoselineTexture != NULL)
     {
-        pModel->drawParam[FFLI_SHAPE_TYPE_XLU_NOSELINE]._54 = 1;
+        pModel->drawParam[FFLI_SHAPE_TYPE_XLU_NOSELINE].modulateType = 1;
         FFLiInitModulateShapeNoseline(&pModel->drawParam[FFLI_SHAPE_TYPE_XLU_NOSELINE].modulateParam, *pNoselineTexture);
     }
 
     const GX2Texture* pGlassTexture = pModel->pGlassTexture;
     if (pGlassTexture != NULL)
     {
-        pModel->drawParam[FFLI_SHAPE_TYPE_XLU_GLASS]._54 = 0;
+        pModel->drawParam[FFLI_SHAPE_TYPE_XLU_GLASS].modulateType = 0;
         FFLiInitModulateShapeGlass(&pModel->drawParam[FFLI_SHAPE_TYPE_XLU_GLASS].modulateParam, pModel->charInfo.parts.glassColor, *pGlassTexture);
     }
 }
@@ -542,7 +542,7 @@ void FFLiCharModelCreator::SetupRenderTextureBuffer(FFLiRenderTextureBuffer& ren
 {
     std::memset(&renderTextureBuffer, 0, sizeof(FFLiRenderTextureBuffer));
 
-    if (pDesc->enableCompressorParam)
+    if (pDesc->compressTexture)
     {
         renderTextureBuffer.size = m_pCharModelCreateParam->GetCompressBufferSize(pDesc);
         renderTextureBuffer.pBuffer = pAllocator->Allocate(renderTextureBuffer.size);

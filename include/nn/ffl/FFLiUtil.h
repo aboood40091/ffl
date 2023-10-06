@@ -44,6 +44,8 @@ void FFLiSwapEndianArrayImpl(T* pArray, u32 size)
         pArray[i] = FFLiSwapEndianImpl<T>(pArray[i]);
 }
 
+u32 FFLiRoundUp(u32 value, u32 multiple);
+
 void FFLiCopyWcharT2U16(u16* dst, u32 size, const wchar_t* src);
 
 #endif // FFLI_UTIL_H_
