@@ -9,7 +9,7 @@ struct FFLiRenderTexture;
 
 struct FFLiMaskTextures
 {
-    FFLiRenderTexture*  renderTextures[19];
+    FFLiRenderTexture*  pRenderTextures[19];
 };
 NN_STATIC_ASSERT(sizeof(FFLiMaskTextures) == 0x4C);
 

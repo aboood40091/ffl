@@ -13,6 +13,8 @@ NN_STATIC_ASSERT(sizeof(FFLiRenderTexture) == 0x9C);
 
 u32 FFLiGetBufferRenderTexture(u32 width, u32 height, GX2SurfaceFormat format, u32 numMips);
 
+struct FFLColor;
+
 class   FFLiBufferAllocator;
 struct  FFLiRenderTextureBuffer;
 class   FFLiShaderCallback;

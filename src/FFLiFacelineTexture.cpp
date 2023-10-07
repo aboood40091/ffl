@@ -41,6 +41,8 @@ void InvalidatePrimitive(FFLPrimitiveParam* pPrimitive);
 void InvalidateAttributes(FFLAttributeBufferParam* pAttributes);
 void InvalidateDrawParam(FFLDrawParam* pDrawParam);
 
+void Compress(FFLiCompressorImplBC1* pCompressorImpl, FFLiRenderTexture* pDst, const FFLiRenderTexture* pSrc, const FFLiCompressorParam* pParam);
+
 }
 
 u32 FFLiGetBufferSizeFacelineTexture(u32 resolution, bool enableMipMap, bool compressTexture)
@@ -134,11 +136,6 @@ FFLResult FFLiInitTempObjectFacelineTexture(FFLiFacelineTextureTempObject* pObje
     return FFL_RESULT_OK;
 }
 
-static void CompressFacelineTexture(FFLiCompressorImplBC1* pCompressorImpl, GX2Texture* pDst, const GX2Texture* pSrc, const FFLiCompressorParam* pParam)
-{
-    pCompressorImpl->CompressImpl(pDst, pSrc, pParam);
-}
-
 void FFLiRenderFacelineTexture(FFLiRenderTexture* pRenderTexture, const FFLiCharInfo* pCharInfo, u32 resolution, FFLiFacelineTextureTempObject* pObject, const FFLiShaderCallback* pCallback, FFLiCopySurface* pCopySurface, FFLiCompressorImplBC1* pCompressorImpl)
 {
     bool enableBeardTexture = pCharInfo->parts.beardType >= 4;
@@ -197,16 +194,16 @@ void FFLiRenderFacelineTexture(FFLiRenderTexture* pRenderTexture, const FFLiChar
 
     if (useTempRenderTexture)
     {
-        const GX2Texture* pSrc = &pObject->pRenderTexture->gx2Texture;
-        GX2Texture* pDst = &pRenderTexture->gx2Texture;
+        const FFLiRenderTexture* pSrc = pObject->pRenderTexture;
+        FFLiRenderTexture* pDst = pRenderTexture;
         FFLiCompressorParam* pParam = pObject->pCompressorParam;
         
-        FFLiInvalidateTexture(pDst);
-        pParam->SetTexture(pSrc);
+        FFLiInvalidateTexture(&pDst->gx2Texture);
+        pParam->SetTexture(&pSrc->gx2Texture);
     
-        CompressFacelineTexture(pCompressorImpl, pDst, pSrc, pParam);
+        Compress(pCompressorImpl, pDst, pSrc, pParam);
 
-        FFLiFlushRenderTexture(pRenderTexture);
+        FFLiFlushRenderTexture(pDst);
 
         pCallback->CallSetContextState();
     }
@@ -391,6 +388,11 @@ void InvalidateDrawParam(FFLDrawParam* pDrawParam)
 {
     InvalidatePrimitive(&pDrawParam->primitiveParam);
     InvalidateAttributes(&pDrawParam->attributeBufferParam);
+}
+
+void Compress(FFLiCompressorImplBC1* pCompressorImpl, FFLiRenderTexture* pDst, const FFLiRenderTexture* pSrc, const FFLiCompressorParam* pParam)
+{
+    pCompressorImpl->CompressImpl(&pDst->gx2Texture, &pSrc->gx2Texture, pParam);
 }
 
 }

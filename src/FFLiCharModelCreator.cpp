@@ -484,7 +484,7 @@ void SetupDrawParam(FFLiCharModel* pModel)
         }
     }
 
-    const FFLiRenderTexture* pMaskRenderTexture = pModel->maskTextures.renderTextures[pModel->expression];
+    const FFLiRenderTexture* pMaskRenderTexture = pModel->maskTextures.pRenderTextures[pModel->expression];
     if (pMaskRenderTexture != NULL)
     {
         pModel->drawParam[FFLI_SHAPE_TYPE_XLU_MASK].modulateType = 1;
