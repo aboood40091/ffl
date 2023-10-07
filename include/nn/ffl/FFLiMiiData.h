@@ -12,6 +12,7 @@ struct  FFLiStoreDataCFL;
 bool FFLiMiiDataCoreRFL2MiiDataCore(FFLiMiiDataCore* pMiiDataCore, const FFLiMiiDataCoreRFL& miiDataCoreRFL, bool replaceName);
 void FFLiClearCreatorNameFromOfficial(FFLiMiiDataOfficial* pMiiDataOfficial);
 void FFLiMiiDataOfficial2CharInfo(FFLiCharInfo* pCharInfo, const FFLiMiiDataOfficial& miiDataOfficial);
+void FFLiCharInfo2MiiDataOfficial(FFLiMiiDataOfficial* pMiiDataOfficial, const FFLiCharInfo& charInfo, bool resetBirthday);
 FFLResult FFLiStoreDataCFLToCharInfo(FFLiCharInfo* pCharInfo, const FFLiStoreDataCFL& storeDataCFL);
 FFLResult FFLiCharInfoToStoreDataCFL(FFLiStoreDataCFL* pStoreDataCFL, const FFLiCharInfo* pCharInfo);
 

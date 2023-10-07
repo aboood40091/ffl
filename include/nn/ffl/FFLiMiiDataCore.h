@@ -255,6 +255,17 @@ NN_STATIC_ASSERT(sizeof(FFLiMiiDataCore) == 0x48);
 
 class FFLiMiiDataOfficial : public FFLiMiiDataCore
 {
+public:
+    u16* CreatorName()
+    {
+        return m_CreatorName;
+    }
+
+    const u16* CreatorName() const
+    {
+        return m_CreatorName;
+    }
+
 private:
     u16 m_CreatorName[10];  // Wstring
 };

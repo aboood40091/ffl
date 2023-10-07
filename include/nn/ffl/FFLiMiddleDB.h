@@ -5,16 +5,38 @@
 #include <nn/ffl/FFLGender.h>
 #include <nn/ffl/FFLMiddleDBType.h>
 #include <nn/ffl/FFLRace.h>
+#include <nn/ffl/FFLResult.h>
+
+class FFLiMiddleDB;
+
+u32 FFLiGetMiddleDBBufferSize(u16 miiDataNum);
+
+void FLiInitMiddleDB(FFLiMiddleDB* pMiddleDB, FFLMiddleDBType type, void* pMiiData, u16 miiDataNum);
+FFLResult FFLiUpdateMiddleDB(FFLiMiddleDB* pMiddleDB);
+
+void FFLiSetMiddleDBHiddenMask(FFLiMiddleDB* pMiddleDB, FFLGender gender);
+void FFLiSetMiddleDBRandomMask(FFLiMiddleDB* pMiddleDB, FFLGender gender, FFLAge age, FFLRace race);
+
+s32 FFLiGetMiddleDBSize(const FFLiMiddleDB* pMiddleDB);             // Deleted in NSMBU
+s32 FFLiGetMiddleDBStoredSize(const FFLiMiddleDB* pMiddleDB);
+
+FFLMiddleDBType FFLiGetMiddleDBType(const FFLiMiddleDB* pMiddleDB); // Deleted in NSMBU
+
+// --------------------------------------------------------------------------
 
 #define FFLI_MIDDLE_DB_PARAM_SIZE   (4)
 
 class FFLiMiddleDBHiddenParam
 {
 public:
+    void Init();
+
     FFLGender Gender() const
     {
         return FFLGender(m_Gender);
     }
+
+    void Set(FFLGender gender);
 
 private:
     u8  m_Gender;
@@ -26,6 +48,8 @@ NN_STATIC_ASSERT(sizeof(FFLiMiddleDBHiddenParam) == FFLI_MIDDLE_DB_PARAM_SIZE);
 class FFLiMiddleDBRandomParam
 {
 public:
+    void Init();
+
     FFLGender Gender() const
     {
         return FFLGender(m_Gender);
@@ -41,6 +65,8 @@ public:
         return FFLRace(m_Race);
     }
 
+    void Set(FFLGender gender, FFLAge age, FFLRace race);
+
 private:
     u8  m_Gender;
     u8  m_Age;
@@ -52,6 +78,9 @@ NN_STATIC_ASSERT(sizeof(FFLiMiddleDBRandomParam) == FFLI_MIDDLE_DB_PARAM_SIZE);
 
 class FFLiMiddleDBNetParam
 {
+public:
+    void Init();
+
 private:
     u16 _0;
     u8  m_Padding[2];
@@ -66,6 +95,15 @@ class   FFLiMiiDataOfficial;
 class FFLiMiddleDB
 {
 public:
+    static u32 GetBufferSize(u16 num);
+
+public:
+    void Init(FFLMiddleDBType type, void* pData, u16 num);
+
+    void SetHiddenParam(FFLGender gender);
+    void SetRandomParam(FFLGender gender, FFLAge age, FFLRace race);
+
+    s32 Size() const;
     s32 StoredSize() const;
 
     FFLMiddleDBType Type() const;
