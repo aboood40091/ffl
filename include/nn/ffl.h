@@ -25,6 +25,7 @@
 #include <nn/ffl/FFLPartsTransform.h>
 #include <nn/ffl/FFLRace.h>
 #include <nn/ffl/FFLResolution.h>
+#include <nn/ffl/FFLResourceDesc.h>
 #include <nn/ffl/FFLResourceType.h>
 #include <nn/ffl/FFLResult.h>
 #include <nn/ffl/FFLVec.h>

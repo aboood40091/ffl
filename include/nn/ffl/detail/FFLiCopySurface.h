@@ -12,8 +12,14 @@ public:
     FFLiCopySurface(FFLiBufferAllocator* pAllocator);
     ~FFLiCopySurface();
 
+    static u32 GetBufferSize();
+
+    void SetupGPU();
+
     void Begin();
     void Execute(GX2Surface* pDstSurface, u32 dstMipLevel, const GX2Surface* pSrcSurface, u32 srcMipLevel);
+
+    bool CanInitCharModel(bool isSetupGPU, bool compressTexture) const;
 
 private:
     FFLiCopySurfaceShader   m_Shader;

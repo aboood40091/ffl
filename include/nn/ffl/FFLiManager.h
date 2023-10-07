@@ -15,16 +15,44 @@
 #include <nn/ffl/detail/FFLiAllocator.h>
 #include <nn/ffl/detail/FFLiCopySurface.h>
 
+struct FFLResourceDesc;
+
+class   FFLiBufferAllocator;
 class   FFLiCompressor;
 struct  FFLiDatabaseFile;
 struct  FFLiFileWriteBuffer;
 struct  FFLiResourceMultiHeader;
 
+FFLResult FFLiInitResEx(void* pBuffer, const FFLInitDesc* pInitDesc, const FFLResourceDesc* pResDesc);
+void FFLiInitResGPUStep();
+
+u32 FFLiGetWorkSize(const FFLInitDesc* pInitDesc);
+
+extern "C" FFLResult FFLiFlushQuota(bool force);    // No idea why this in particular is extern "C"
+
+FFLResult FFLiExit();
+
+bool FFLiIsAvailable();
+
+// --------------------------------------------------------------------------
+
 class FFLiManager
 {
 public:
+    static FFLResult Create(void* pBuffer, const FFLInitDesc* pInitDesc, const FFLResourceDesc* pResDesc);
+    static FFLResult Destroy();
+
     static bool IsConstruct();
     static FFLiManager* GetInstance();
+
+    static u32 GetBufferSize(const FFLInitDesc* pInitDesc);
+
+private:
+    FFLiManager(const FFLInitDesc* pInitDesc, FFLiBufferAllocator* pAllocator);
+    ~FFLiManager();
+
+    FFLResult AfterConstruct(const FFLInitDesc* pInitDesc, const FFLResourceDesc* pResDesc);
+    FFLResult BeforeDestruct();
 
 public:
     FFLiDatabaseManager& GetDatabaseManager()
@@ -69,6 +97,10 @@ public:
 
     bool CanInitCharModel() const;
 
+    void SetupGPU();
+
+    FFLResult FlushQuota(bool force);
+
 private:
     FFLiAllocator               m_Allocator;
     FFLiSystemContext           m_SystemContext;
@@ -87,17 +119,5 @@ private:
     u8                          _29ad;
 };
 NN_STATIC_ASSERT(sizeof(FFLiManager) == 0x29B0);
-
-// --------------------------------------------------------------------------
-
-struct FFLResourceDesc;
-
-FFLResult FFLiInitResEx(void* pBuffer, const FFLInitDesc* pInitDesc, const FFLResourceDesc* pResDesc);
-void FFLiInitResGPUStep();
-u32 FFLiGetWorkSize(const FFLInitDesc* pInitDesc);
-FFLResult FFLiFlushQuota(bool force);
-FFLResult FFLiExit();
-bool FFLiIsAvailable();
-const FFLColor& FFLiGetFavoriteColor(s32 index);
 
 #endif // FFLI_MANAGER_H_

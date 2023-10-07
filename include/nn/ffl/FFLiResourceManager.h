@@ -7,12 +7,18 @@
 
 struct  FFLiResourceMultiHeader;
 class   FFLiFsClient;
+struct  FFLiFsCommandBuffer;
 
 class FFLiResourceManager
 {
 public:
-    FFLiResourceManager();
+    FFLiResourceManager(FFLiResourceMultiHeader* pHeader, FFLiFsClient* pClient);
     ~FFLiResourceManager();
+
+    FFLResult AfterConstruct();
+
+    FFLResult LoadResourceHeader(FFLiFsCommandBuffer* pCommandBuffer);
+    FFLResult AttachCache(const void* pData, u32 size, FFLResourceType resourceType);
 
     u32 GetShapeAlignedMaxSize(FFLResourceType resourceType, FFLiShapePartsType partsType) const;
 

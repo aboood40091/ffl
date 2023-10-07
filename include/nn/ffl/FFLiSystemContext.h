@@ -17,6 +17,8 @@ public:
 
     u64 TitleID() const;
 
+    bool AfterConstruct();
+
 private:
     FFLiRandomContext   m_RandomContext;
     FFLiAuthorID        m_AuthorID;

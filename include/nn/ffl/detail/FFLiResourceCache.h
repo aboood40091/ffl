@@ -12,8 +12,8 @@ public:
 private:
     struct
     {
-        const void* data;
-        u32 size;
+        const void* pData;
+        u32         size;
     }   m_Res[FFL_RESOURCE_TYPE_MAX];
 };
 NN_STATIC_ASSERT(sizeof(FFLiResourceCache) == 0x10);

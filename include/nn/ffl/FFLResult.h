@@ -26,7 +26,7 @@ typedef enum FFLResult
   //FFL_RESULT_                         = 14,
   //FFL_RESULT_                         = 15,
   //FFL_RESULT_                         = 16,
-  //FFL_RESULT_                         = 17,
+    FFL_RESULT_UNKNOWN_17               = 17,
     FFL_RESULT_FS_ERROR                 = 18,
     FFL_RESULT_FS_NOT_FOUND             = 19    // I... think?
 }

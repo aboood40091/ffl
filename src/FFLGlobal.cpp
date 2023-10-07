@@ -1,5 +1,6 @@
 #include <nn/ffl/FFLGlobal.h>
 
+#include <nn/ffl/FFLiColor.h>
 #include <nn/ffl/FFLiManager.h>
 
 FFLResult FFLInitResEx(void* pBuffer, const FFLInitDesc* pInitDesc, const FFLResourceDesc* pResDesc)
