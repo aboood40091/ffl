@@ -932,13 +932,11 @@ static const s32 RANDOM_GLASS_TYPE[FFL_AGE_MAX][FFL_GLASS_TYPE_MAX] = {
 
 s32 GetRandomGlassType(FFLAge age, FFLiRandomContext* pContext)
 {
-    s32 b = pContext->Random(100);
+    s32 target = pContext->Random(100);
 
-    s32 a = RANDOM_GLASS_TYPE[age][0];
     s32 type = 0;
-
-    while (a <= b)
-        a = RANDOM_GLASS_TYPE[age][++type];
+    while (target >= RANDOM_GLASS_TYPE[age][type])
+        type++;
 
     return type;
 }
