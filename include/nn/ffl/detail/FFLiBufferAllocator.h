@@ -3,6 +3,15 @@
 
 #include <nn/ffl/types.h>
 
+class FFLiBufferAllocator;
+
+void FFLiInitBufferAllocator(FFLiBufferAllocator* pAllocator, void* pBuffer, u32 size); // Deleted in NSMBU
+
+void* FFLiAllocateBufferAllocator(FFLiBufferAllocator* pAllocator, u32 size, u32 alignment);
+void* FFLiAllocateBufferAllocator(FFLiBufferAllocator* pAllocator, u32 size);
+
+// --------------------------------------------------------------------------
+
 class FFLiBufferAllocator
 {
 public:
