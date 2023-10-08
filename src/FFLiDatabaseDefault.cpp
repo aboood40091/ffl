@@ -1,3 +1,5 @@
+#include <nn/ffl/FFLBirthPlatform.h>
+
 #include <nn/ffl/FFLiCreateID.h>
 #include <nn/ffl/FFLiDatabaseDefault.h>
 #include <nn/ffl/FFLiMiiData.h>
@@ -144,7 +146,7 @@ void GetDefaultCreateID(FFLCreateID* pCreateID, u32 index)
 void FFLiDatabaseDefault::InitElement(FFLiMiiDataOfficial* pMiiDataOfficial, const FFLiMiiDataCoreRFL* pMiiDataCoreRFL, u32 index)
 {
     FFLiMiiDataCoreRFL2MiiDataCore(pMiiDataOfficial, *pMiiDataCoreRFL, true);
-    GetDefaultCreateID(&pMiiDataOfficial->GetCreateID(), index);
+    GetDefaultCreateID(&pMiiDataOfficial->CreateID(), index);
     FFLiClearCreatorNameFromOfficial(pMiiDataOfficial);
     pMiiDataOfficial->SetBirthPlatform(FFL_BIRTH_PLATFORM_WII_U);
     pMiiDataOfficial->SetCopyable(true);

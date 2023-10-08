@@ -1,6 +1,7 @@
 #ifndef FFLI_DATABASE_FILE_HIDDEN_H_
 #define FFLI_DATABASE_FILE_HIDDEN_H_
 
+#include <nn/ffl/FFLGender.h>
 #include <nn/ffl/FFLResult.h>
 
 #include <nn/ffl/FFLiMiiDataCore.h>

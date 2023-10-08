@@ -74,7 +74,7 @@ bool FFLiDatabaseFileOfficial::Get(FFLiCharInfo* pCharInfo, u16 miiDataIndex, bo
         return false;
 
     const FFLiMiiDataOfficial& official = GetImpl(miiDataIndex);
-    const FFLCreateID* pCreateID = &official.GetCreateID();
+    const FFLCreateID* pCreateID = &official.CreateID();
     
     if (FFLiIsNullMiiID(pCreateID))
         return false;
@@ -109,7 +109,7 @@ bool FFLiDatabaseFileOfficial::Search(u16* pMiiDataIndex, const FFLCreateID& cre
     for (u16 i = 0; i < GetMiiDataNum(); i++)
     {
         const FFLiMiiDataOfficial& official = GetImpl(i);
-        const FFLCreateID* pCreateID = &official.GetCreateID();
+        const FFLCreateID* pCreateID = &official.CreateID();
 
         if (FFLiIsSameMiiID(pCreateID, &createID))
         {

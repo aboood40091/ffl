@@ -47,5 +47,6 @@ void FFLiSwapEndianArrayImpl(T* pArray, u32 size)
 u32 FFLiRoundUp(u32 value, u32 multiple);
 
 void FFLiCopyWcharT2U16(u16* dst, u32 size, const wchar_t* src);
+bool FFLiIsNumberCharCode(u16 c);
 
 #endif // FFLI_UTIL_H_
