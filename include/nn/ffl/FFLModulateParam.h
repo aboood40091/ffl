@@ -13,12 +13,12 @@ typedef struct FFLColor FFLColor;
 
 typedef struct FFLModulateParam
 {
-    u32         _0;
-    u32         _4;
-    FFLColor*   pColorR;
-    FFLColor*   pColorG;
-    FFLColor*   pColorB;
-    GX2Texture* pGX2Texture;
+    u32                 _0;
+    u32                 _4;
+    const FFLColor*     pColorR;
+    const FFLColor*     pColorG;
+    const FFLColor*     pColorB;
+    const GX2Texture*   pGX2Texture;
 }
 FFLModulateParam;
 NN_STATIC_ASSERT(sizeof(FFLModulateParam) == 0x18);

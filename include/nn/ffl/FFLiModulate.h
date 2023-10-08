@@ -7,6 +7,11 @@
 
 struct FFLModulateParam;
 
+void FFLiInitModulateMustache(FFLModulateParam* pParam, s32 color, const GX2Texture& gx2Texture);
+void FFLiInitModulateMouth(FFLModulateParam* pParam, s32 color, const GX2Texture& gx2Texture);
+void FFLiInitModulateEyebrow(FFLModulateParam* pParam, s32 color, const GX2Texture& gx2Texture);
+void FFLiInitModulateEye(FFLModulateParam* pParam, s32 colorGB, s32 colorR, const GX2Texture& gx2Texture);
+void FFLiInitModulateMole(FFLModulateParam* pParam, const GX2Texture& gx2Texture);
 void FFLiInitModulateFaceMake(FFLModulateParam* pParam, const GX2Texture& gx2Texture);
 void FFLiInitModulateFaceLine(FFLModulateParam* pParam, const GX2Texture& gx2Texture);
 void FFLiInitModulateFaceBeard(FFLModulateParam* pParam, s32 color, const GX2Texture& gx2Texture);
@@ -20,5 +25,7 @@ void FFLiInitModulateShapeCap(FFLModulateParam* pParam, s32 color, const GX2Text
 void FFLiInitModulateShapeMask(FFLModulateParam* pParam, const GX2Texture& gx2Texture);
 void FFLiInitModulateShapeNoseline(FFLModulateParam* pParam, const GX2Texture& gx2Texture);
 void FFLiInitModulateShapeGlass(FFLModulateParam* pParam, s32 color, const GX2Texture& gx2Texture);
+
+void FFLiInitModulateFill(FFLModulateParam* pParam);
 
 #endif // FFLI_MODULATE_H_
