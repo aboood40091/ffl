@@ -6,6 +6,8 @@
 class FFLiRandomContext
 {
 public:
+    void Init(u32 seed);
+
     u16 Random(u16 max);
 
 private:
