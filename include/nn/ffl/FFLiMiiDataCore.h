@@ -649,6 +649,8 @@ public:
         m_PlaceHolder = value;
     }
 
+    void SwapEndian();
+
 private:
     union
     {
@@ -870,6 +872,8 @@ public:
     {
         return m_CreatorName;
     }
+
+    void SwapEndian();
 
 private:
     u16 m_CreatorName[10];  // Wstring
