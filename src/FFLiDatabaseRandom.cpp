@@ -964,29 +964,29 @@ void FFLiDatabaseRandom::Get(FFLiCharInfo* pCharInfo, FFLGender gender, FFLAge a
 
     pCharInfo->parts.eyeType = GetRandomParts(RANDOM_PARTS_ARRAY_EYE_TYPE[gender][age][race], m_pRandomContext);
     pCharInfo->parts.eyeColor = GetRandomParts(RANDOM_PARTS_ARRAY_EYE_COLOR[race], m_pRandomContext);
-    pCharInfo->parts.eyeScaleX = 4;
+    pCharInfo->parts.eyeScale = 4;
     pCharInfo->parts.eyeScaleY = 3;
     s32 eyeRotateOffsetTarget;
     if (gender == FFL_GENDER_MALE)
     {
-        pCharInfo->parts.eyeRotateOffset = 4;
+        pCharInfo->parts.eyeRotate = 4;
         eyeRotateOffsetTarget = FFLiiGetEyeRotateOffset(2);
     }
     else
     {
-        pCharInfo->parts.eyeRotateOffset = 3;
+        pCharInfo->parts.eyeRotate = 3;
         eyeRotateOffsetTarget = FFLiiGetEyeRotateOffset(4);
     }
     s32 eyeRotateOffsetBase = FFLiiGetEyeRotateOffset(pCharInfo->parts.eyeType);
     pCharInfo->parts.eyeSpacingX = 2;
     pCharInfo->parts.eyePositionY = basePositionY + 12;
-    pCharInfo->parts.eyeRotateOffset += eyeRotateOffsetTarget - eyeRotateOffsetBase;
+    pCharInfo->parts.eyeRotate += eyeRotateOffsetTarget - eyeRotateOffsetBase;
 
     pCharInfo->parts.eyebrowType = GetRandomParts(RANDOM_PARTS_ARRAY_EYEBROW_TYPE[gender][age][race], m_pRandomContext);
     pCharInfo->parts.eyebrowColor = pCharInfo->parts.hairColor;
-    pCharInfo->parts.eyebrowScaleX = 4;
+    pCharInfo->parts.eyebrowScale = 4;
     pCharInfo->parts.eyebrowScaleY = 3;
-    pCharInfo->parts.eyebrowRotateOffset = 6;
+    pCharInfo->parts.eyebrowRotate = 6;
     pCharInfo->parts.eyebrowSpacingX = 2;
     s32 eyebrowRotateOffsetTarget;
     if (race == FFL_RACE_2)
@@ -1000,7 +1000,7 @@ void FFLiDatabaseRandom::Get(FFLiCharInfo* pCharInfo, FFLGender gender, FFLAge a
         eyebrowRotateOffsetTarget = FFLiiGetEyebrowRotateOffset(0);
     }
     s32 eyebrowRotateOffsetBase = FFLiiGetEyebrowRotateOffset(pCharInfo->parts.eyebrowType);
-    pCharInfo->parts.eyebrowRotateOffset += eyebrowRotateOffsetTarget - eyebrowRotateOffsetBase;
+    pCharInfo->parts.eyebrowRotate += eyebrowRotateOffsetTarget - eyebrowRotateOffsetBase;
 
     pCharInfo->parts.noseType = GetRandomParts(RANDOM_PARTS_ARRAY_NOSE_TYPE[gender][age][race], m_pRandomContext);
     pCharInfo->parts.noseScale = gender == FFL_GENDER_MALE ? 4 : 3;
@@ -1008,7 +1008,7 @@ void FFLiDatabaseRandom::Get(FFLiCharInfo* pCharInfo, FFLGender gender, FFLAge a
 
     pCharInfo->parts.mouthType = GetRandomParts(RANDOM_PARTS_ARRAY_MOUTH_TYPE[gender][age][race], m_pRandomContext);
     pCharInfo->parts.mouthColor = gender == FFL_GENDER_MALE ? 0 : m_pRandomContext->Random(FFL_MOUTH_COLOR_MAX);
-    pCharInfo->parts.mouthScaleX = 4;
+    pCharInfo->parts.mouthScale = 4;
     pCharInfo->parts.mouthScaleY = 3;
     pCharInfo->parts.mouthPositionY = basePositionY + 13;
 

@@ -52,17 +52,17 @@ bool FFLiMiiDataCoreRFL2CharInfo(FFLiCharInfo* pCharInfo, const FFLiMiiDataCoreR
 
     pCharInfo->parts.eyeType = miiDataCoreRFL.EyeType();
     pCharInfo->parts.eyeColor = miiDataCoreRFL.EyeColor();
-    pCharInfo->parts.eyeScaleX = miiDataCoreRFL.EyeScale();
+    pCharInfo->parts.eyeScale = miiDataCoreRFL.EyeScale();
     pCharInfo->parts.eyeScaleY = 3;
-    pCharInfo->parts.eyeRotateOffset = miiDataCoreRFL.EyeRotate();
+    pCharInfo->parts.eyeRotate = miiDataCoreRFL.EyeRotate();
     pCharInfo->parts.eyeSpacingX = miiDataCoreRFL.EyeSpacing();
     pCharInfo->parts.eyePositionY = miiDataCoreRFL.EyePosition();
 
     pCharInfo->parts.eyebrowType = miiDataCoreRFL.EyebrowType();
     pCharInfo->parts.eyebrowColor = miiDataCoreRFL.EyebrowColor();
-    pCharInfo->parts.eyebrowScaleX = miiDataCoreRFL.EyebrowScale();
+    pCharInfo->parts.eyebrowScale = miiDataCoreRFL.EyebrowScale();
     pCharInfo->parts.eyebrowScaleY = 3;
-    pCharInfo->parts.eyebrowRotateOffset = miiDataCoreRFL.EyebrowRotate();
+    pCharInfo->parts.eyebrowRotate = miiDataCoreRFL.EyebrowRotate();
     pCharInfo->parts.eyebrowSpacingX = miiDataCoreRFL.EyebrowSpacing();
     pCharInfo->parts.eyebrowPositionY = miiDataCoreRFL.EyebrowPosition();
 
@@ -72,7 +72,7 @@ bool FFLiMiiDataCoreRFL2CharInfo(FFLiCharInfo* pCharInfo, const FFLiMiiDataCoreR
 
     pCharInfo->parts.mouthType = miiDataCoreRFL.MouthType();
     pCharInfo->parts.mouthColor = miiDataCoreRFL.MouthColor();
-    pCharInfo->parts.mouthScaleX = miiDataCoreRFL.MouthScale();
+    pCharInfo->parts.mouthScale = miiDataCoreRFL.MouthScale();
     pCharInfo->parts.mouthScaleY = 3;
     pCharInfo->parts.mouthPositionY = miiDataCoreRFL.MouthPosition();
 
@@ -158,17 +158,17 @@ void FFLiMiiDataCore2CharInfo(FFLiCharInfo* pCharInfo, const FFLiMiiDataCore& mi
 
     pCharInfo->parts.eyeType = miiDataCore.EyeType();
     pCharInfo->parts.eyeColor = miiDataCore.EyeColor();
-    pCharInfo->parts.eyeScaleX = miiDataCore.EyeScaleX();
+    pCharInfo->parts.eyeScale = miiDataCore.EyeScale();
     pCharInfo->parts.eyeScaleY = miiDataCore.EyeScaleY();
-    pCharInfo->parts.eyeRotateOffset = miiDataCore.EyeRotate();
+    pCharInfo->parts.eyeRotate = miiDataCore.EyeRotate();
     pCharInfo->parts.eyeSpacingX = miiDataCore.EyeSpacing();
     pCharInfo->parts.eyePositionY = miiDataCore.EyePosition();
 
     pCharInfo->parts.eyebrowType = miiDataCore.EyebrowType();
     pCharInfo->parts.eyebrowColor = miiDataCore.EyebrowColor();
-    pCharInfo->parts.eyebrowScaleX = miiDataCore.EyebrowScaleX();
+    pCharInfo->parts.eyebrowScale = miiDataCore.EyebrowScale();
     pCharInfo->parts.eyebrowScaleY = miiDataCore.EyebrowScaleY();
-    pCharInfo->parts.eyebrowRotateOffset = miiDataCore.EyebrowRotate();
+    pCharInfo->parts.eyebrowRotate = miiDataCore.EyebrowRotate();
     pCharInfo->parts.eyebrowSpacingX = miiDataCore.EyebrowSpacing();
     pCharInfo->parts.eyebrowPositionY = miiDataCore.EyebrowPosition();
 
@@ -178,7 +178,7 @@ void FFLiMiiDataCore2CharInfo(FFLiCharInfo* pCharInfo, const FFLiMiiDataCore& mi
 
     pCharInfo->parts.mouthType = miiDataCore.MouthType();
     pCharInfo->parts.mouthColor = miiDataCore.MouthColor();
-    pCharInfo->parts.mouthScaleX = miiDataCore.MouthScaleX();
+    pCharInfo->parts.mouthScale = miiDataCore.MouthScale();
     pCharInfo->parts.mouthScaleY = miiDataCore.MouthScaleY();
     pCharInfo->parts.mouthPositionY = miiDataCore.MouthPosition();
 
@@ -271,16 +271,16 @@ void FFLiCharInfo2MiiDataCore(FFLiMiiDataCore* pMiiDataCore, const FFLiCharInfo&
     pMiiDataCore->SetHairDir(charInfo.parts.hairDir);
     pMiiDataCore->SetEyeType(charInfo.parts.eyeType);
     pMiiDataCore->SetEyeColor(charInfo.parts.eyeColor);
-    pMiiDataCore->SetEyeScaleX(charInfo.parts.eyeScaleX);
+    pMiiDataCore->SetEyeScale(charInfo.parts.eyeScale);
     pMiiDataCore->SetEyeScaleY(charInfo.parts.eyeScaleY);
-    pMiiDataCore->SetEyeRotate(charInfo.parts.eyeRotateOffset);
+    pMiiDataCore->SetEyeRotate(charInfo.parts.eyeRotate);
     pMiiDataCore->SetEyeSpacing(charInfo.parts.eyeSpacingX);
     pMiiDataCore->SetEyePosition(charInfo.parts.eyePositionY);
     pMiiDataCore->SetEyebrowType(charInfo.parts.eyebrowType);
     pMiiDataCore->SetEyebrowColor(charInfo.parts.eyebrowColor);
-    pMiiDataCore->SetEyebrowScaleX(charInfo.parts.eyebrowScaleX);
+    pMiiDataCore->SetEyebrowScale(charInfo.parts.eyebrowScale);
     pMiiDataCore->SetEyebrowScaleY(charInfo.parts.eyebrowScaleY);
-    pMiiDataCore->SetEyebrowRotate(charInfo.parts.eyebrowRotateOffset);
+    pMiiDataCore->SetEyebrowRotate(charInfo.parts.eyebrowRotate);
     pMiiDataCore->SetEyebrowSpacing(charInfo.parts.eyebrowSpacingX);
     pMiiDataCore->SetEyebrowPosition(charInfo.parts.eyebrowPositionY);
     pMiiDataCore->SetNoseType(charInfo.parts.noseType);
@@ -288,7 +288,7 @@ void FFLiCharInfo2MiiDataCore(FFLiMiiDataCore* pMiiDataCore, const FFLiCharInfo&
     pMiiDataCore->SetNosePosition(charInfo.parts.nosePositionY);
     pMiiDataCore->SetMouthType(charInfo.parts.mouthType);
     pMiiDataCore->SetMouthColor(charInfo.parts.mouthColor);
-    pMiiDataCore->SetMouthScaleX(charInfo.parts.mouthScaleX);
+    pMiiDataCore->SetMouthScale(charInfo.parts.mouthScale);
     pMiiDataCore->SetMouthScaleY(charInfo.parts.mouthScaleY);
     pMiiDataCore->SetMouthPosition(charInfo.parts.mouthPositionY);
     pMiiDataCore->SetMustacheType(charInfo.parts.mustacheType);

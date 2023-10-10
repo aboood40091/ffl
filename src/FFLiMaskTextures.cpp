@@ -353,13 +353,13 @@ void SetupExpressionCharInfo(FFLiCharInfo* pExpressionCharInfo, const FFLiCharIn
 
     if (eyeRotateOffset != 0)
     {
-        // pExpressionCharInfo->parts.eyeRotateOffset = clamp(pExpressionCharInfo->parts.eyeRotateOffset + eyeRotateOffset, 0, 7);
-        s32 eyeRotate = pExpressionCharInfo->parts.eyeRotateOffset + eyeRotateOffset;
+        // pExpressionCharInfo->parts.eyeRotate = clamp(pExpressionCharInfo->parts.eyeRotate + eyeRotateOffset, 0, 7);
+        s32 eyeRotate = pExpressionCharInfo->parts.eyeRotate + eyeRotateOffset;
         if (eyeRotate < 0)
             eyeRotate = 0;
         else if (eyeRotate > 7)
             eyeRotate = 7;
-        pExpressionCharInfo->parts.eyeRotateOffset = eyeRotate;
+        pExpressionCharInfo->parts.eyeRotate = eyeRotate;
     }
 
     pExpressionCharInfo->parts.eyebrowPositionY += param.eyebrowPositionY;
@@ -367,13 +367,13 @@ void SetupExpressionCharInfo(FFLiCharInfo* pExpressionCharInfo, const FFLiCharIn
     s32 eyebrowRotateOffset = param.eyebrowRotateOffset;
     if (eyebrowRotateOffset != 0)
     {
-        // pExpressionCharInfo->parts.eyebrowRotateOffset = clamp(pExpressionCharInfo->parts.eyebrowRotateOffset + eyebrowRotateOffset, 0, 11);
-        s32 eyebrowRotate = pExpressionCharInfo->parts.eyebrowRotateOffset + eyebrowRotateOffset;
+        // pExpressionCharInfo->parts.eyebrowRotate = clamp(pExpressionCharInfo->parts.eyebrowRotate + eyebrowRotateOffset, 0, 11);
+        s32 eyebrowRotate = pExpressionCharInfo->parts.eyebrowRotate + eyebrowRotateOffset;
         if (eyebrowRotate < 0)
             eyebrowRotate = 0;
         else if (eyebrowRotate > 11)
             eyebrowRotate = 11;
-        pExpressionCharInfo->parts.eyebrowRotateOffset = eyebrowRotate;
+        pExpressionCharInfo->parts.eyebrowRotate = eyebrowRotate;
     }
 }
 

@@ -314,14 +314,14 @@ public:
         return m_EyeColor;
     }
 
-    void SetEyeScaleX(u16 value)
+    void SetEyeScale(u16 value)
     {
-        m_EyeScaleX = value;
+        m_EyeScale = value;
     }
 
-    u16 EyeScaleX() const
+    u16 EyeScale() const
     {
-        return m_EyeScaleX;
+        return m_EyeScale;
     }
 
     void SetEyeScaleY(u16 value)
@@ -336,12 +336,12 @@ public:
 
     void SetEyeRotate(u16 value)
     {
-        m_EyeRotateOffset = value;
+        m_EyeRotate = value;
     }
 
     u16 EyeRotate() const
     {
-        return m_EyeRotateOffset;
+        return m_EyeRotate;
     }
 
     void SetEyeSpacing(u16 value)
@@ -384,14 +384,14 @@ public:
         return m_EyebrowColor;
     }
 
-    void SetEyebrowScaleX(u16 value)
+    void SetEyebrowScale(u16 value)
     {
-        m_EyebrowScaleX = value;
+        m_EyebrowScale = value;
     }
 
-    u16 EyebrowScaleX() const
+    u16 EyebrowScale() const
     {
-        return m_EyebrowScaleX;
+        return m_EyebrowScale;
     }
 
     void SetEyebrowScaleY(u16 value)
@@ -406,12 +406,12 @@ public:
 
     void SetEyebrowRotate(u16 value)
     {
-        m_EyebrowRotateOffset = value;
+        m_EyebrowRotate = value;
     }
 
     u16 EyebrowRotate() const
     {
-        return m_EyebrowRotateOffset;
+        return m_EyebrowRotate;
     }
 
     void SetEyebrowSpacing(u16 value)
@@ -484,14 +484,14 @@ public:
         return m_MouthColor;
     }
 
-    void SetMouthScaleX(u16 value)
+    void SetMouthScale(u16 value)
     {
-        m_MouthScaleX = value;
+        m_MouthScale = value;
     }
 
-    u16 MouthScaleX() const
+    u16 MouthScale() const
     {
-        return m_MouthScaleX;
+        return m_MouthScale;
     }
 
     void SetMouthScaleY(u16 value)
@@ -739,7 +739,7 @@ private:
         struct
         {
             u16 m_EyeScaleY : 3;    // (MSB)
-            u16 m_EyeScaleX : 4;
+            u16 m_EyeScale  : 4;
             u16 m_EyeColor  : 3;
             u16 m_EyeType   : 6;    // (LSB)
         };
@@ -753,7 +753,7 @@ private:
             u16                     : 2;    // Unused (MSB)
             u16 m_EyePositionY      : 5;
             u16 m_EyeSpacingX       : 4;
-            u16 m_EyeRotateOffset   : 5;    // (LSB)
+            u16 m_EyeRotate         : 5;    // (LSB)
         };
 
         u16 _36;
@@ -764,7 +764,7 @@ private:
         {
             u16                 : 1;    // Unused (MSB)
             u16 m_EyebrowScaleY : 3;
-            u16 m_EyebrowScaleX : 4;
+            u16 m_EyebrowScale  : 4;
             u16 m_EyebrowColor  : 3;
             u16 m_EyebrowType   : 5;    // (LSB)
         };
@@ -778,7 +778,7 @@ private:
             u16                         : 2;    // Unused (MSB)
             u16 m_EyebrowPositionY      : 5;
             u16 m_EyebrowSpacingX       : 4;
-            u16 m_EyebrowRotateOffset   : 5;    // (LSB)
+            u16 m_EyebrowRotate         : 5;    // (LSB)
         };
 
         u16 _3A;
@@ -800,7 +800,7 @@ private:
         struct
         {
             u16 m_MouthScaleY   : 3;    // (MSB)
-            u16 m_MouthScaleX   : 4;
+            u16 m_MouthScale    : 4;
             u16 m_MouthColor    : 3;
             u16 m_MouthType     : 6;    // (LSB)
         };

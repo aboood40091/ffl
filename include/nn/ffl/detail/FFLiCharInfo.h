@@ -26,16 +26,16 @@ struct FFLiCharInfo
         s32             hairDir;
         s32             eyeType;
         s32             eyeColor;
-        s32             eyeScaleX;
+        s32             eyeScale;
         s32             eyeScaleY;
-        s32             eyeRotateOffset;
+        s32             eyeRotate;
         s32             eyeSpacingX;
         s32             eyePositionY;
         s32             eyebrowType;
         s32             eyebrowColor;
-        s32             eyebrowScaleX;
+        s32             eyebrowScale;
         s32             eyebrowScaleY;
-        s32             eyebrowRotateOffset;
+        s32             eyebrowRotate;
         s32             eyebrowSpacingX;
         s32             eyebrowPositionY;
         s32             noseType;
@@ -43,7 +43,7 @@ struct FFLiCharInfo
         s32             nosePositionY;
         s32             mouthType;
         s32             mouthColor;
-        s32             mouthScaleX;
+        s32             mouthScale;
         s32             mouthScaleY;
         s32             mouthPositionY;
         s32             mustacheType;
@@ -103,6 +103,8 @@ BOOL FFLiVerifyCharInfo(const FFLiCharInfo* pCharInfo, BOOL verifyName);
 
 s32 FFLiiGetEyeRotateOffset(s32 type);
 s32 FFLiiGetEyebrowRotateOffset(s32 type);
+f32 FFLiiGetAdjustedMouthH(f32 height, s32 type);
+f32 FFLiiGetAdjustedEyeH(f32 height, s32 type);
 
 struct FFLAdditionalInfo;
 
