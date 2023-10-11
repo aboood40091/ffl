@@ -84,7 +84,7 @@ FFLResult FFLiDatabaseFileHidden::UpdateMiddleDBRandom(FFLiMiddleDB* pMiddleDB, 
     if (num == 0)
     {
         pAllocator->Free(pIndices);
-        return FFL_RESULT_UNKNOWN_2;
+        return FFL_RESULT_HDB_EMPTY;
     }
 
     ShuffleIndices(pIndices, num);
@@ -168,7 +168,7 @@ FFLResult FFLiDatabaseFileHidden::UpdateMiddleDBTime(FFLiMiddleDB* pMiddleDB, bo
     return
         pMiddleDB->StoredSize() != 0
             ? FFL_RESULT_OK
-            : FFL_RESULT_UNKNOWN_2;
+            : FFL_RESULT_HDB_EMPTY;
 }
 
 void FFLiDatabaseFileHidden::Init()

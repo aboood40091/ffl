@@ -321,7 +321,7 @@ void FFLiCharInfo2MiiDataOfficial(FFLiMiiDataOfficial* pMiiDataOfficial, const F
 FFLResult FFLiStoreDataCFLToCharInfo(FFLiCharInfo* pCharInfo, const FFLiStoreDataCFL& storeDataCFL)
 {
     if (!FFLiIsValidCRC16(&storeDataCFL, sizeof(FFLiStoreDataCFL)))
-        return FFL_RESULT_UNKNOWN_3;
+        return FFL_RESULT_FILE_INVALID;
 
     FFLiStoreData storeData;
     std::memcpy(&storeData, &storeDataCFL, FFL_STOREDATA_SIZE);

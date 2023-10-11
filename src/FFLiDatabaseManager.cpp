@@ -70,7 +70,7 @@ bool FFLiDatabaseManager::IsEnabledSpecialMii() const
 FFLResult FFLiDatabaseManager::GetCharInfoFromOfficial(FFLiCharInfo* pCharInfo, u16 index)
 {
     if (!m_DatabaseFileAccessor.GetDatabaseFile()->official.Get(pCharInfo, index, true, IsEnabledSpecialMii()))
-        return FFL_RESULT_UNKNOWN_3;
+        return FFL_RESULT_FILE_INVALID;
 
     return FFL_RESULT_OK;
 }
@@ -78,7 +78,7 @@ FFLResult FFLiDatabaseManager::GetCharInfoFromOfficial(FFLiCharInfo* pCharInfo, 
 FFLResult FFLiDatabaseManager::GetCharInfoFromDefault(FFLiCharInfo* pCharInfo, u16 index)
 {
     if (!m_DatabaseDefault.Get(pCharInfo, index))
-        return FFL_RESULT_UNKNOWN_3;
+        return FFL_RESULT_FILE_INVALID;
 
     return FFL_RESULT_OK;
 }
@@ -163,7 +163,7 @@ FFLResult FFLiDatabaseManager::PickupCharInfo(FFLiCharInfo* pCharInfo, FFLDataSo
         return result;
 
     if (FFLiIsNullMiiID(&pCharInfo->createID) || !FFLiiVerifyCharInfo(pCharInfo, true))
-        result = FFL_RESULT_UNKNOWN_3;
+        result = FFL_RESULT_FILE_INVALID;
 
     return result;
 }

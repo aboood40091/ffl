@@ -17,8 +17,11 @@ T FFLiMax(T a, T b)
     else        return a;
 }
 
-u32 FFLiRoundUp(u32 value, u32 multiple);
-void* FFLiRoundUpPtr(void* ptr, u32 multiple);
+u32 FFLiRoundUp(u32 value, u32 alignment);
+void* FFLiRoundUpPtr(void* ptr, u32 alignment);
+
+bool FFLiCheckAlign(u32 value, u32 alignment);
+bool FFLiCheckAlignPtr(const void* ptr, u32 alignment);
 
 void FFLiCopyWcharT2U16(u16* dst, u32 size, const wchar_t* src);
 bool FFLiIsNumberCharCode(u16 c);
