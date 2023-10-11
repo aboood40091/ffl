@@ -116,6 +116,26 @@ class FFLiResourceHeader
 public:
     FFLResult GetResult() const;
 
+    FFLiResourceTextureHeader* GetTextureHeader()
+    {
+        return &m_TextureHeader;
+    }
+
+    u32 GetTextureMaxSize(FFLiTexturePartsType partsType) const
+    {
+        return m_TextureHeader.partsMaxSize[partsType];
+    }
+
+    FFLiResourceShapeHeader* GetShapeHeader()
+    {
+        return &m_ShapeHeader;
+    }
+
+    u32 GetShapeMaxSize(FFLiShapePartsType partsType) const
+    {
+        return m_ShapeHeader.partsMaxSize[partsType];
+    }
+
 private:
     u32                         m_Magic;
     u32                         m_Version;                  // I think? Always 0x00070000

@@ -12,6 +12,11 @@ public:
     FFLiResourceUncompressBuffer(const FFLiResourceManager* pResourceManager, FFLiBufferAllocator* pAllocator, FFLResourceType resourceType);
     ~FFLiResourceUncompressBuffer();
 
+    void* Buffer();
+
+    void* TempBuffer();
+    u32 TempBufferSize() const;
+
     static u32 GetBufferSize(const FFLiResourceManager* pResourceManager, FFLResourceType resourceType);
 
 private:

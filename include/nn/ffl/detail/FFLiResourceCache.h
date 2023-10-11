@@ -3,11 +3,15 @@
 
 #include <nn/ffl/FFLResourceType.h>
 
+class FFLiResourceHeader;
+
 class FFLiResourceCache
 {
 public:
     FFLiResourceCache();
     ~FFLiResourceCache();
+
+    FFLiResourceHeader* Header(FFLResourceType resourceType) const;
 
 private:
     struct

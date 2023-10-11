@@ -5,9 +5,10 @@
 
 #include <nn/ffl/detail/FFLiResourceCache.h>
 
-struct  FFLiResourceMultiHeader;
 class   FFLiFsClient;
 struct  FFLiFsCommandBuffer;
+struct  FFLiResourceHeader;
+struct  FFLiResourceMultiHeader;
 
 class FFLiResourceManager
 {
@@ -17,12 +18,34 @@ public:
 
     FFLResult AfterConstruct();
 
+    const char* GetPath(FFLResourceType resourceType) const;
+
     FFLResult LoadResourceHeader(FFLiFsCommandBuffer* pCommandBuffer);
     FFLResult AttachCache(const void* pData, u32 size, FFLResourceType resourceType);
 
+    FFLiResourceHeader* Header(FFLResourceType resourceType) const;
+
     u32 GetShapeAlignedMaxSize(FFLResourceType resourceType, FFLiShapePartsType partsType) const;
 
+    bool IsCached() const;
+
     bool IsValid(FFLResourceType resourceType) const;
+    bool IsExpand(FFLResourceType resourceType) const;
+
+    FFLiFsClient* GetClient() const
+    {
+        return m_pFsClient;
+    }
+
+    FFLiResourceCache& GetResourceCache()
+    {
+        return m_ResourceCache;
+    }
+
+    const FFLiResourceCache& GetResourceCache() const
+    {
+        return m_ResourceCache;
+    }
 
 private:
     FFLiResourceMultiHeader*    m_pResourceMultiHeader;

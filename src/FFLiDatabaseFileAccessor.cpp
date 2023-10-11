@@ -131,7 +131,7 @@ FFLResult FFLiDatabaseFileAccessor::BootLoadImpl(FFLiFsCommand* pCommand)
     }
     else if (result.fileResult == FFLI_FS_FILE_RESULT_NOT_FOUND)
     {
-        return ConvertFFLiFsResultToFFLResult(result, FFL_RESULT_DB_FILE_LOAD_ERROR);
+        return ConvertFFLiFsResultToFFLResult(result, FFL_RESULT_FILE_LOAD_ERROR);
     }
 
     if (needInitHidden)
@@ -141,7 +141,7 @@ FFLResult FFLiDatabaseFileAccessor::BootLoadImpl(FFLiFsCommand* pCommand)
 
         result = SaveDatabaseHidden(m_pDatabaseFile->hidden, pCommand, m_pFileWriteBuffer, GetPathHidden());
         if (!CheckFFLiFsResult(result))
-            return ConvertFFLiFsResultToFFLResult(result, FFL_RESULT_DB_FILE_LOAD_ERROR);
+            return ConvertFFLiFsResultToFFLResult(result, FFL_RESULT_FILE_LOAD_ERROR);
     }
 
     result = LoadDatabaseOfficial(&m_pDatabaseFile->official, pCommand, GetPathOfficial());
@@ -155,7 +155,7 @@ FFLResult FFLiDatabaseFileAccessor::BootLoadImpl(FFLiFsCommand* pCommand)
 
                 result = SaveDatabaseOfficial(m_pDatabaseFile->official, pCommand, m_pFileWriteBuffer, GetPathBackup());
                 if (!CheckFFLiFsResult(result))
-                    return ConvertFFLiFsResultToFFLResult(result, FFL_RESULT_DB_FILE_LOAD_ERROR);
+                    return ConvertFFLiFsResultToFFLResult(result, FFL_RESULT_FILE_LOAD_ERROR);
             }
 
             return FFL_RESULT_OK;
@@ -163,7 +163,7 @@ FFLResult FFLiDatabaseFileAccessor::BootLoadImpl(FFLiFsCommand* pCommand)
     }
     else if (result.fileResult == FFLI_FS_FILE_RESULT_NOT_FOUND)
     {
-        return ConvertFFLiFsResultToFFLResult(result, FFL_RESULT_DB_FILE_LOAD_ERROR);
+        return ConvertFFLiFsResultToFFLResult(result, FFL_RESULT_FILE_LOAD_ERROR);
     }
 
     result = LoadDatabaseOfficial(&m_pDatabaseFile->official, pCommand, GetPathBackup());
@@ -175,14 +175,14 @@ FFLResult FFLiDatabaseFileAccessor::BootLoadImpl(FFLiFsCommand* pCommand)
 
             result = SaveDatabaseOfficial(m_pDatabaseFile->official, pCommand, m_pFileWriteBuffer, GetPathOfficial());
             if (!CheckFFLiFsResult(result))
-                return ConvertFFLiFsResultToFFLResult(result, FFL_RESULT_DB_FILE_LOAD_ERROR);
+                return ConvertFFLiFsResultToFFLResult(result, FFL_RESULT_FILE_LOAD_ERROR);
 
             return FFL_RESULT_OK;
         }
     }
     else if (result.fileResult == FFLI_FS_FILE_RESULT_NOT_FOUND)
     {
-        return ConvertFFLiFsResultToFFLResult(result, FFL_RESULT_DB_FILE_LOAD_ERROR);
+        return ConvertFFLiFsResultToFFLResult(result, FFL_RESULT_FILE_LOAD_ERROR);
     }
 
     Init();
@@ -191,11 +191,11 @@ FFLResult FFLiDatabaseFileAccessor::BootLoadImpl(FFLiFsCommand* pCommand)
 
     result = SaveDatabaseOfficial(m_pDatabaseFile->official, pCommand, m_pFileWriteBuffer, GetPathBackup());
     if (!CheckFFLiFsResult(result))
-        return ConvertFFLiFsResultToFFLResult(result, FFL_RESULT_DB_FILE_LOAD_ERROR);
+        return ConvertFFLiFsResultToFFLResult(result, FFL_RESULT_FILE_LOAD_ERROR);
 
     result = SaveDatabaseOfficial(m_pDatabaseFile->official, pCommand, m_pFileWriteBuffer, GetPathOfficial());
     if (!CheckFFLiFsResult(result))
-        return ConvertFFLiFsResultToFFLResult(result, FFL_RESULT_DB_FILE_LOAD_ERROR);
+        return ConvertFFLiFsResultToFFLResult(result, FFL_RESULT_FILE_LOAD_ERROR);
 
     return FFL_RESULT_ODB_EMPTY;
 }
@@ -215,7 +215,7 @@ FFLResult FFLiDatabaseFileAccessor::AdjustRegularListOfficial()
 FFLResult FFLiDatabaseFileAccessor::BeforeDestruct()
 {
     if (!m_IsPathSet)
-        return FFL_RESULT_DB_FILE_LOAD_ERROR;
+        return FFL_RESULT_FILE_LOAD_ERROR;
 
     return FFL_RESULT_OK;
 }
@@ -248,7 +248,7 @@ FFLResult FFLiDatabaseFileAccessor::SaveHidden()
 
     FFLiFsResult result = SaveDatabaseHidden(m_pDatabaseFile->hidden, &m_FsCommand, m_pFileWriteBuffer, GetPathHidden());
     if (!CheckFFLiFsResult(result))
-        return ConvertFFLiFsResultToFFLResult(result, FFL_RESULT_DB_FILE_SAVE_ERROR);
+        return ConvertFFLiFsResultToFFLResult(result, FFL_RESULT_FILE_SAVE_ERROR);
 
     m_IsSaveHiddenNeeded = false;
     m_IsHiddenSaved = true;
@@ -266,7 +266,7 @@ FFLResult FFLiDatabaseFileAccessor::BackupOfficial()
 
     FFLiFsResult result = CopyDatabaseOfficial(pPathTo, pPathFrom, &m_FsCommand, m_pFileWriteBuffer, m_pAllocator);
     if (!CheckFFLiFsResult(result))
-        return ConvertFFLiFsResultToFFLResult(result, FFL_RESULT_DB_FILE_SAVE_ERROR);
+        return ConvertFFLiFsResultToFFLResult(result, FFL_RESULT_FILE_SAVE_ERROR);
 
     return FFL_RESULT_OK;
 }
