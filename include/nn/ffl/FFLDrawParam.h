@@ -7,25 +7,29 @@
 extern "C" {
 #endif
 
-typedef enum FFLAttributeBuffer
+typedef enum FFLAttributeBufferType
 {
-    FFL_ATTRIBUTE_BUFFER_POSITION   = 0,
-    FFL_ATTRIBUTE_BUFFER_TEXCOORD   = 1,
-    FFL_ATTRIBUTE_BUFFER_USER_0     = 2,
-    FFL_ATTRIBUTE_BUFFER_USER_1     = 3,
-    FFL_ATTRIBUTE_BUFFER_USER_2     = 4,
-    FFL_ATTRIBUTE_BUFFER_MAX        = 5
+    FFL_ATTRIBUTE_BUFFER_TYPE_POSITION  = 0,
+    FFL_ATTRIBUTE_BUFFER_TYPE_TEXCOORD  = 1,
+    FFL_ATTRIBUTE_BUFFER_TYPE_NORMAL    = 2,
+    FFL_ATTRIBUTE_BUFFER_TYPE_TANGENT   = 3,
+    FFL_ATTRIBUTE_BUFFER_TYPE_COLOR     = 4,
+    FFL_ATTRIBUTE_BUFFER_TYPE_MAX       = 5
+}
+FFLAttributeBufferType;
+
+typedef struct FFLAttributeBuffer
+{
+    u32     size;
+    u32     stride;
+    void*   ptr;
 }
 FFLAttributeBuffer;
+NN_STATIC_ASSERT(sizeof(FFLAttributeBuffer) == 0xC);
 
 typedef struct FFLAttributeBufferParam
 {
-    struct
-    {
-        u32 size;
-        u32 stride;
-        void* ptr;
-    } attributeBuffers[FFL_ATTRIBUTE_BUFFER_MAX];
+    FFLAttributeBuffer  attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_MAX];
 }
 FFLAttributeBufferParam;
 NN_STATIC_ASSERT(sizeof(FFLAttributeBufferParam) == 0x3C);

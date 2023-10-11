@@ -128,24 +128,24 @@ const FFLiShapeTypeInfo& GetShapeTypeInfo(FFLModelType type)
 
 const FFLDrawParam* FFLiGetDrawParamOpaForeheadFromCharModel(const FFLiCharModel* pModel)
 {
-    const FFLDrawParam* pParam = NULL;
+    const FFLDrawParam* pDrawParam = NULL;
     if (pModel->modelType != FFL_MODEL_TYPE_2)
     {
         const FFLDrawParam* drawParam = pModel->drawParam;
-        pParam = &(drawParam[GetShapeTypeInfo(pModel->modelType).foreheadIndex]);
+        pDrawParam = &(drawParam[GetShapeTypeInfo(pModel->modelType).foreheadIndex]);
     }
-    return pParam;
+    return pDrawParam;
 }
 
 const FFLDrawParam* FFLiGetDrawParamOpaHairFromCharModel(const FFLiCharModel* pModel)
 {
-    const FFLDrawParam* pParam = NULL;
+    const FFLDrawParam* pDrawParam = NULL;
     if (pModel->modelType != FFL_MODEL_TYPE_2)
     {
         const FFLDrawParam* drawParam = pModel->drawParam;
-        pParam = &(drawParam[GetShapeTypeInfo(pModel->modelType).hairIndex]);
+        pDrawParam = &(drawParam[GetShapeTypeInfo(pModel->modelType).hairIndex]);
     }
-    return pParam;
+    return pDrawParam;
 }
 
 const FFLDrawParam* FFLiGetDrawParamOpaCapFromCharModel(const FFLiCharModel* pModel)

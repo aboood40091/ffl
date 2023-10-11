@@ -26,8 +26,6 @@
 
 #include <cstring>
 
-class FFLiResourceLoader;
-
 union F32BitCast
 {
     f32 f;
@@ -248,14 +246,14 @@ void CalcluateBoundingBox(FFLBoundingBox* pDst, const FFLBoundingBox* pSrc, FFLi
 FFLResult InitShape(FFLiCharModel* pModel, FFLiShapePartsType partsType, u32 index, f32 scaleX, f32 scaleY, const FFLVec3* pTranslate, bool flipX, FFLiResourceLoader* pResLoader, FFLiBufferAllocator* pAllocator, const FFLiCoordinate* pCoordinate)
 {
     FFLiShapeType type = ConvertShapePartsTypeToShapeType(partsType);
-    FFLDrawParam* pParam = &(pModel->drawParam[type]);
+    FFLDrawParam* pDrawParam = &(pModel->drawParam[type]);
     FFLBoundingBox boundingBox;
 
-    FFLResult result = FFLiLoadShape(pParam, &boundingBox, pModel, partsType, index, pResLoader, pAllocator);
+    FFLResult result = FFLiLoadShape(pDrawParam, &boundingBox, pModel, partsType, index, pResLoader, pAllocator);
     if (result != FFL_RESULT_OK)
         return result;
 
-    FFLiAdjustShape(pParam, &boundingBox, scaleX, scaleY, pTranslate, flipX, pCoordinate, partsType, pModel->charModelDesc.modelFlag >> 3 & 1);
+    FFLiAdjustShape(pDrawParam, &boundingBox, scaleX, scaleY, pTranslate, flipX, pCoordinate, partsType, pModel->charModelDesc.modelFlag >> 3 & 1);
     CalcluateBoundingBox(pModel->boundingBox, &boundingBox, partsType);
     return FFL_RESULT_OK;
 }

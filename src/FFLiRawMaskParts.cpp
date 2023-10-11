@@ -170,18 +170,18 @@ void InitAttributes(FFLAttributeBufferParam* pAttributes, FFLiOriginPosition ori
 
     std::memcpy(pAttributes, &ATTRIBUTES, sizeof(FFLAttributeBufferParam));
 
-    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_POSITION].ptr = Allocate(pAllocator, FFLiBugCanSwapSize(POSITION_BUFFER_SIZE), GX2_VERTEX_BUFFER_ALIGNMENT);
-    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TEXCOORD].ptr = Allocate(pAllocator, FFLiBugCanSwapSize(TEXCOORD_BUFFER_SIZE), GX2_VERTEX_BUFFER_ALIGNMENT);
+    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_POSITION].ptr = Allocate(pAllocator, FFLiBugCanSwapSize(POSITION_BUFFER_SIZE), GX2_VERTEX_BUFFER_ALIGNMENT);
+    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_TEXCOORD].ptr = Allocate(pAllocator, FFLiBugCanSwapSize(TEXCOORD_BUFFER_SIZE), GX2_VERTEX_BUFFER_ALIGNMENT);
 
     CalcAttribute(
-        static_cast<FFLVec4*>(pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_POSITION].ptr),
-        static_cast<FFLVec2*>(pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TEXCOORD].ptr),
+        static_cast<FFLVec4*>(pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_POSITION].ptr),
+        static_cast<FFLVec2*>(pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_TEXCOORD].ptr),
         originPosition,
         pMVPMatrix
     );
 
-    EndianSwap(pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_POSITION].ptr, POSITION_BUFFER_SIZE);
-    EndianSwap(pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TEXCOORD].ptr, TEXCOORD_BUFFER_SIZE);
+    EndianSwap(pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_POSITION].ptr, POSITION_BUFFER_SIZE);
+    EndianSwap(pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_TEXCOORD].ptr, TEXCOORD_BUFFER_SIZE);
 }
 
 void InvalidatePrimitive(FFLPrimitiveParam* pPrimitive)
@@ -195,7 +195,7 @@ void InvalidatePrimitive(FFLPrimitiveParam* pPrimitive)
 
 void InvalidateAttributes(FFLAttributeBufferParam* pAttributes)
 {
-    for (u32 i = 0; i < FFL_ATTRIBUTE_BUFFER_MAX; i++)
+    for (u32 i = 0; i < FFL_ATTRIBUTE_BUFFER_TYPE_MAX; i++)
     {
         void* ptr = pAttributes->attributeBuffers[i].ptr;
         if (ptr != NULL)
@@ -229,10 +229,10 @@ void InitAttributesForFill(FFLAttributeBufferParam* pAttributes, FFLiBufferAlloc
 
     std::memcpy(pAttributes, &ATTRIBUTES, sizeof(FFLAttributeBufferParam));
 
-    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_POSITION].ptr = Allocate(pAllocator, FFLiBugCanSwapSize(POSITION_BUFFER_SIZE), GX2_VERTEX_BUFFER_ALIGNMENT);
+    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_POSITION].ptr = Allocate(pAllocator, FFLiBugCanSwapSize(POSITION_BUFFER_SIZE), GX2_VERTEX_BUFFER_ALIGNMENT);
 
-    std::memcpy(pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_POSITION].ptr, POSITION_BUFFER, POSITION_BUFFER_SIZE);
-    EndianSwap(pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_POSITION].ptr, POSITION_BUFFER_SIZE);
+    std::memcpy(pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_POSITION].ptr, POSITION_BUFFER, POSITION_BUFFER_SIZE);
+    EndianSwap(pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_POSITION].ptr, POSITION_BUFFER_SIZE);
 }
 
 }

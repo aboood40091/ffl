@@ -327,31 +327,31 @@ void InitAttributes(FFLAttributeBufferParam* pAttributes, u32 resolution, FFLiBu
     };
     NN_STATIC_ASSERT(sizeof(TEXCOORD_BUFFER) == TEXCOORD_BUFFER_SIZE);
 
-    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_POSITION].size = POSITION_BUFFER_SIZE;
-    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_POSITION].stride = sizeof(FFLVec4);
-    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_POSITION].ptr = Allocate(pAllocator, FFLiBugCanSwapSize(POSITION_BUFFER_SIZE), GX2_VERTEX_BUFFER_ALIGNMENT);
+    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_POSITION].size = POSITION_BUFFER_SIZE;
+    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_POSITION].stride = sizeof(FFLVec4);
+    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_POSITION].ptr = Allocate(pAllocator, FFLiBugCanSwapSize(POSITION_BUFFER_SIZE), GX2_VERTEX_BUFFER_ALIGNMENT);
 
-    std::memcpy(pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_POSITION].ptr, POSITION_BUFFER, POSITION_BUFFER_SIZE);
-    EndianSwap(pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_POSITION].ptr, POSITION_BUFFER_SIZE);
+    std::memcpy(pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_POSITION].ptr, POSITION_BUFFER, POSITION_BUFFER_SIZE);
+    EndianSwap(pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_POSITION].ptr, POSITION_BUFFER_SIZE);
 
-    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TEXCOORD].size = TEXCOORD_BUFFER_SIZE;
-    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TEXCOORD].stride = sizeof(FFLVec2);
-    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TEXCOORD].ptr = Allocate(pAllocator, FFLiBugCanSwapSize(TEXCOORD_BUFFER_SIZE), GX2_VERTEX_BUFFER_ALIGNMENT);
+    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_TEXCOORD].size = TEXCOORD_BUFFER_SIZE;
+    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_TEXCOORD].stride = sizeof(FFLVec2);
+    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_TEXCOORD].ptr = Allocate(pAllocator, FFLiBugCanSwapSize(TEXCOORD_BUFFER_SIZE), GX2_VERTEX_BUFFER_ALIGNMENT);
 
-    std::memcpy(pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TEXCOORD].ptr, TEXCOORD_BUFFER, TEXCOORD_BUFFER_SIZE);
-    EndianSwap(pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TEXCOORD].ptr, TEXCOORD_BUFFER_SIZE);
+    std::memcpy(pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_TEXCOORD].ptr, TEXCOORD_BUFFER, TEXCOORD_BUFFER_SIZE);
+    EndianSwap(pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_TEXCOORD].ptr, TEXCOORD_BUFFER_SIZE);
 
-    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_USER_0].size = 0;
-    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_USER_0].stride = 0;
-    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_USER_0].ptr = NULL;
+    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_NORMAL].size = 0;
+    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_NORMAL].stride = 0;
+    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_NORMAL].ptr = NULL;
 
-    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_USER_1].size = 0;
-    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_USER_1].stride = 0;
-    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_USER_1].ptr = NULL;
+    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_TANGENT].size = 0;
+    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_TANGENT].stride = 0;
+    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_TANGENT].ptr = NULL;
 
-    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_USER_2].size = 0;
-    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_USER_2].stride = 0;
-    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_USER_2].ptr = NULL;
+    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_COLOR].size = 0;
+    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_COLOR].stride = 0;
+    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_COLOR].ptr = NULL;
 }
 
 void InitDrawParamWithoutModulate(FFLDrawParam* pDrawParam, u32 resolution, FFLiBufferAllocator* pAllocator)
@@ -372,7 +372,7 @@ void InvalidatePrimitive(FFLPrimitiveParam* pPrimitive)
 
 void InvalidateAttributes(FFLAttributeBufferParam* pAttributes)
 {
-    for (u32 i = 0; i < FFL_ATTRIBUTE_BUFFER_MAX; i++)
+    for (u32 i = 0; i < FFL_ATTRIBUTE_BUFFER_TYPE_MAX; i++)
     {
         void* ptr = pAttributes->attributeBuffers[i].ptr;
         if (ptr != NULL)
