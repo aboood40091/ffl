@@ -6,5 +6,5 @@ const FFLiAuthorID* FFLiGetUserID()
     if (!FFLiManager::IsConstruct())
         return NULL;
 
-    return &FFLiManager::GetInstance()->GetSystemContext().UserID();
+    return FFLiManager::GetInstance()->GetSystemContext().UserID();
 }

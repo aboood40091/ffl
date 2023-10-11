@@ -32,7 +32,7 @@ typedef struct FFLiCreateID
     u8                  _1;
     u8                  _2;
     u8                  databaseIndex;
-    FFLiCreateIDBase    base;   // Maybe?
+    FFLiCreateIDBase    base;
 }
 FFLiCreateID;
 NN_STATIC_ASSERT(sizeof(FFLiCreateID) == FFL_CREATE_ID_SIZE);
