@@ -21,11 +21,15 @@ NN_STATIC_ASSERT(sizeof(FFLiSwapEndianDesc) == 8);
 
 u32 FFLiSwapEndianGroup(void* ptr, const FFLiSwapEndianDesc* pDesc, u32 num);
 
+#ifdef __ghs__
+#pragma ghs nowarning 186
+#endif
+
 template <typename T>
 T FFLiSwapEndianImpl(T value)
 {
     const u32 count = sizeof(T);
-    NN_STATIC_ASSERT(count % 2 == 0);
+    NN_STATIC_ASSERT(count == 1 || count % 2 == 0);
     const u32 count_2 = count / 2;
 
     union {
@@ -38,6 +42,10 @@ T FFLiSwapEndianImpl(T value)
 
     return value_.value;
 }
+
+#ifdef __ghs__
+#pragma ghs endnowarning
+#endif
 
 template <typename T>
 void FFLiSwapEndianArrayImpl(T* pArray, u32 size)
