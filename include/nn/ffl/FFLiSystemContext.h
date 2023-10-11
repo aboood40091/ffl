@@ -16,6 +16,7 @@ public:
     }
 
     u64 TitleID() const;
+    const FFLiAuthorID& UserID() const;
 
     bool AfterConstruct();
 

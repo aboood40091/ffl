@@ -55,6 +55,11 @@ private:
     FFLResult BeforeDestruct();
 
 public:
+    const FFLiSystemContext& GetSystemContext() const
+    {
+        return m_SystemContext;
+    }
+
     FFLiDatabaseManager& GetDatabaseManager()
     {
         return m_DatabaseManager;
