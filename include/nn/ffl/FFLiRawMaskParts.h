@@ -4,7 +4,7 @@
 #include <nn/ffl/FFLDrawParam.h>
 #include <nn/ffl/FFLVec.h>
 
-#include <cafe/mtx.h>
+#include <cafe/mat.h>
 
 struct FFLiRawMaskPartsDrawParam : FFLDrawParam
 {

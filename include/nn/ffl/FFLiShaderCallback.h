@@ -14,6 +14,8 @@ public:
     FFLiShaderCallback();
     ~FFLiShaderCallback();
 
+    bool IsExist() const;
+
     const FFLShaderCallback* Get() const
     {
         return m_pShaderCallback;
