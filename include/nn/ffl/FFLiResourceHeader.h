@@ -116,6 +116,16 @@ class FFLiResourceHeader
 public:
     FFLResult GetResult() const;
 
+    u32 GetUncompressBufferSize() const
+    {
+        return m_UncompressBufferSize;
+    }
+
+    bool IsExpand() const
+    {
+        return m_IsExpand == TRUE;
+    }
+
     FFLiResourceTextureHeader* GetTextureHeader()
     {
         return &m_TextureHeader;
