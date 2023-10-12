@@ -6,7 +6,9 @@
 class FFLiAllocatorInterface
 {
 public:
-    virtual ~FFLiAllocatorInterface() = 0;
+    virtual ~FFLiAllocatorInterface()
+    {
+    }
 
     virtual void* Allocate(u32 size) = 0;
     virtual void* Allocate(u32 size, u32 alignment) = 0;
