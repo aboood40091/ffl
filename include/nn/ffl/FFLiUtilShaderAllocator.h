@@ -7,6 +7,7 @@ class FFLiUtilShaderAllocator
 {
 public:
     FFLiUtilShaderAllocator(FFLiBufferAllocator* pAllocator, u32 numAttribs, const void* pShaderData, u32 shaderIndex);
+    FFLiUtilShaderAllocator(FFLiBufferAllocator* pAllocator, u32 numAttribs);
 
     FFLiBufferAllocator& HeaderAllocator()
     {
