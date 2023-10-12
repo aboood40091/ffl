@@ -24,6 +24,7 @@ bool FFLiCheckAlign(u32 value, u32 alignment);
 bool FFLiCheckAlignPtr(const void* ptr, u32 alignment);
 
 void FFLiCopyWcharT2U16(u16* dst, u32 size, const wchar_t* src);
+s32 FFLiCompareString16(const u16* s1, const u16* s2, s32 n);
 bool FFLiIsNumberCharCode(u16 c);
 
 #endif // FFLI_UTIL_H_
