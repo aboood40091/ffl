@@ -9,7 +9,6 @@
 #include <nn/ffl/detail/FFLiResourceShape.h>
 
 #include <cstring>
-#include <limits>
 
 union F32BitCast
 {
