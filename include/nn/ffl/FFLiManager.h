@@ -65,6 +65,11 @@ public:
         return m_DatabaseManager;
     }
 
+    FFLiShaderCallback& GetShaderCallback()
+    {
+        return m_ShaderCallback;
+    }
+
     const FFLiShaderCallback& GetShaderCallback() const
     {
         return m_ShaderCallback;

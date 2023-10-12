@@ -23,6 +23,8 @@ typedef struct FFLShaderCallback
 FFLShaderCallback;
 NN_STATIC_ASSERT(sizeof(FFLShaderCallback) == 0x10);
 
+void FFLSetShaderCallback(const FFLShaderCallback* pCallback);
+
 #ifdef __cplusplus
 }
 #endif
