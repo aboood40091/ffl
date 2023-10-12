@@ -7,6 +7,12 @@ class FFLiAllocatorInterface;
 
 class FFLiZlibAllocator
 {
+public:
+    FFLiZlibAllocator(FFLiAllocatorInterface& interface);
+
+    static void* Allocate(void* opaque, u32 items, u32 size);
+    static void Free(void* opaque, void* address);
+
 private:
     FFLiAllocatorInterface* m_pInterface;
 };
