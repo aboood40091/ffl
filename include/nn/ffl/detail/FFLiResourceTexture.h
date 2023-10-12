@@ -24,14 +24,39 @@ struct FFLiResourceTextureHeader
 };
 NN_STATIC_ASSERT(sizeof(FFLiResourceTextureHeader) == 0x13FC);
 
-struct FFLiResourceTextureFooter
+class FFLiResourceTextureFooter
 {
-    s32 mipOffset;
-    u16 width;
-    u16 height;
-    u8  numMips;
-    u8  format;    // Maps to FFLiTextureFormat
+public:
+    u16 Width() const
+    {
+        return m_Width;
+    }
+
+    u16 Height() const
+    {
+        return m_Height;
+    }
+
+    u8 NumMips() const
+    {
+        return m_NumMips;
+    }
+
+    GX2SurfaceFormat SurfaceFormat() const;
+
+    static FFLiResourceTextureFooter& GetFooterImpl(const void* pData, u32 size);
+
+    void* GetImagePtrImpl(u32 size) const;
+    void* GetMipPtrImpl(u32 size) const;
+
+private:
+    s32 m_MipOffset;
+    u16 m_Width;
+    u16 m_Height;
+    u8  m_NumMips;
+    u8  m_TextureFormat;    // Maps to FFLiTextureFormat
 };
+NN_STATIC_ASSERT_IS_POD(FFLiResourceTextureFooter);
 NN_STATIC_ASSERT(sizeof(FFLiResourceTextureFooter) == 0xC);
 
 #endif // FFLI_RESOURCE_TEXTURE_H_

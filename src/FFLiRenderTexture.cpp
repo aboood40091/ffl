@@ -36,12 +36,7 @@ void FFLiInitRenderTexture(FFLiRenderTexture* pRenderTexture, u32 width, u32 hei
             ? FFLiAllocateBufferAllocator(pAllocator, pRenderTexture->gx2Texture.surface.mipSize, pRenderTexture->gx2Texture.surface.alignment)
             : NULL;
 
-    pRenderTexture->gx2Texture.surface.imagePtr = imagePtr;
-
-    if (pRenderTexture->gx2Texture.surface.numMips > 1 && mipPtr == NULL)
-        pRenderTexture->gx2Texture.surface.mipPtr = (u8*)imagePtr + pRenderTexture->gx2Texture.surface.mipOffset[0];
-    else
-        pRenderTexture->gx2Texture.surface.mipPtr = mipPtr;
+    GX2InitTexturePtrs(&pRenderTexture->gx2Texture, imagePtr, mipPtr);
 }
 
 void FFLiInitByBufferRenderTexture(FFLiRenderTexture* pRenderTexture, u32 width, u32 height, GX2SurfaceFormat format, u32 numMips, FFLiRenderTextureBuffer* pRenderTextureBuffer)
