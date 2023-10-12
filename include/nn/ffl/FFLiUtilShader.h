@@ -28,6 +28,13 @@ public:
 
 public:
     static u32 GetBufferSize(u32 numAttribs, const void* pShaderData, u32 shaderIndex);
+    static u32 GetBufferSizeForFetch(u32 numAttribs);
+
+    static u32 GetHeaderBufferSize(u32 numAttribs, const void* pShaderData, u32 shaderIndex);
+    static u32 GetHeaderBufferSizeForFetch(u32 numAttribs);
+
+    static u32 GetProgramBufferSize(u32 numAttribs, const void* pShaderData, u32 shaderIndex);
+    static u32 GetProgramBufferSizeForFetch(u32 numAttribs);
 
     static bool BuildShader(FFLiUtilShader::FetchShader* pFetchShader, const GX2VertexShader* pVertexShader, FFLiUtilShaderAllocator* pAllocator, const FFLiUtilShader::AttributeStreamDesc* pAttribs, u32 numAttribs, bool invalidate);
     static bool BuildShader(GX2PixelShader** ppShader, FFLiUtilShaderAllocator* pAllocator, const void* pShaderData, u32 shaderIndex, bool invalidate);
