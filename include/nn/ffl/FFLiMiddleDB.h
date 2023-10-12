@@ -11,7 +11,7 @@ class FFLiMiddleDB;
 
 u32 FFLiGetMiddleDBBufferSize(u16 miiDataNum);
 
-void FLiInitMiddleDB(FFLiMiddleDB* pMiddleDB, FFLMiddleDBType type, void* pMiiData, u16 miiDataNum);
+void FFLiInitMiddleDB(FFLiMiddleDB* pMiddleDB, FFLMiddleDBType type, void* pMiiData, u16 miiDataNum);
 FFLResult FFLiUpdateMiddleDB(FFLiMiddleDB* pMiddleDB);
 
 void FFLiSetMiddleDBHiddenMask(FFLiMiddleDB* pMiddleDB, FFLGender gender);

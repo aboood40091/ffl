@@ -9,7 +9,7 @@ u32 FFLiGetMiddleDBBufferSize(u16 miiDataNum)
     return FFLiMiddleDB::GetBufferSize(miiDataNum);
 }
 
-void FLiInitMiddleDB(FFLiMiddleDB* pMiddleDB, FFLMiddleDBType type, void* pMiiData, u16 miiDataNum)
+void FFLiInitMiddleDB(FFLiMiddleDB* pMiddleDB, FFLMiddleDBType type, void* pMiiData, u16 miiDataNum)
 {
     pMiddleDB->Init(type, pMiiData, miiDataNum);
 }
