@@ -3,6 +3,8 @@
 
 #include <nn/ffl/types.h>
 
+struct FFLVec4;
+
 class FFLiBufferAllocator;
 
 class FFLiCompressUniform
@@ -28,9 +30,9 @@ public:
     static u32 GetBufferSize();
 
 private:
-    bool        m_IsUB;
-    const void* m_pVertexUniform;
-    const void* m_pPixelUniform;
+    bool    m_IsUB;
+    f32*    m_pVertexUniform;
+    f32*    m_pPixelUniform;
 };
 NN_STATIC_ASSERT(sizeof(FFLiCompressUniform) == 0xC);
 
