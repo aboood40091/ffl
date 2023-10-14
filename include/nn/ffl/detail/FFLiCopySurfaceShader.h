@@ -11,12 +11,12 @@ public:
     FFLiCopySurfaceShader();
     ~FFLiCopySurfaceShader();
 
-    void SetupCPU(FFLiBufferAllocator* pAllocator);
+    bool SetupCPU(FFLiBufferAllocator* pAllocator);
     void SetupGPU();
 
     void Bind() const;
 
-    void SetTexture(const GX2Texture* pGX2Texture, u32 mipLevel) const;
+    void SetTexture(const GX2Texture* pGX2Texture, u32 mipLevel);
 
     static u32 GetBufferSize();
 
