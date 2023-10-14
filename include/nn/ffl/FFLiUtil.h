@@ -17,6 +17,12 @@ T FFLiMax(T a, T b)
     else        return a;
 }
 
+template <typename T>
+bool FFLiRange(T min, T max, T value)
+{
+    return min <= value && value <= max;
+}
+
 u32 FFLiRoundUp(u32 value, u32 alignment);
 void* FFLiRoundUpPtr(void* ptr, u32 alignment);
 

@@ -70,7 +70,7 @@ void FFLiGetAdditionalInfo(FFLAdditionalInfo* pAdditionalInfo, const FFLiCharInf
         }
     }
 
-    std::memcpy(&pAdditionalInfo->createID, &pCharInfo->createID, sizeof(FFLCreateID));
+    std::memcpy(&pAdditionalInfo->creatorID, &pCharInfo->creatorID, sizeof(FFLCreateID));
 
     pAdditionalInfo->gender = pCharInfo->gender;
 

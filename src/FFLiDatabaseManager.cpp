@@ -90,7 +90,7 @@ FFLResult FFLiDatabaseManager::GetCharInfoFromStoreData(FFLiCharInfo* pCharInfo,
         return result;
 
     u16 miiDataIndex;
-    if (dataSource == FFL_DATA_SOURCE_STORE_DATA_OFFICIAL && m_DatabaseFileAccessor.GetDatabaseFile()->official.Search(&miiDataIndex, pCharInfo->createID))
+    if (dataSource == FFL_DATA_SOURCE_STORE_DATA_OFFICIAL && m_DatabaseFileAccessor.GetDatabaseFile()->official.Search(&miiDataIndex, pCharInfo->creatorID))
     {
         result = GetCharInfoFromOfficial(pCharInfo, miiDataIndex);
         if (result != FFL_RESULT_OK)
@@ -162,7 +162,7 @@ FFLResult FFLiDatabaseManager::PickupCharInfo(FFLiCharInfo* pCharInfo, FFLDataSo
     if (result != FFL_RESULT_OK)
         return result;
 
-    if (FFLiIsNullMiiID(&pCharInfo->createID) || !FFLiiVerifyCharInfo(pCharInfo, true))
+    if (FFLiIsNullMiiID(&pCharInfo->creatorID) || !FFLiiVerifyCharInfo(pCharInfo, true))
         result = FFL_RESULT_FILE_INVALID;
 
     return result;

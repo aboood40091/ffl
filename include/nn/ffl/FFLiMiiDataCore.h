@@ -124,14 +124,14 @@ public:
         return m_AuthorID;
     }
 
-    FFLCreateID& CreateID()
+    FFLCreateID& CreatorID()
     {
-        return m_CreateID;
+        return m_CreatorID;
     }
 
-    const FFLCreateID& CreateID() const
+    const FFLCreateID& CreatorID() const
     {
-        return m_CreateID;
+        return m_CreatorID;
     }
 
     u8* Padding1()
@@ -184,7 +184,7 @@ public:
         return m_FavoriteColor;
     }
 
-    void SetFavoriteMii(bool favoriteMii)
+    void SetFavoriteMii(u8 favoriteMii)
     {
         m_FavoriteMii = favoriteMii;
     }
@@ -683,7 +683,7 @@ private:
 
     union
     {
-        FFLCreateID m_CreateID;
+        FFLCreateID m_CreatorID;
 
         u8  _C[0xA];
     };
@@ -1153,7 +1153,7 @@ public:
     u16 m_Name[10];
     u8  m_Height;
     u8  m_Build;
-    u8  m_CreateID[4];
+    u8  m_CreatorID[4];
     u8  m_SystemID[4];
     u16 m_FaceFlag;
     u16 m_HairFlag;

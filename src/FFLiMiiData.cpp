@@ -118,7 +118,7 @@ bool FFLiMiiDataCoreRFL2CharInfo(FFLiCharInfo* pCharInfo, const FFLiMiiDataCoreR
     pCharInfo->name[10] = L'\0';
     bool nameReplaced = replaceName ? ReplaceNameFromRFL(pCharInfo->name, 10, 5) : false;
 
-    std::memset(&pCharInfo->createID, 0, sizeof(FFLCreateID));                          // Create ID is cleared here...
+    std::memset(&pCharInfo->creatorID, 0, sizeof(FFLCreateID));                         // Create ID is cleared here...
 
     pCharInfo->birthMonth = miiDataCoreRFL.BirthMonth();
     pCharInfo->birthDay = miiDataCoreRFL.BirthDay();
@@ -130,7 +130,7 @@ bool FFLiMiiDataCoreRFL2CharInfo(FFLiCharInfo* pCharInfo, const FFLiMiiDataCoreR
     pCharInfo->creatorName[10] = L'\0';
     bool creatorNameReplaced = replaceName ? ReplaceNameFromRFL(pCharInfo->creatorName, 10, 0) : false;
 
-    bool isNTR = FFLiIsNTRMiiID(&pCharInfo->createID);
+    bool isNTR = FFLiIsNTRMiiID(&pCharInfo->creatorID);
     pCharInfo->birthPlatform = isNTR ? FFL_BIRTH_PLATFORM_NTR : FFL_BIRTH_PLATFORM_WII; //  ... yet they still check it LOL
 
     pCharInfo->_112 = 0;
@@ -225,7 +225,7 @@ void FFLiMiiDataCore2CharInfo(FFLiCharInfo* pCharInfo, const FFLiMiiDataCore& mi
     std::memcpy(pCharInfo->name, miiDataCore.Name(), sizeof(u16) * (10 + 1));
     pCharInfo->name[10] = L'\0';
 
-    std::memcpy(&pCharInfo->createID, &miiDataCore.CreateID(), sizeof(FFLCreateID));
+    std::memcpy(&pCharInfo->creatorID, &miiDataCore.CreatorID(), sizeof(FFLCreateID));
 
     pCharInfo->birthMonth = resetBirthday ? 0 : miiDataCore.BirthMonth();
     pCharInfo->birthDay = resetBirthday ? 0 : miiDataCore.BirthDay();
@@ -252,7 +252,7 @@ void FFLiCharInfo2MiiDataCore(FFLiMiiDataCore* pMiiDataCore, const FFLiCharInfo&
     pMiiDataCore->SetFlagBit24To27(charInfo._114);
     pMiiDataCore->SetBirthPlatform(charInfo.birthPlatform);
     std::memcpy(&pMiiDataCore->AuthorID(), &charInfo.authorID, sizeof(FFLiAuthorID));
-    std::memcpy(&pMiiDataCore->CreateID(), &charInfo.createID, sizeof(FFLCreateID));
+    std::memcpy(&pMiiDataCore->CreatorID(), &charInfo.creatorID, sizeof(FFLCreateID));
     std::memset(pMiiDataCore->Padding1(), 0, pMiiDataCore->Padding1Size());
     pMiiDataCore->SetGender(charInfo.gender);
     pMiiDataCore->SetBirthMonth(resetBirthday ? 0 : charInfo.birthMonth);

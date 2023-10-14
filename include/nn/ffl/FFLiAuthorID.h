@@ -5,18 +5,18 @@
 
 #define FFLI_AUTHOR_ID_SIZE  (sizeof(u64))
 
-struct FFLiAuthorID
+typedef struct FFLiAuthorID
 {
     union
     {
         u8 data[FFLI_AUTHOR_ID_SIZE];
         u16 value16[FFLI_AUTHOR_ID_SIZE / sizeof(u16)];
     };
-};
-NN_STATIC_ASSERT_IS_POD(FFLiAuthorID);
+}
+FFLiAuthorID;
 NN_STATIC_ASSERT(sizeof(FFLiAuthorID) == FFLI_AUTHOR_ID_SIZE);
 
-bool FFLiIsSameAuthorID(const FFLiAuthorID* a, const FFLiAuthorID* b);
-bool FFLiIsHomeAuthorID(const FFLiAuthorID* pAuthorID);
+BOOL FFLiIsSameAuthorID(const FFLiAuthorID* a, const FFLiAuthorID* b);
+BOOL FFLiIsHomeAuthorID(const FFLiAuthorID* pAuthorID);
 
 #endif // FFLI_AUTHOR_ID_H_
