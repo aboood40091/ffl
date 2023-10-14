@@ -11,13 +11,13 @@ public:
     FFLiCompressDrawer();
     ~FFLiCompressDrawer();  // Deleted in NSMBU
 
-    static u32 GetBufferSize();
-
     void SetupCPU(FFLiBufferAllocator* pAllocator);
     void SetupGPU();
 
     void SetAttributeBuffer(u32 positionBufferIndex, u32 texCoordBufferIndex);
     void Draw();
+
+    static u32 GetBufferSize();
 
 private:
     FFLVec3*    m_pPositionBuffer;
