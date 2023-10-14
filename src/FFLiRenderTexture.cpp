@@ -51,12 +51,12 @@ void FFLiInvalidateRenderTexture(FFLiRenderTexture* pRenderTexture)
     FFLiInvalidateTexture(&pRenderTexture->gx2Texture);
 }
 
-void FFLiSetupRenderTexture(FFLiRenderTexture* pRenderTexture, const FFLColor* pClearColor, void* pDepthBuffer, u32 viewMip, GX2SurfaceFormat format, const FFLiShaderCallback* pCallback)
+void FFLiSetupRenderTexture(FFLiRenderTexture* pRenderTexture, const FFLColor* pClearColor, void* pDepthBuffer, u32 mipLevel, GX2SurfaceFormat format, const FFLiShaderCallback* pCallback)
 {
-    FFLiSetupRenderTexture(&pRenderTexture->gx2Texture, pClearColor, pDepthBuffer, viewMip, format, pCallback);
+    FFLiSetupRenderTexture(&pRenderTexture->gx2Texture, pClearColor, pDepthBuffer, mipLevel, format, pCallback);
 }
 
-void FFLiSetupRenderTexture(GX2Texture* pGX2Texture, const FFLColor* pClearColor, void* pDepthBuffer, u32 viewMip, GX2SurfaceFormat format, const FFLiShaderCallback* pCallback)
+void FFLiSetupRenderTexture(GX2Texture* pGX2Texture, const FFLColor* pClearColor, void* pDepthBuffer, u32 mipLevel, GX2SurfaceFormat format, const FFLiShaderCallback* pCallback)
 {
     GX2ColorBuffer colorBuffer;
     std::memset(&colorBuffer, 0, sizeof(GX2ColorBuffer));
@@ -67,7 +67,7 @@ void FFLiSetupRenderTexture(GX2Texture* pGX2Texture, const FFLColor* pClearColor
     GX2InitColorBuffer(&colorBuffer, pGX2Texture->surface.width, pGX2Texture->surface.height, format, GX2_AA_MODE_1X);
 
     colorBuffer.surface.numMips = pGX2Texture->surface.numMips;
-    colorBuffer.viewMip = viewMip;
+    colorBuffer.viewMip = mipLevel;
     GX2CalcSurfaceSizeAndAlignment(&colorBuffer.surface);
     GX2InitColorBufferRegs(&colorBuffer);
 
@@ -90,16 +90,16 @@ void FFLiSetupRenderTexture(GX2Texture* pGX2Texture, const FFLColor* pClearColor
     GX2SetViewport(
         0.0f,
         0.0f,
-        f32(FFLiGetMipMapLevelSize(colorBuffer.surface.width, viewMip)),
-        f32(FFLiGetMipMapLevelSize(colorBuffer.surface.height, viewMip)),
+        f32(FFLiGetMipMapLevelSize(colorBuffer.surface.width, mipLevel)),
+        f32(FFLiGetMipMapLevelSize(colorBuffer.surface.height, mipLevel)),
         0.0f,
         1.0f
     );
     GX2SetScissor(
         0.0f,
         0.0f,
-        f32(FFLiGetMipMapLevelSize(colorBuffer.surface.width, viewMip)),
-        f32(FFLiGetMipMapLevelSize(colorBuffer.surface.height, viewMip))
+        f32(FFLiGetMipMapLevelSize(colorBuffer.surface.width, mipLevel)),
+        f32(FFLiGetMipMapLevelSize(colorBuffer.surface.height, mipLevel))
     );
 
     if (pClearColor != NULL)

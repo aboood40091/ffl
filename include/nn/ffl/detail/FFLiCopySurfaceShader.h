@@ -3,11 +3,22 @@
 
 #include <nn/ffl/FFLiUtilShader.h>
 
+class FFLiBufferAllocator;
+
 class FFLiCopySurfaceShader
 {
 public:
     FFLiCopySurfaceShader();
     ~FFLiCopySurfaceShader();
+
+    void SetupCPU(FFLiBufferAllocator* pAllocator);
+    void SetupGPU();
+
+    void Bind() const;
+
+    void SetTexture(const GX2Texture* pGX2Texture, u32 mipLevel) const;
+
+    static u32 GetBufferSize();
 
 private:
     FFLiUtilShader::FetchShader m_FetchShader;

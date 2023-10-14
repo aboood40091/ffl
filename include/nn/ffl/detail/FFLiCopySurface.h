@@ -22,6 +22,10 @@ public:
     bool CanInitCharModel(bool isSetupGPU, bool compressTexture) const;
 
 private:
+    void SetupSrcSurface(const GX2Surface* pSurface, u32 mipLevel);
+    void SetupDstSurface(GX2Surface* pSurface, u32 mipLevel);
+
+private:
     FFLiCopySurfaceShader   m_Shader;
     FFLiCopySurfaceDrawer   m_Drawer;
 };
