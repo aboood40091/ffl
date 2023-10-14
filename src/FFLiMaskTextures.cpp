@@ -90,7 +90,7 @@ FFLExpression FFLiInitMaskTextures(FFLiMaskTextures* pMaskTextures, u32 expressi
 
     for (u32 i = 0; i < FFL_EXPRESSION_MAX; i++)
     {
-        if ((expressionFlag & 1 << (i & 0x3f)) == 0)
+        if ((expressionFlag & 1 << i) == 0)
         {
             pMaskTextures->pRenderTextures[i] = NULL;
             continue;
@@ -224,7 +224,7 @@ u32 ExpressionFlagCount(u32 expressionFlag)
     u32 ret = 0;
 
     for (u32 i = 0; i < FFL_EXPRESSION_MAX; i++)
-        if (expressionFlag & 1 << (i & 0x3f))
+        if (expressionFlag & 1 << i)
             ret++;
 
     return ret;
@@ -270,7 +270,7 @@ FFLiRenderTexture* FFLiRenderTextureAllocate(FFLiBufferAllocator* pAllocator)
 
 bool CanUseExpression(u32 expressionFlag, FFLExpression expression)
 {
-    return (expressionFlag & 1 << (expression & 0x3f)) != 0;
+    return (expressionFlag & 1 << expression) != 0;
 }
 
 void InitRawMask(FFLiMaskTexturesTempObject* pObject, u32 expressionFlag, FFLiBufferAllocator* pAllocator)

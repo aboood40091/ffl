@@ -155,8 +155,8 @@ void FFLiCompressorImpl<T>::CompressImpl(GX2Texture* pDst, const GX2Texture* pSr
         
         GX2SetColorBuffer(pColorBuffer, GX2_RENDER_TARGET_0);
         
-        u32 width = FFLiCalculateUnitTextureResolution(pDst->surface.width, i) >> (i & 0x3f);
-        u32 height = FFLiCalculateUnitTextureResolution(pDst->surface.height, i) >> (i & 0x3f);
+        u32 width = FFLiCalculateUnitTextureResolution(pDst->surface.width, i) >> i;
+        u32 height = FFLiCalculateUnitTextureResolution(pDst->surface.height, i) >> i;
         GX2SetViewport(0.0f, 0.0f, width, height, 0.0f, 1.0f);
         GX2SetScissor(0, 0, width, height);
 

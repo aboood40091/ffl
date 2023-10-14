@@ -49,7 +49,7 @@ void FFLiDeleteCharModel(FFLiCharModel* pModel)
 
 void FFLiSetExpression(FFLiCharModel* pModel, FFLExpression expression)
 {
-    if (1 << (expression & 0x3f) & pModel->charModelDesc.expressionFlag)
+    if (1 << expression & pModel->charModelDesc.expressionFlag)
     {
         pModel->expression = expression;
         FFLiInitModulateShapeMask(&pModel->drawParam[FFLI_SHAPE_TYPE_XLU_MASK].modulateParam, pModel->maskTextures.pRenderTextures[expression]->gx2Texture);
@@ -69,7 +69,7 @@ void FFLiGetPartsTransform(FFLPartsTransform* pTransform, const FFLiCharModel* p
 void FFLiSetViewModelType(FFLiCharModel* pModel, FFLModelType type)
 {
     if (type < FFL_MODEL_TYPE_MAX &&
-        (pModel->charModelDesc).modelFlag & 1 << (type & 0x3f))
+        (pModel->charModelDesc).modelFlag & 1 << type)
     {
         pModel->modelType = type;
     }

@@ -162,7 +162,7 @@ namespace {
 FFLModelType ModelFlagToModelType(u32 flag)
 {
     for (u32 i = 0; i < FFL_MODEL_TYPE_MAX; ++i)
-        if (flag & 1 << (i & 0x3f))
+        if (flag & 1 << i)
             return FFLModelType(i);
 
     return FFL_MODEL_TYPE_0;
@@ -460,7 +460,7 @@ void SetupDrawParam(FFLiCharModel* pModel)
 
     for (u32 i = 0; i < 2; i++)
     {
-        if (pModel->charModelDesc.modelFlag & 1 << (MODEL_TYPE[i] & 0x3f))
+        if (pModel->charModelDesc.modelFlag & 1 << MODEL_TYPE[i])
         {
             const FFLiShapeTypeInfo& shapeTypeInfo = GetShapeTypeInfo(MODEL_TYPE[i]);
 

@@ -161,7 +161,7 @@ void ExpressionToEyeUseFlag(bool* pUseFlag, u32 expressionFlag)
 
     for (u32 i = 0; i < FFL_EXPRESSION_MAX; i++)
     {
-        if (expressionFlag & 1 << (i & 0x3f))
+        if (expressionFlag & 1 << i)
         {
             pUseFlag[EYE_MOUTH_TYPE_ELEMENT[i].eyeTextureType[0]] = true;
             pUseFlag[EYE_MOUTH_TYPE_ELEMENT[i].eyeTextureType[1]] = true;
@@ -174,7 +174,7 @@ void ExpressionToMouthUseFlag(bool* pUseFlag, u32 expressionFlag)
     std::memset(pUseFlag, 0, sizeof(bool) * FFLI_MOUTH_TEXTURE_TYPE_MAX);
 
     for (u32 i = 0; i < FFL_EXPRESSION_MAX; i++)
-        if (expressionFlag & 1 << (i & 0x3f))
+        if (expressionFlag & 1 << i)
             pUseFlag[EYE_MOUTH_TYPE_ELEMENT[i].mouthTextureType] = true;
 
 }
