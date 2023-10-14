@@ -3,6 +3,8 @@
 
 #include <nn/ffl/types.h>
 
+class FFLiBufferAllocator;
+
 class FFLiCompressUniform
 {
 public:
@@ -19,8 +21,14 @@ public:
         return m_pPixelUniform;
     }
 
+    void Setup(FFLiBufferAllocator* pAllocator, u32 compressUseUB);
+    void SetResolution(u32 width, u32 height);
+    void SetMipLevel(u32 mipLevel);
+
+    static u32 GetBufferSize();
+
 private:
-    bool        _0;
+    bool        m_IsUB;
     const void* m_pVertexUniform;
     const void* m_pPixelUniform;
 };
