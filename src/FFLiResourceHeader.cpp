@@ -133,40 +133,40 @@ s32 FFLiResourceWindowBitsToZlibWindowBits(FFLiResourceWindowBits windowBits)
 {
     switch (windowBits)
     {
-    case FFLI_RESOURCE_WINDOW_BITS_8:
+    case FFLI_RESOURCE_WINDOW_BITS_ZLIB_8:
         return 8;
-    case FFLI_RESOURCE_WINDOW_BITS_9:
+    case FFLI_RESOURCE_WINDOW_BITS_ZLIB_9:
         return 9;
-    case FFLI_RESOURCE_WINDOW_BITS_10:
+    case FFLI_RESOURCE_WINDOW_BITS_ZLIB_10:
         return 10;
-    case FFLI_RESOURCE_WINDOW_BITS_11:
+    case FFLI_RESOURCE_WINDOW_BITS_ZLIB_11:
         return 11;
-    case FFLI_RESOURCE_WINDOW_BITS_12:
+    case FFLI_RESOURCE_WINDOW_BITS_ZLIB_12:
         return 12;
-    case FFLI_RESOURCE_WINDOW_BITS_13:
+    case FFLI_RESOURCE_WINDOW_BITS_ZLIB_13:
         return 13;
-    case FFLI_RESOURCE_WINDOW_BITS_14:
+    case FFLI_RESOURCE_WINDOW_BITS_ZLIB_14:
         return 14;
-    case FFLI_RESOURCE_WINDOW_BITS_15:
+    case FFLI_RESOURCE_WINDOW_BITS_ZLIB_15:
         return 15;
-    case FFLI_RESOURCE_WINDOW_BITS_24:
-        return 24;
-    case FFLI_RESOURCE_WINDOW_BITS_25:
-        return 25;
-    case FFLI_RESOURCE_WINDOW_BITS_26:
-        return 26;
-    case FFLI_RESOURCE_WINDOW_BITS_27:
-        return 27;
-    case FFLI_RESOURCE_WINDOW_BITS_28:
-        return 28;
-    case FFLI_RESOURCE_WINDOW_BITS_29:
-        return 29;
-    case FFLI_RESOURCE_WINDOW_BITS_30:
-        return 30;
-    case FFLI_RESOURCE_WINDOW_BITS_31:
-        return 31;
-    case FFLI_RESOURCE_WINDOW_BITS_47:
-        return 47;
+    case FFLI_RESOURCE_WINDOW_BITS_GZIP_8:
+        return 16 + 8;
+    case FFLI_RESOURCE_WINDOW_BITS_GZIP_9:
+        return 16 + 9;
+    case FFLI_RESOURCE_WINDOW_BITS_GZIP_10:
+        return 16 + 10;
+    case FFLI_RESOURCE_WINDOW_BITS_GZIP_11:
+        return 16 + 11;
+    case FFLI_RESOURCE_WINDOW_BITS_GZIP_12:
+        return 16 + 12;
+    case FFLI_RESOURCE_WINDOW_BITS_GZIP_13:
+        return 16 + 13;
+    case FFLI_RESOURCE_WINDOW_BITS_GZIP_14:
+        return 16 + 14;
+    case FFLI_RESOURCE_WINDOW_BITS_GZIP_15:
+        return 16 + 15;
+    case FFLI_RESOURCE_WINDOW_BITS_ZLIB_OR_GZIP_15:
+        return 32 + 15;
     }
     return 15;
 }
