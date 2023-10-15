@@ -74,7 +74,7 @@ u32 FFLiGetTempBufferSizeFacelineTexture(u32 resolution, bool enableMipMap, bool
     return ret;
 }
 
-u32 FFLiGetTempBufferSizeFacelineTexture(u32 resolution, bool enableMipMap)
+u32 FFLiGetCompressBufferSizeFacelineTexture(u32 resolution, bool enableMipMap)
 {
     u32 width = GetWidth(resolution);
     u32 height = GetHeight(resolution);

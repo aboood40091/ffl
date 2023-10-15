@@ -6,10 +6,6 @@ FFLiCompressor::FFLiCompressor(FFLiBufferAllocator* pAllocator, const void* pSha
 {
 }
 
-FFLiCompressor::~FFLiCompressor()
-{
-}
-
 u32 FFLiCompressor::GetBufferSize(const void* pShaderData)
 {
     u32 bufferSizeBC1 = FFLiCompressorImplBC1::GetBufferSize(pShaderData, 0);
