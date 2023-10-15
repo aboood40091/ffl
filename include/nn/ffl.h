@@ -19,15 +19,18 @@
 #include <nn/ffl/FFLGender.h>
 #include <nn/ffl/FFLGlobal.h>
 #include <nn/ffl/FFLInitDesc.h>
+#include <nn/ffl/FFLMiddleDB.h>
 #include <nn/ffl/FFLMiddleDBType.h>
 #include <nn/ffl/FFLModelType.h>
 #include <nn/ffl/FFLModulateParam.h>
 #include <nn/ffl/FFLPartsTransform.h>
 #include <nn/ffl/FFLRace.h>
 #include <nn/ffl/FFLResolution.h>
+#include <nn/ffl/FFLResource.h>
 #include <nn/ffl/FFLResourceDesc.h>
 #include <nn/ffl/FFLResourceType.h>
 #include <nn/ffl/FFLResult.h>
+#include <nn/ffl/FFLShaderCallback.h>
 #include <nn/ffl/FFLVec.h>
 
 #endif // NN_FFL_H_
