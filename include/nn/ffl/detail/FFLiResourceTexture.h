@@ -7,6 +7,17 @@
 
 #include <cafe/gx2.h>
 
+enum FFLiTextureFormat
+{
+    FFLI_TEXTURE_FORMAT_R8      = 0,
+    FFLI_TEXTURE_FORMAT_RG8     = 1,
+    FFLI_TEXTURE_FORMAT_RGBA8   = 2
+};
+
+GX2SurfaceFormat FFLiGetResourceSurfaceFormat(FFLiTextureFormat textureFormat);
+
+// --------------------------------------------------------------------------
+
 struct FFLiResourceTextureHeader
 {
     u32                     partsMaxSize[FFLI_TEXTURE_PARTS_TYPE_MAX];
@@ -50,7 +61,7 @@ public:
     void* GetMipPtrImpl(u32 size) const;
 
 private:
-    s32 m_MipOffset;
+    u32 m_MipOffset;
     u16 m_Width;
     u16 m_Height;
     u8  m_NumMips;
