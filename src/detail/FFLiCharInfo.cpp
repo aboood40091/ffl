@@ -27,130 +27,130 @@ BOOL FFLiVerifyCharInfo(const FFLiCharInfo* pCharInfo, BOOL verifyName)
 
 FFLiVerifyCharInfoReason FFLiVerifyCharInfoWithReason(const FFLiCharInfo* pCharInfo, BOOL verifyName)
 {
-    if (!FFLiRange(0, 11, pCharInfo->parts.faceType))
+    if (!FFLiRange<s32>(0, FFL_FACE_TYPE_MAX - 1, pCharInfo->parts.faceType))
         return FFLI_VERIFY_CHAR_INFO_REASON_FACE_TYPE_INVALID;
 
-    if (!FFLiRange(0, 5, pCharInfo->parts.facelineColor))
+    if (!FFLiRange<s32>(0, FFL_FACELINE_COLOR_MAX - 1, pCharInfo->parts.facelineColor))
         return FFLI_VERIFY_CHAR_INFO_REASON_FACELINE_COLOR_INVALID;
 
-    if (!FFLiRange(0, 11, pCharInfo->parts.faceLine))
+    if (!FFLiRange<s32>(0, FFL_FACE_LINE_MAX - 1, pCharInfo->parts.faceLine))
         return FFLI_VERIFY_CHAR_INFO_REASON_FACE_LINE_INVALID;
 
-    if (!FFLiRange(0, 11, pCharInfo->parts.faceMakeup))
+    if (!FFLiRange<s32>(0, FFL_FACE_MAKE_MAX - 1, pCharInfo->parts.faceMakeup))
         return FFLI_VERIFY_CHAR_INFO_REASON_FACE_MAKE_INVALID;
 
-    if (!FFLiRange(0, 131, pCharInfo->parts.hairType))
+    if (!FFLiRange<s32>(0, FFL_HAIR_TYPE_MAX - 1, pCharInfo->parts.hairType))
         return FFLI_VERIFY_CHAR_INFO_REASON_HAIR_TYPE_INVALID;
 
-    if (!FFLiRange(0, 7, pCharInfo->parts.hairColor))
+    if (!FFLiRange<s32>(0, FFL_HAIR_COLOR_MAX - 1, pCharInfo->parts.hairColor))
         return FFLI_VERIFY_CHAR_INFO_REASON_HAIR_COLOR_INVALID;
 
-    if (!FFLiRange(0, 1, pCharInfo->parts.hairDir))
+    if (!FFLiRange<s32>(0, FFL_HAIR_DIR_MAX - 1, pCharInfo->parts.hairDir))
         return FFLI_VERIFY_CHAR_INFO_REASON_HAIR_DIR_INVALID;
 
-    if (!FFLiRange(0, 59, pCharInfo->parts.eyeType))
+    if (!FFLiRange<s32>(0, FFL_EYE_TYPE_DATA_MAX - 1, pCharInfo->parts.eyeType))
         return FFLI_VERIFY_CHAR_INFO_REASON_EYE_TYPE_INVALID;
 
-    if (!FFLiRange(0, 5, pCharInfo->parts.eyeColor))
+    if (!FFLiRange<s32>(0, FFL_EYE_COLOR_MAX - 1, pCharInfo->parts.eyeColor))
         return FFLI_VERIFY_CHAR_INFO_REASON_EYE_COLOR_INVALID;
 
-    if (!FFLiRange(0, 7, pCharInfo->parts.eyeScale))
+    if (!FFLiRange<s32>(0, FFL_EYE_SCALE_MAX - 1, pCharInfo->parts.eyeScale))
         return FFLI_VERIFY_CHAR_INFO_REASON_EYE_SCALE_INVALID;
 
-    if (!FFLiRange(0, 6, pCharInfo->parts.eyeScaleY))
+    if (!FFLiRange<s32>(0, FFL_EYE_SCALE_Y_MAX - 1, pCharInfo->parts.eyeScaleY))
         return FFLI_VERIFY_CHAR_INFO_REASON_EYE_SCALE_Y_INVALID;
 
-    if (!FFLiRange(0, 7, pCharInfo->parts.eyeRotate))
+    if (!FFLiRange<s32>(0, FFL_EYE_ROTATE_MAX - 1, pCharInfo->parts.eyeRotate))
         return FFLI_VERIFY_CHAR_INFO_REASON_EYE_ROTATE_INVALID;
 
-    if (!FFLiRange(0, 12, pCharInfo->parts.eyeSpacingX))
+    if (!FFLiRange<s32>(0, FFL_EYE_SPACING_MAX - 1, pCharInfo->parts.eyeSpacingX))
         return FFLI_VERIFY_CHAR_INFO_REASON_EYE_SPACING_INVALID;
 
-    if (!FFLiRange(0, 18, pCharInfo->parts.eyePositionY))
+    if (!FFLiRange<s32>(0, FFL_EYE_POS_MAX - 1, pCharInfo->parts.eyePositionY))
         return FFLI_VERIFY_CHAR_INFO_REASON_EYE_POS_INVALID;
 
-    if (!FFLiRange(0, 23, pCharInfo->parts.eyebrowType))
+    if (!FFLiRange<s32>(0, FFL_EYEBROW_TYPE_MAX - 1, pCharInfo->parts.eyebrowType))
         return FFLI_VERIFY_CHAR_INFO_REASON_EYEBROW_TYPE_INVALID;
 
-    if (!FFLiRange(0, 7, pCharInfo->parts.eyebrowColor))
+    if (!FFLiRange<s32>(0, FFL_EYEBROW_COLOR_MAX - 1, pCharInfo->parts.eyebrowColor))
         return FFLI_VERIFY_CHAR_INFO_REASON_EYEBROW_COLOR_INVALID;
 
-    if (!FFLiRange(0, 8, pCharInfo->parts.eyebrowScale))
+    if (!FFLiRange<s32>(0, FFL_EYEBROW_SCALE_MAX - 1, pCharInfo->parts.eyebrowScale))
         return FFLI_VERIFY_CHAR_INFO_REASON_EYEBROW_SCALE_INVALID;
 
-    if (!FFLiRange(0, 6, pCharInfo->parts.eyebrowScaleY))
+    if (!FFLiRange<s32>(0, FFL_EYEBROW_SCALE_Y_MAX - 1, pCharInfo->parts.eyebrowScaleY))
         return FFLI_VERIFY_CHAR_INFO_REASON_EYEBROW_SCALE_Y_INVALID;
 
-    if (!FFLiRange(0, 11, pCharInfo->parts.eyebrowRotate))
+    if (!FFLiRange<s32>(0, FFL_EYEBROW_ROTATE_MAX - 1, pCharInfo->parts.eyebrowRotate))
         return FFLI_VERIFY_CHAR_INFO_REASON_EYEBROW_ROTATE_INVALID;
 
-    if (!FFLiRange(0, 12, pCharInfo->parts.eyebrowSpacingX))
+    if (!FFLiRange<s32>(0, FFL_EYEBROW_SPACING_MAX - 1, pCharInfo->parts.eyebrowSpacingX))
         return FFLI_VERIFY_CHAR_INFO_REASON_EYEBROW_SPACING_INVALID;
 
-    if (!FFLiRange(3, 18, pCharInfo->parts.eyebrowPositionY))
+    if (!FFLiRange<s32>(FFL_EYEBROW_POS_MIN, FFL_EYEBROW_POS_MAX - 1, pCharInfo->parts.eyebrowPositionY))
         return FFLI_VERIFY_CHAR_INFO_REASON_EYEBROW_POS_INVALID;
 
-    if (!FFLiRange(0, 17, pCharInfo->parts.noseType))
+    if (!FFLiRange<s32>(0, FFL_NOSE_TYPE_MAX - 1, pCharInfo->parts.noseType))
         return FFLI_VERIFY_CHAR_INFO_REASON_NOSE_TYPE_INVALID;
 
-    if (!FFLiRange(0, 8, pCharInfo->parts.noseScale))
+    if (!FFLiRange<s32>(0, FFL_NOSE_SCALE_MAX - 1, pCharInfo->parts.noseScale))
         return FFLI_VERIFY_CHAR_INFO_REASON_NOSE_SCALE_INVALID;
 
-    if (!FFLiRange(0, 18, pCharInfo->parts.nosePositionY))
+    if (!FFLiRange<s32>(0, FFL_NOSE_POS_MAX - 1, pCharInfo->parts.nosePositionY))
         return FFLI_VERIFY_CHAR_INFO_REASON_NOSE_POS_INVALID;
 
-    if (!FFLiRange(0, 35, pCharInfo->parts.mouthType))
+    if (!FFLiRange<s32>(0, FFL_MOUTH_TYPE_DATA_MAX - 1, pCharInfo->parts.mouthType))
         return FFLI_VERIFY_CHAR_INFO_REASON_MOUTH_TYPE_INVALID;
 
-    if (!FFLiRange(0, 4, pCharInfo->parts.mouthColor))
+    if (!FFLiRange<s32>(0, FFL_MOUTH_COLOR_MAX - 1, pCharInfo->parts.mouthColor))
         return FFLI_VERIFY_CHAR_INFO_REASON_MOUTH_COLOR_INVALID;
 
-    if (!FFLiRange(0, 8, pCharInfo->parts.mouthScale))
+    if (!FFLiRange<s32>(0, FFL_MOUTH_SCALE_MAX - 1, pCharInfo->parts.mouthScale))
         return FFLI_VERIFY_CHAR_INFO_REASON_MOUTH_SCALE_INVALID;
 
-    if (!FFLiRange(0, 6, pCharInfo->parts.mouthScaleY))
+    if (!FFLiRange<s32>(0, FFL_MOUTH_SCALE_Y_MAX - 1, pCharInfo->parts.mouthScaleY))
         return FFLI_VERIFY_CHAR_INFO_REASON_MOUTH_SCALE_Y_INVALID;
 
-    if (!FFLiRange(0, 18, pCharInfo->parts.mouthPositionY))
+    if (!FFLiRange<s32>(0, FFL_MOUTH_POS_MAX - 1, pCharInfo->parts.mouthPositionY))
         return FFLI_VERIFY_CHAR_INFO_REASON_MOUTH_POS_INVALID;
 
-    if (!FFLiRange(0, 5, pCharInfo->parts.mustacheType))
+    if (!FFLiRange<s32>(0, FFL_MUSTACHE_TYPE_MAX - 1, pCharInfo->parts.mustacheType))
         return FFLI_VERIFY_CHAR_INFO_REASON_MUSTACHE_TYPE_INVALID;
 
-    if (!FFLiRange(0, 5, pCharInfo->parts.beardType))
+    if (!FFLiRange<s32>(0, FFL_BEARD_TYPE_MAX - 1, pCharInfo->parts.beardType))
         return FFLI_VERIFY_CHAR_INFO_REASON_BEARD_TYPE_INVALID;
 
-    if (!FFLiRange(0, 7, pCharInfo->parts.beardColor))
+    if (!FFLiRange<s32>(0, FFL_BEARD_COLOR_MAX - 1, pCharInfo->parts.beardColor))
         return FFLI_VERIFY_CHAR_INFO_REASON_BEARD_COLOR_INVALID;
 
-    if (!FFLiRange(0, 8, pCharInfo->parts.mustacheScale))
+    if (!FFLiRange<s32>(0, FFL_MUSTACHE_SCALE_MAX - 1, pCharInfo->parts.mustacheScale))
         return FFLI_VERIFY_CHAR_INFO_REASON_MUSTACHE_SCALE_INVALID;
 
-    if (!FFLiRange(0, 16, pCharInfo->parts.mustachePositionY))
+    if (!FFLiRange<s32>(0, FFL_MUSTACHE_POS_MAX - 1, pCharInfo->parts.mustachePositionY))
         return FFLI_VERIFY_CHAR_INFO_REASON_MUSTACHE_POS_INVALID;
 
-    if (!FFLiRange(0, 8, pCharInfo->parts.glassType))
+    if (!FFLiRange<s32>(0, FFL_GLASS_TYPE_MAX - 1, pCharInfo->parts.glassType))
         return FFLI_VERIFY_CHAR_INFO_REASON_GLASS_TYPE_INVALID;
 
-    if (!FFLiRange(0, 5, pCharInfo->parts.glassColor))
+    if (!FFLiRange<s32>(0, FFL_GLASS_COLOR_MAX - 1, pCharInfo->parts.glassColor))
         return FFLI_VERIFY_CHAR_INFO_REASON_GLASS_COLOR_INVALID;
 
-    if (!FFLiRange(0, 7, pCharInfo->parts.glassScale))
+    if (!FFLiRange<s32>(0, FFL_GLASS_SCALE_MAX - 1, pCharInfo->parts.glassScale))
         return FFLI_VERIFY_CHAR_INFO_REASON_GLASS_SCALE_INVALID;
 
-    if (!FFLiRange(0, 20, pCharInfo->parts.glassPositionY))
+    if (!FFLiRange<s32>(0, FFL_GLASS_POS_MAX - 1, pCharInfo->parts.glassPositionY))
         return FFLI_VERIFY_CHAR_INFO_REASON_GLASS_POS_INVALID;
 
-    if (!FFLiRange(0, 1, pCharInfo->parts.moleType))
+    if (!FFLiRange<s32>(0, FFL_MOLE_TYPE_MAX - 1, pCharInfo->parts.moleType))
         return FFLI_VERIFY_CHAR_INFO_REASON_MOLE_TYPE_INVALID;
 
-    if (!FFLiRange(0, 8, pCharInfo->parts.moleScale))
+    if (!FFLiRange<s32>(0, FFL_MOLE_SCALE_MAX - 1, pCharInfo->parts.moleScale))
         return FFLI_VERIFY_CHAR_INFO_REASON_MOLE_SCALE_INVALID;
 
-    if (!FFLiRange(0, 16, pCharInfo->parts.molePositionX))
+    if (!FFLiRange<s32>(0, FFL_MOLE_POS_X_MAX - 1, pCharInfo->parts.molePositionX))
         return FFLI_VERIFY_CHAR_INFO_REASON_MOLE_POS_X_INVALID;
 
-    if (!FFLiRange(0, 30, pCharInfo->parts.molePositionY))
+    if (!FFLiRange<s32>(0, FFL_MOLE_POS_Y_MAX - 1, pCharInfo->parts.molePositionY))
         return FFLI_VERIFY_CHAR_INFO_REASON_MOLE_POS_Y_INVALID;
 
     if (verifyName)
@@ -205,7 +205,7 @@ BOOL FFLiiVerifyCharInfo(const FFLiCharInfo* pCharInfo, BOOL verifyName)
 
 s32 FFLiiGetEyeRotateOffset(s32 type)
 {
-    static const u8 ROTATE[64] = {  // Don't ask me why this is 64 and not 60
+    static const u8 ROTATE[FFL_EYE_TYPE_TRUE_MAX] = {
         3, 4, 4, 4,
         3, 4, 4, 4,
         3, 4, 4, 4,
@@ -221,14 +221,14 @@ s32 FFLiiGetEyeRotateOffset(s32 type)
         3, 3, 3, 3,
         4, 4, 4, 4,
         3, 4, 4, 3,
-        4, 4, 0, 0
+        4, 4
     };
     return 32 - ROTATE[type];
 }
 
 s32 FFLiiGetEyebrowRotateOffset(s32 type)
 {
-    static const u8 ROTATE[24] = {
+    static const u8 ROTATE[FFL_EYEBROW_TYPE_MAX] = {
         6, 6, 5, 7,
         6, 7, 6, 7,
         4, 7, 6, 8,

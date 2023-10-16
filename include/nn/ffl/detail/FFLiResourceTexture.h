@@ -22,16 +22,16 @@ struct FFLiResourceTextureHeader
 {
     u32                     partsMaxSize[FFLI_TEXTURE_PARTS_TYPE_MAX];
     FFLiResourcePartsInfo   partsInfoBeard[3];
-    FFLiResourcePartsInfo   partsInfoCap[132];
-    FFLiResourcePartsInfo   partsInfoEye[62];
-    FFLiResourcePartsInfo   partsInfoEyebrow[24];
-    FFLiResourcePartsInfo   partsInfoFaceline[12];
-    FFLiResourcePartsInfo   partsInfoFaceMakeup[12];
-    FFLiResourcePartsInfo   partsInfoGlass[9];
-    FFLiResourcePartsInfo   partsInfoMole[2];
-    FFLiResourcePartsInfo   partsInfoMouth[37];
-    FFLiResourcePartsInfo   partsInfoMustache[6];
-    FFLiResourcePartsInfo   partsInfoNoseline[18];
+    FFLiResourcePartsInfo   partsInfoCap[FFL_HAIR_TYPE_MAX];
+    FFLiResourcePartsInfo   partsInfoEye[FFL_EYE_TYPE_TRUE_MAX];
+    FFLiResourcePartsInfo   partsInfoEyebrow[FFL_EYEBROW_TYPE_MAX];
+    FFLiResourcePartsInfo   partsInfoFaceline[FFL_FACE_LINE_MAX];
+    FFLiResourcePartsInfo   partsInfoFaceMakeup[FFL_FACE_MAKE_MAX];
+    FFLiResourcePartsInfo   partsInfoGlass[FFL_GLASS_TYPE_MAX];
+    FFLiResourcePartsInfo   partsInfoMole[FFL_MOLE_TYPE_MAX];
+    FFLiResourcePartsInfo   partsInfoMouth[FFL_MOUTH_TYPE_TRUE_MAX];
+    FFLiResourcePartsInfo   partsInfoMustache[FFL_MUSTACHE_TYPE_MAX];
+    FFLiResourcePartsInfo   partsInfoNoseline[FFL_NOSE_TYPE_MAX];
 };
 NN_STATIC_ASSERT(sizeof(FFLiResourceTextureHeader) == 0x13FC);
 

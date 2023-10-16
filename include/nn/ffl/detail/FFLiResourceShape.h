@@ -28,17 +28,17 @@ struct FFLiResourceShapeHeader
 {
     u32                     partsMaxSize[FFLI_SHAPE_PARTS_TYPE_MAX];
     FFLiResourcePartsInfo   partsInfoBeard[4];
-    FFLiResourcePartsInfo   partsInfoCap1[132];
-    FFLiResourcePartsInfo   partsInfoCap2[132];
-    FFLiResourcePartsInfo   partsInfoFaceline[12];
+    FFLiResourcePartsInfo   partsInfoCap1[FFL_HAIR_TYPE_MAX];
+    FFLiResourcePartsInfo   partsInfoCap2[FFL_HAIR_TYPE_MAX];
+    FFLiResourcePartsInfo   partsInfoFaceline[FFL_FACE_TYPE_MAX];
     FFLiResourcePartsInfo   partsInfoGlass[1];
-    FFLiResourcePartsInfo   partsInfoMask[12];
-    FFLiResourcePartsInfo   partsInfoNoseline[18];
-    FFLiResourcePartsInfo   partsInfoNose[18];
-    FFLiResourcePartsInfo   partsInfoHair1[132];
-    FFLiResourcePartsInfo   partsInfoHair2[132];
-    FFLiResourcePartsInfo   partsInfoForehead1[132];
-    FFLiResourcePartsInfo   partsInfoForehead2[132];
+    FFLiResourcePartsInfo   partsInfoMask[FFL_FACE_TYPE_MAX];
+    FFLiResourcePartsInfo   partsInfoNoseline[FFL_NOSE_TYPE_MAX];
+    FFLiResourcePartsInfo   partsInfoNose[FFL_NOSE_TYPE_MAX];
+    FFLiResourcePartsInfo   partsInfoHair1[FFL_HAIR_TYPE_MAX];
+    FFLiResourcePartsInfo   partsInfoHair2[FFL_HAIR_TYPE_MAX];
+    FFLiResourcePartsInfo   partsInfoForehead1[FFL_HAIR_TYPE_MAX];
+    FFLiResourcePartsInfo   partsInfoForehead2[FFL_HAIR_TYPE_MAX];
 };
 NN_STATIC_ASSERT(sizeof(FFLiResourceShapeHeader) == 0x35C0);
 
