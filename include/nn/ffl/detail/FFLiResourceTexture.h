@@ -9,9 +9,9 @@
 
 enum FFLiTextureFormat
 {
-    FFLI_TEXTURE_FORMAT_R8      = 0,
-    FFLI_TEXTURE_FORMAT_RG8     = 1,
-    FFLI_TEXTURE_FORMAT_RGBA8   = 2
+    FFLI_TEXTURE_FORMAT_A8      = 0,    // 8-bit Alpha
+    FFLI_TEXTURE_FORMAT_AL8     = 1,    // 8-bit Alpha + 8-bit Luminance
+    FFLI_TEXTURE_FORMAT_RGBA8   = 2     // 8-bit Red + 8-bit Green + 8-bit Blue + 8-bit Alpha
 };
 
 GX2SurfaceFormat FFLiGetResourceSurfaceFormat(FFLiTextureFormat textureFormat);

@@ -4,9 +4,9 @@ GX2SurfaceFormat FFLiGetResourceSurfaceFormat(FFLiTextureFormat textureFormat)
 {
     switch (textureFormat)
     {
-    case FFLI_TEXTURE_FORMAT_R8:
+    case FFLI_TEXTURE_FORMAT_A8:
         return GX2_SURFACE_FORMAT_TC_R8_UNORM;
-    case FFLI_TEXTURE_FORMAT_RG8:
+    case FFLI_TEXTURE_FORMAT_AL8:
         return GX2_SURFACE_FORMAT_TC_R8_G8_UNORM;
     case FFLI_TEXTURE_FORMAT_RGBA8:
         return GX2_SURFACE_FORMAT_TCS_R8_G8_B8_A8_UNORM;
