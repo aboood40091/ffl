@@ -356,7 +356,7 @@ void InitAttributes(FFLAttributeBufferParam* pAttributes, u32 resolution, FFLiBu
 
 void InitDrawParamWithoutModulate(FFLDrawParam* pDrawParam, u32 resolution, FFLiBufferAllocator* pAllocator)
 {
-    pDrawParam->modulateType = 3;
+    pDrawParam->cullMode = FFL_CULL_MODE_MAX;
     InitPrimitive(&pDrawParam->primitiveParam, pAllocator);
     InitAttributes(&pDrawParam->attributeBufferParam, resolution, pAllocator);
 }

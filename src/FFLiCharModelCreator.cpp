@@ -444,19 +444,19 @@ static const FFLModelType MODEL_TYPE[2] = {
 
 void SetupDrawParam(FFLiCharModel* pModel)
 {
-    u32 hairModulateType = 1;
+    FFLCullMode hairCullMode = FFL_CULL_MODE_BACK;
 
-    pModel->drawParam[FFLI_SHAPE_TYPE_OPA_FACELINE].modulateType = 1;
+    pModel->drawParam[FFLI_SHAPE_TYPE_OPA_FACELINE].cullMode = FFL_CULL_MODE_BACK;
     FFLiInitModulateShapeFaceline(&pModel->drawParam[FFLI_SHAPE_TYPE_OPA_FACELINE].modulateParam, pModel->facelineRenderTexture.gx2Texture);
 
-    pModel->drawParam[FFLI_SHAPE_TYPE_OPA_BEARD].modulateType = 1;
+    pModel->drawParam[FFLI_SHAPE_TYPE_OPA_BEARD].cullMode = FFL_CULL_MODE_BACK;
     FFLiInitModulateShapeBeard(&pModel->drawParam[FFLI_SHAPE_TYPE_OPA_BEARD].modulateParam, pModel->charInfo.parts.beardColor);
 
-    pModel->drawParam[FFLI_SHAPE_TYPE_OPA_NOSE].modulateType = 1;
+    pModel->drawParam[FFLI_SHAPE_TYPE_OPA_NOSE].cullMode = FFL_CULL_MODE_BACK;
     FFLiInitModulateShapeNose(&pModel->drawParam[FFLI_SHAPE_TYPE_OPA_NOSE].modulateParam, pModel->charInfo.parts.facelineColor);
 
     if (pModel->charInfo.parts.hairDir > 0)
-        hairModulateType = 2;
+        hairCullMode = FFL_CULL_MODE_FRONT;
 
     for (u32 i = 0; i < 2; i++)
     {
@@ -465,18 +465,18 @@ void SetupDrawParam(FFLiCharModel* pModel)
             const FFLiShapeTypeInfo& shapeTypeInfo = GetShapeTypeInfo(MODEL_TYPE[i]);
 
             FFLDrawParam& drawParamForehead = pModel->drawParam[shapeTypeInfo.foreheadIndex];
-            drawParamForehead.modulateType = hairModulateType;
+            drawParamForehead.cullMode = hairCullMode;
             FFLiInitModulateShapeForehead(&drawParamForehead.modulateParam, pModel->charInfo.parts.facelineColor);
 
             FFLDrawParam& drawParamHair = pModel->drawParam[shapeTypeInfo.hairIndex];
-            drawParamHair.modulateType = hairModulateType;
+            drawParamHair.cullMode = hairCullMode;
             FFLiInitModulateShapeHair(&drawParamHair.modulateParam, pModel->charInfo.parts.hairColor);
 
             const GX2Texture* pCapTexture = pModel->pCapTexture;
             if (pCapTexture != NULL)
             {
                 FFLDrawParam& drawParamCap = pModel->drawParam[shapeTypeInfo.capIndex];
-                drawParamCap.modulateType = hairModulateType;
+                drawParamCap.cullMode = hairCullMode;
                 FFLiInitModulateShapeCap(&drawParamCap.modulateParam, pModel->charInfo.favoriteColor, *pCapTexture);
             }
         }
@@ -485,21 +485,21 @@ void SetupDrawParam(FFLiCharModel* pModel)
     const FFLiRenderTexture* pMaskRenderTexture = pModel->maskTextures.pRenderTextures[pModel->expression];
     if (pMaskRenderTexture != NULL)
     {
-        pModel->drawParam[FFLI_SHAPE_TYPE_XLU_MASK].modulateType = 1;
+        pModel->drawParam[FFLI_SHAPE_TYPE_XLU_MASK].cullMode = FFL_CULL_MODE_BACK;
         FFLiInitModulateShapeMask(&pModel->drawParam[FFLI_SHAPE_TYPE_XLU_MASK].modulateParam, pMaskRenderTexture->gx2Texture);
     }
 
     const GX2Texture* pNoselineTexture = pModel->pNoselineTexture;
     if (pNoselineTexture != NULL)
     {
-        pModel->drawParam[FFLI_SHAPE_TYPE_XLU_NOSELINE].modulateType = 1;
+        pModel->drawParam[FFLI_SHAPE_TYPE_XLU_NOSELINE].cullMode = FFL_CULL_MODE_BACK;
         FFLiInitModulateShapeNoseline(&pModel->drawParam[FFLI_SHAPE_TYPE_XLU_NOSELINE].modulateParam, *pNoselineTexture);
     }
 
     const GX2Texture* pGlassTexture = pModel->pGlassTexture;
     if (pGlassTexture != NULL)
     {
-        pModel->drawParam[FFLI_SHAPE_TYPE_XLU_GLASS].modulateType = 0;
+        pModel->drawParam[FFLI_SHAPE_TYPE_XLU_GLASS].cullMode = FFL_CULL_MODE_NONE;
         FFLiInitModulateShapeGlass(&pModel->drawParam[FFLI_SHAPE_TYPE_XLU_GLASS].modulateParam, pModel->charInfo.parts.glassColor, *pGlassTexture);
     }
 }

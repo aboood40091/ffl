@@ -9,12 +9,48 @@
 extern "C" {
 #endif
 
+typedef enum FFLModulateMode
+{
+    FFL_MODULATE_MODE_0 = 0,
+    FFL_MODULATE_MODE_1 = 1,
+    FFL_MODULATE_MODE_2 = 2,
+    FFL_MODULATE_MODE_3 = 3,
+    FFL_MODULATE_MODE_4 = 4,
+    FFL_MODULATE_MODE_5 = 5
+}
+FFLModulateMode;
+
+typedef enum FFLModulateType
+{
+    FFL_MODULATE_TYPE_SHAPE_FACELINE    =  0,
+    FFL_MODULATE_TYPE_SHAPE_BEARD       =  1,
+    FFL_MODULATE_TYPE_SHAPE_NOSE        =  2,
+    FFL_MODULATE_TYPE_SHAPE_FOREHEAD    =  3,
+    FFL_MODULATE_TYPE_SHAPE_HAIR        =  4,
+    FFL_MODULATE_TYPE_SHAPE_CAP         =  5,
+    FFL_MODULATE_TYPE_SHAPE_MASK        =  6,
+    FFL_MODULATE_TYPE_SHAPE_NOSELINE    =  7,
+    FFL_MODULATE_TYPE_SHAPE_GLASS       =  8,
+    FFL_MODULATE_TYPE_MUSTACHE          =  9,
+    FFL_MODULATE_TYPE_MOUTH             = 10,
+    FFL_MODULATE_TYPE_EYEBROW           = 11,
+    FFL_MODULATE_TYPE_EYE               = 12,
+    FFL_MODULATE_TYPE_MOLE              = 13,
+    FFL_MODULATE_TYPE_FACE_MAKE         = 14,
+    FFL_MODULATE_TYPE_FACE_LINE         = 15,
+    FFL_MODULATE_TYPE_FACE_BEARD        = 16,
+    FFL_MODULATE_TYPE_FILL              = 17,
+
+    FFL_MODULATE_TYPE_SHAPE_MAX         = FFL_MODULATE_TYPE_SHAPE_GLASS + 1
+}
+FFLModulateType;
+
 typedef struct FFLColor FFLColor;
 
 typedef struct FFLModulateParam
 {
-    u32                 _0;
-    u32                 _4;
+    FFLModulateMode     mode;
+    FFLModulateType     type;
     const FFLColor*     pColorR;
     const FFLColor*     pColorG;
     const FFLColor*     pColorB;

@@ -46,7 +46,7 @@ void FFLiInitDrawParamRawMaskParts(FFLiRawMaskPartsDrawParam* pDrawParam, const 
 
     InitPrimitive(&pDrawParam->primitiveParam, pAllocator);
     InitAttributes(&pDrawParam->attributeBufferParam, pDesc->originPos, pAllocator, &mvpMatrix);
-    pDrawParam->modulateType = 3;
+    pDrawParam->cullMode = FFL_CULL_MODE_MAX;
 }
 
 void FFLiInvalidateDrawParamRawMaskParts(FFLiRawMaskPartsDrawParam* pDrawParam)
@@ -59,7 +59,7 @@ void FFLiInitDrawParamRawMaskPartsFill(FFLiRawMaskPartsDrawParam* pDrawParam, FF
 {
     InitPrimitive(&pDrawParam->primitiveParam, pAllocator);
     InitAttributesForFill(&pDrawParam->attributeBufferParam, pAllocator);
-    pDrawParam->modulateType = 3;
+    pDrawParam->cullMode = FFL_CULL_MODE_MAX;
 }
 
 void FFLiDrawRawMaskParts(const FFLiRawMaskPartsDrawParam* pDrawParam, const FFLiShaderCallback* pCallback)

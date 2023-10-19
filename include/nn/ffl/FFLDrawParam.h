@@ -44,11 +44,20 @@ typedef struct FFLPrimitiveParam
 FFLPrimitiveParam;
 NN_STATIC_ASSERT(sizeof(FFLPrimitiveParam) == 0x10);
 
+typedef enum FFLCullMode
+{
+    FFL_CULL_MODE_NONE  = 0,
+    FFL_CULL_MODE_BACK  = 1,
+    FFL_CULL_MODE_FRONT = 2,
+    FFL_CULL_MODE_MAX   = 3
+}
+FFLCullMode;
+
 typedef struct FFLDrawParam
 {
     FFLAttributeBufferParam attributeBufferParam;
     FFLModulateParam        modulateParam;
-    u32                     modulateType;           // TODO: Enum
+    FFLCullMode             cullMode;
     FFLPrimitiveParam       primitiveParam;
 }
 FFLDrawParam;
