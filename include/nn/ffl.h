@@ -31,6 +31,7 @@
 #include <nn/ffl/FFLResourceType.h>
 #include <nn/ffl/FFLResult.h>
 #include <nn/ffl/FFLShaderCallback.h>
+#include <nn/ffl/FFLStandard.h>
 #include <nn/ffl/FFLVec.h>
 
 #endif // NN_FFL_H_
