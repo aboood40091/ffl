@@ -171,7 +171,7 @@ FFLResult FFLiManager::AfterConstruct(const FFLInitDesc* pInitDesc, const FFLRes
     if (!m_SystemContext.AfterConstruct())
         return FFL_RESULT_UNKNOWN_17;
 
-    if (!m_FsClient.Init(pInitDesc->pChangeParams) != FS_STATUS_OK)
+    if (m_FsClient.Init(pInitDesc->pChangeParams) != FS_STATUS_OK)
         return FFL_RESULT_FS_ERROR;
 
     if (m_pCompressor != NULL)
