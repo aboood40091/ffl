@@ -15,7 +15,7 @@ class   FFLiSystemContext;
 class FFLiDatabaseManager
 {
 public:
-    FFLiDatabaseManager(FFLiDatabaseFile* pFile, FFLiFileWriteBuffer* pWriteBuffer, FFLiSystemContext* pContext, FFLiAllocator* pAllocator);
+    FFLiDatabaseManager(FFLiDatabaseFile* pFile, FFLiFileWriteBuffer* pWriteBuffer, FFLiSystemContext* pContext);
     ~FFLiDatabaseManager();
 
     FFLiDatabaseFileAccessor& GetDatabaseFileAccessor()
@@ -44,7 +44,7 @@ private:
     FFLiDatabaseDefault         m_DatabaseDefault;
     FFLiDatabaseRandom          m_DatabaseRandom;
     bool                        m_IsEnabledSpecialMii;
-    FFLiAllocator*              m_pAllocator;
+    void*                       _fd4;   // Deleted
 };
 NN_STATIC_ASSERT(sizeof(FFLiDatabaseManager) == 0xFD8);
 

@@ -37,9 +37,6 @@ public:
         return m_Coordinate;
     }
 
-    u32 GetBufferSize(const FFLCharModelDesc* pDesc) const;
-    u32 GetTempBufferSize(const FFLCharModelDesc* pDesc) const;
-
 private:
     FFLiDatabaseManager*    m_pDatabaseManager;
     FFLiResourceManager*    m_pResourceManager;

@@ -1,7 +1,7 @@
-#include <nn/ffl/detail/FFLiBufferAllocator.h>
 #include <nn/ffl/detail/FFLiCopySurfaceDrawer.h>
 
 #include <gpu/rio_Drawer.h>
+#include <misc/rio_MemUtil.h>
 
 #include <cstring>
 
@@ -13,7 +13,7 @@ FFLiCopySurfaceDrawer::~FFLiCopySurfaceDrawer()
 {
 }
 
-void FFLiCopySurfaceDrawer::SetupCPU(FFLiBufferAllocator* pAllocator)
+void FFLiCopySurfaceDrawer::SetupCPU()
 {
     const u32 POSITION_BUFFER_SIZE = sizeof(FFLVec2) * 4;
     const u32 TEXCOORD_BUFFER_SIZE = sizeof(FFLVec2) * 4;
@@ -34,8 +34,8 @@ void FFLiCopySurfaceDrawer::SetupCPU(FFLiBufferAllocator* pAllocator)
     };
     NN_STATIC_ASSERT(sizeof(TEXCOORD_BUFFER) == TEXCOORD_BUFFER_SIZE);
 
-    m_Position.pBuffer = static_cast<FFLVec2*>(pAllocator->Allocate(POSITION_BUFFER_SIZE, rio::Drawer::cVtxAlignment));
-    m_TexCoord.pBuffer = static_cast<FFLVec2*>(pAllocator->Allocate(TEXCOORD_BUFFER_SIZE, rio::Drawer::cVtxAlignment));
+    m_Position.pBuffer = static_cast<FFLVec2*>(rio::MemUtil::alloc(POSITION_BUFFER_SIZE, rio::Drawer::cVtxAlignment));
+    m_TexCoord.pBuffer = static_cast<FFLVec2*>(rio::MemUtil::alloc(TEXCOORD_BUFFER_SIZE, rio::Drawer::cVtxAlignment));
 
     std::memcpy(m_Position.pBuffer, POSITION_BUFFER, POSITION_BUFFER_SIZE);
     std::memcpy(m_TexCoord.pBuffer, TEXCOORD_BUFFER, TEXCOORD_BUFFER_SIZE);
@@ -67,18 +67,4 @@ void FFLiCopySurfaceDrawer::SetAttributeBuffer()
 void FFLiCopySurfaceDrawer::Draw()
 {
     rio::Drawer::DrawArrays(rio::Drawer::TRIANGLE_STRIP, 4);
-}
-
-u32 FFLiCopySurfaceDrawer::GetBufferSize()
-{
-    const u32 POSITION_BUFFER_SIZE = sizeof(FFLVec2) * 4;
-    const u32 TEXCOORD_BUFFER_SIZE = sizeof(FFLVec2) * 4;
-
-    u32 ret  = rio::Drawer::cVtxAlignment;
-    ret     += POSITION_BUFFER_SIZE;
-
-    ret     += rio::Drawer::cVtxAlignment;
-    ret     += TEXCOORD_BUFFER_SIZE;
-
-    return ret;
 }

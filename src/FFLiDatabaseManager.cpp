@@ -9,11 +9,10 @@
 
 #include <cstring>
 
-FFLiDatabaseManager::FFLiDatabaseManager(FFLiDatabaseFile* pFile, FFLiFileWriteBuffer* pWriteBuffer, FFLiSystemContext* pContext, FFLiAllocator* pAllocator)
+FFLiDatabaseManager::FFLiDatabaseManager(FFLiDatabaseFile* pFile, FFLiFileWriteBuffer* pWriteBuffer, FFLiSystemContext* pContext)
     : m_pSystemContext(pContext)
-    , m_DatabaseFileAccessor(pFile, pWriteBuffer, pAllocator)
+    , m_DatabaseFileAccessor(pFile, pWriteBuffer)
     , m_DatabaseRandom(pContext->RandomContext())
-    , m_pAllocator(pAllocator)
 {
     m_DatabaseFileAccessor.Init();
 }
@@ -195,7 +194,7 @@ FFLResult FFLiDatabaseManager::UpdateMiddleDB(FFLiMiddleDB* pMiddleDB)
     case FFL_MIDDLE_DB_TYPE_HIDDEN_PARAM_RANDOM_UPDATE:
     case FFL_MIDDLE_DB_TYPE_HIDDEN_PARAM_TIME_UPDATE_REVERSE:
     case FFL_MIDDLE_DB_TYPE_HIDDEN_PARAM_TIME_UPDATE:
-        return m_DatabaseFileAccessor.GetDatabaseFile()->hidden.UpdateMiddleDB(pMiddleDB, m_pAllocator);
+        return m_DatabaseFileAccessor.GetDatabaseFile()->hidden.UpdateMiddleDB(pMiddleDB);
     case FFL_MIDDLE_DB_TYPE_RANDOM_PARAM:
         return m_DatabaseRandom.UpdateMiddleDB(pMiddleDB);
     default:

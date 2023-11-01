@@ -76,7 +76,7 @@ s32 FFLiCharInfoAndTypeToMouthIndex(const FFLiCharInfo* pCharInfo, FFLiMouthText
     }
 }
 
-FFLResult FFLiLoadPartsTextures(FFLiPartsTextures* pPartsTextures, const FFLiCharInfo* pCharInfo, u32 expressionFlag, FFLiResourceLoader* pResLoader, FFLiBufferAllocator* pAllocator)
+FFLResult FFLiLoadPartsTextures(FFLiPartsTextures* pPartsTextures, const FFLiCharInfo* pCharInfo, u32 expressionFlag, FFLiResourceLoader* pResLoader)
 {
     std::memset(pPartsTextures, 0, sizeof(FFLiPartsTextures));
 
@@ -89,7 +89,7 @@ FFLResult FFLiLoadPartsTextures(FFLiPartsTextures* pPartsTextures, const FFLiCha
         {
             if (useFlag[i])
             {
-                FFLResult result = FFLiLoadTextureWithAllocate(&(pPartsTextures->pTexturesEye[i]), FFLI_TEXTURE_PARTS_TYPE_EYE, FFLiCharInfoAndTypeToEyeIndex(pCharInfo, FFLiEyeTextureType(i)), pResLoader, pAllocator);
+                FFLResult result = FFLiLoadTextureWithAllocate(&(pPartsTextures->pTexturesEye[i]), FFLI_TEXTURE_PARTS_TYPE_EYE, FFLiCharInfoAndTypeToEyeIndex(pCharInfo, FFLiEyeTextureType(i)), pResLoader);
                 if (result != FFL_RESULT_OK)
                     return result;
             }
@@ -103,22 +103,22 @@ FFLResult FFLiLoadPartsTextures(FFLiPartsTextures* pPartsTextures, const FFLiCha
         {
             if (useFlag[i])
             {
-                FFLResult result = FFLiLoadTextureWithAllocate(&(pPartsTextures->pTexturesMouth[i]), FFLI_TEXTURE_PARTS_TYPE_MOUTH, FFLiCharInfoAndTypeToMouthIndex(pCharInfo, FFLiMouthTextureType(i)), pResLoader, pAllocator);
+                FFLResult result = FFLiLoadTextureWithAllocate(&(pPartsTextures->pTexturesMouth[i]), FFLI_TEXTURE_PARTS_TYPE_MOUTH, FFLiCharInfoAndTypeToMouthIndex(pCharInfo, FFLiMouthTextureType(i)), pResLoader);
                 if (result != FFL_RESULT_OK)
                     return result;
             }
         }
     }
 
-    FFLResult result = FFLiLoadTextureWithAllocate(&pPartsTextures->pTextureEyebrow, FFLI_TEXTURE_PARTS_TYPE_EYEBROW, pCharInfo->parts.eyebrowType, pResLoader, pAllocator);
+    FFLResult result = FFLiLoadTextureWithAllocate(&pPartsTextures->pTextureEyebrow, FFLI_TEXTURE_PARTS_TYPE_EYEBROW, pCharInfo->parts.eyebrowType, pResLoader);
     if (result != FFL_RESULT_OK)
         return result;
 
-    result = FFLiLoadTextureWithAllocate(&pPartsTextures->pTextureMustache, FFLI_TEXTURE_PARTS_TYPE_MUSTACHE, pCharInfo->parts.mustacheType, pResLoader, pAllocator);
+    result = FFLiLoadTextureWithAllocate(&pPartsTextures->pTextureMustache, FFLI_TEXTURE_PARTS_TYPE_MUSTACHE, pCharInfo->parts.mustacheType, pResLoader);
     if (result != FFL_RESULT_OK)
         return result;
 
-    result = FFLiLoadTextureWithAllocate(&pPartsTextures->pTextureMole, FFLI_TEXTURE_PARTS_TYPE_MOLE, pCharInfo->parts.moleType, pResLoader, pAllocator);
+    result = FFLiLoadTextureWithAllocate(&pPartsTextures->pTextureMole, FFLI_TEXTURE_PARTS_TYPE_MOLE, pCharInfo->parts.moleType, pResLoader);
     if (result != FFL_RESULT_OK)
         return result;
 

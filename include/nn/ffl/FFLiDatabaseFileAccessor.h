@@ -3,14 +3,13 @@
 
 #include <nn/ffl/types.h>
 
-class FFLiAllocator;
 class FFLiDatabaseFile;
 class FFLiFileWriteBuffer;
 
 class FFLiDatabaseFileAccessor
 {
 public:
-    FFLiDatabaseFileAccessor(FFLiDatabaseFile* pFile, FFLiFileWriteBuffer* pWriteBuffer, FFLiAllocator* pAllocator);
+    FFLiDatabaseFileAccessor(FFLiDatabaseFile* pFile, FFLiFileWriteBuffer* pWriteBuffer);
     ~FFLiDatabaseFileAccessor();
 
     FFLiDatabaseFile* GetDatabaseFile() const
@@ -44,7 +43,7 @@ private:
     u32                     _4[0xA84 / sizeof(u32)];    // Deleted
     FFLiDatabaseFile*       m_pDatabaseFile;
     FFLiFileWriteBuffer*    m_pFileWriteBuffer;
-    FFLiAllocator*          m_pAllocator;
+    void*                   _a90;                       // Deleted
     u32                     _a94;               // Unused?
     char                    m_PathOfficial[FFL_PATH_MAX_LEN];
     char                    m_PathBackup[FFL_PATH_MAX_LEN];

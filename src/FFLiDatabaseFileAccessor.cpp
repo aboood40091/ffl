@@ -5,7 +5,6 @@
 #include <nn/ffl/FFLiPath.h>
 #include <nn/ffl/FFLiUtil.h>
 
-#include <nn/ffl/detail/FFLiAllocator.h>
 #include <nn/ffl/detail/FFLiFileWriteBuffer.h>
 
 #include <filedevice/rio_FileDeviceMgr.h>
@@ -53,14 +52,13 @@ FFLiFsResult SaveDatabaseHidden(const FFLiDatabaseFileHidden& hidden, FFLiFileWr
 FFLiFsResult LoadDatabaseOfficial(FFLiDatabaseFileOfficial* pOfficial, const char* pPath);
 FFLiFsResult SaveDatabaseOfficial(const FFLiDatabaseFileOfficial& official, FFLiFileWriteBuffer* pWriteBuffer, const char* pPath);
 
-FFLiFsResult CopyDatabaseOfficial(const char* pPathTo, const char* pPathFrom, FFLiFileWriteBuffer* pWriteBuffer, FFLiAllocator* pAllocator);
+FFLiFsResult CopyDatabaseOfficial(const char* pPathTo, const char* pPathFrom, FFLiFileWriteBuffer* pWriteBuffer);
 
 }
 
-FFLiDatabaseFileAccessor::FFLiDatabaseFileAccessor(FFLiDatabaseFile* pFile, FFLiFileWriteBuffer* pWriteBuffer, FFLiAllocator* pAllocator)
+FFLiDatabaseFileAccessor::FFLiDatabaseFileAccessor(FFLiDatabaseFile* pFile, FFLiFileWriteBuffer* pWriteBuffer)
     : m_pDatabaseFile(pFile)
     , m_pFileWriteBuffer(pWriteBuffer)
-    , m_pAllocator(pAllocator)
     , _a94(0)
     , m_IsPathSet(false)
     , m_IsBackupOfficialNeed(false)
@@ -200,13 +198,13 @@ FFLResult FFLiDatabaseFileAccessor::BootLoadImpl()
 
 FFLResult FFLiDatabaseFileAccessor::AdjustRegularListOfficial()
 {
-    FFLiDatabaseFileOfficial::AdjustRegularBuffer* pBuffer = static_cast<FFLiDatabaseFileOfficial::AdjustRegularBuffer*>(m_pAllocator->Allocate(sizeof(FFLiDatabaseFileOfficial::AdjustRegularBuffer)));
+    FFLiDatabaseFileOfficial::AdjustRegularBuffer* pBuffer = new FFLiDatabaseFileOfficial::AdjustRegularBuffer;
     if (pBuffer == NULL)
         return FFL_RESULT_OUT_OF_MEMORY;
 
     m_pDatabaseFile->official.AdjustRegularList(pBuffer);
 
-    m_pAllocator->Free(pBuffer);
+    delete pBuffer;
     return FFL_RESULT_OK;
 }
 
@@ -256,7 +254,7 @@ FFLResult FFLiDatabaseFileAccessor::BackupOfficial()
     const char* pPathFrom   = GetPathOfficial();
     const char* pPathTo     = GetPathBackup();
 
-    FFLiFsResult result = CopyDatabaseOfficial(pPathTo, pPathFrom, m_pFileWriteBuffer, m_pAllocator);
+    FFLiFsResult result = CopyDatabaseOfficial(pPathTo, pPathFrom, m_pFileWriteBuffer);
     if (!CheckFFLiFsResult(result))
         return ConvertFFLiFsResultToFFLResult(result, FFL_RESULT_FILE_SAVE_ERROR);
 
@@ -492,9 +490,9 @@ FFLiFsResult SaveDatabaseOfficial(const FFLiDatabaseFileOfficial& official, FFLi
     return WriteFile(&official, sizeof(FFLiDatabaseFileOfficial), pWriteBuffer, pPath);
 }
 
-FFLiFsResult CopyDatabaseOfficial(const char* pPathTo, const char* pPathFrom, FFLiFileWriteBuffer* pWriteBuffer, FFLiAllocator* pAllocator)
+FFLiFsResult CopyDatabaseOfficial(const char* pPathTo, const char* pPathFrom, FFLiFileWriteBuffer* pWriteBuffer)
 {
-    FFLiDatabaseFileOfficial* pOfficial = static_cast<FFLiDatabaseFileOfficial*>(pAllocator->Allocate(sizeof(FFLiDatabaseFileOfficial), rio::FileDevice::cBufferMinAlignment));
+    FFLiDatabaseFileOfficial* pOfficial = static_cast<FFLiDatabaseFileOfficial*>(rio::MemUtil::alloc(sizeof(FFLiDatabaseFileOfficial), rio::FileDevice::cBufferMinAlignment));
     if (pOfficial == NULL)
     {
         FFLiFsResult result = { FFLI_FS_FILE_RESULT_OUT_OF_MEMORY };
@@ -507,7 +505,7 @@ FFLiFsResult CopyDatabaseOfficial(const char* pPathTo, const char* pPathFrom, FF
     if (CheckFFLiFsResult(result))
         result = SaveDatabaseOfficial(*pOfficial, pWriteBuffer, pPathTo);
 
-    pAllocator->Free(pOfficial);
+    rio::MemUtil::free(pOfficial);
     return result;
 }
 

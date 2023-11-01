@@ -27,14 +27,11 @@ struct FFLiRawMaskPartsDesc
 };
 NN_STATIC_ASSERT(sizeof(FFLiRawMaskPartsDesc) == 0x18);
 
-u32 FFLiGetBufferRawMaskParts();
-
-class FFLiBufferAllocator;
 class FFLiShaderCallback;
 
-void FFLiInitDrawParamRawMaskParts(FFLiRawMaskPartsDrawParam* pDrawParam, const FFLiRawMaskPartsDesc* pDesc, const rio::BaseMtx44f* pProjMatrix, FFLiBufferAllocator* pAllocator);
+void FFLiInitDrawParamRawMaskParts(FFLiRawMaskPartsDrawParam* pDrawParam, const FFLiRawMaskPartsDesc* pDesc, const rio::BaseMtx44f* pProjMatrix);
 void FFLiInvalidateDrawParamRawMaskParts(FFLiRawMaskPartsDrawParam* pDrawParam);
-void FFLiInitDrawParamRawMaskPartsFill(FFLiRawMaskPartsDrawParam* pDrawParam, FFLiBufferAllocator* pAllocator);
+void FFLiInitDrawParamRawMaskPartsFill(FFLiRawMaskPartsDrawParam* pDrawParam);
 void FFLiDrawRawMaskParts(const FFLiRawMaskPartsDrawParam* pDrawParam, const FFLiShaderCallback* pCallback);
 
 #endif // FFLI_RAW_MASK_PARTS_H_

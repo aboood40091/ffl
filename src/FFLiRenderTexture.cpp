@@ -7,12 +7,11 @@
 #include <nn/ffl/FFLiTexture.h>
 #include <nn/ffl/FFLiUtil.h>
 
-#include <nn/ffl/detail/FFLiBufferAllocator.h>
-
 #include <detail/aglTextureDataUtil.h>
 #include <gpu/rio_RenderState.h>
 
 #if RIO_IS_CAFE
+#include <misc/rio_MemUtil.h>
 #include <cafe/gx2.h>
 #endif // RIO_IS_CAFE
 
@@ -33,7 +32,7 @@ u32 FFLiGetBufferRenderTexture(u32 width, u32 height, rio::TextureFormat format,
 #endif // RIO_IS_CAFE
 }
 
-void FFLiInitRenderTexture(FFLiRenderTexture* pRenderTexture, u32 width, u32 height, rio::TextureFormat format, u32 numMips, FFLiBufferAllocator* pAllocator)
+void FFLiInitRenderTexture(FFLiRenderTexture* pRenderTexture, u32 width, u32 height, rio::TextureFormat format, u32 numMips)
 {
   //std::memset(pRenderTexture, 0, sizeof(FFLiRenderTexture));
     pRenderTexture->textureData = agl::TextureData();
@@ -48,10 +47,10 @@ void FFLiInitRenderTexture(FFLiRenderTexture* pRenderTexture, u32 width, u32 hei
 
 #if RIO_IS_CAFE
 
-    pRenderTexture->textureData.setImagePtr(FFLiAllocateBufferAllocator(pAllocator, pRenderTexture->textureData.getImageByteSize(), pRenderTexture->textureData.getAlignment()));
+    pRenderTexture->textureData.setImagePtr(rio::MemUtil::alloc(pRenderTexture->textureData.getImageByteSize(), pRenderTexture->textureData.getAlignment()));
 
     if (pRenderTexture->textureData.getMipLevelNum() > 1)
-        pRenderTexture->textureData.setMipPtr(FFLiAllocateBufferAllocator(pAllocator, pRenderTexture->textureData.getMipByteSize(), pRenderTexture->textureData.getAlignment()));
+        pRenderTexture->textureData.setMipPtr(rio::MemUtil::alloc(pRenderTexture->textureData.getMipByteSize(), pRenderTexture->textureData.getAlignment()));
     else
         pRenderTexture->textureData.setMipPtr(nullptr);
 

@@ -4,7 +4,6 @@
 #include <nn/ffl/FFLiManager.h>
 #include <nn/ffl/FFLiResourceHeader.h>
 
-#include <nn/ffl/detail/FFLiBufferAllocator.h>
 #include <nn/ffl/detail/FFLiFileWriteBuffer.h>
 
 #include <filedevice/rio_FileDevice.h>
@@ -26,28 +25,19 @@ namespace {
 
 FFLiManager* g_FFLManager = NULL;
 
-FFLResult InitResImpl(void* pBuffer, const FFLInitDesc* pInitDesc, const FFLResourceDesc* pResDesc);
-
-u32 TempMemorySize(bool);
-
-FFLiFileWriteBuffer* CreateFileWriteBuffer(FFLiBufferAllocator* pAllocator);
+FFLResult InitResImpl(const FFLInitDesc* pInitDesc, const FFLResourceDesc* pResDesc);
 
 }
 
-FFLResult FFLiInitResEx(void* pBuffer, const FFLInitDesc* pInitDesc, const FFLResourceDesc* pResDesc)
+FFLResult FFLiInitResEx(const FFLInitDesc* pInitDesc, const FFLResourceDesc* pResDesc)
 {
-    return InitResImpl(pBuffer, pInitDesc, pResDesc);
+    return InitResImpl(pInitDesc, pResDesc);
 }
 
 void FFLiInitResGPUStep()
 {
     if (FFLiManager::IsConstruct())
         FFLiManager::GetInstance()->SetupGPU();
-}
-
-u32 FFLiGetWorkSize(const FFLInitDesc* pInitDesc)
-{
-    return FFLiManager::GetBufferSize(pInitDesc);
 }
 
 FFLResult FFLiFlushQuota(bool force)
@@ -68,7 +58,7 @@ bool FFLiIsAvailable()
     return FFLiManager::IsConstruct();
 }
 
-FFLResult FFLiManager::Create(void* pBuffer, const FFLInitDesc* pInitDesc, const FFLResourceDesc* pResDesc)
+FFLResult FFLiManager::Create(const FFLInitDesc* pInitDesc, const FFLResourceDesc* pResDesc)
 {
     if (IsConstruct())
         return FFL_RESULT_OK;
@@ -76,10 +66,7 @@ FFLResult FFLiManager::Create(void* pBuffer, const FFLInitDesc* pInitDesc, const
     if (pInitDesc == NULL)
         return FFL_RESULT_ERROR;
 
-    FFLiBufferAllocator allocator;
-    allocator.Init(pBuffer, GetBufferSize(pInitDesc));
-
-    g_FFLManager = new (allocator.Allocate(sizeof(FFLiManager), 4)) FFLiManager(pInitDesc, &allocator);
+    g_FFLManager = new FFLiManager(pInitDesc);
 
     FFLResult result = g_FFLManager->AfterConstruct(pInitDesc, pResDesc);
     if (result != FFL_RESULT_OK && result != FFL_RESULT_ODB_EMPTY)
@@ -97,7 +84,7 @@ FFLResult FFLiManager::Destroy()
 
     FFLResult result = pManager->BeforeDestruct();
 
-    pManager->~FFLiManager();
+    delete pManager;
     g_FFLManager = NULL;
 
     return result;
@@ -113,39 +100,36 @@ FFLiManager* FFLiManager::GetInstance()
     return g_FFLManager;
 }
 
-u32 FFLiManager::GetBufferSize(const FFLInitDesc* pInitDesc)
-{
-    if (pInitDesc == NULL)
-        return 0;
-
-    u32 ret  = 11400; // ???
-    ret     += sizeof(FFLiResourceMultiHeader);
-    ret     += sizeof(FFLiDatabaseFile);
-    ret     += sizeof(FFLiFileWriteBuffer);
-    ret     += FFLiCopySurface::GetBufferSize();
-    ret     += TempMemorySize(pInitDesc->_10);
-
-    return ret;
-}
-
-FFLiManager::FFLiManager(const FFLInitDesc* pInitDesc, FFLiBufferAllocator* pAllocator)
-    : m_pResourceMultiHeader(static_cast<FFLiResourceMultiHeader*>(pAllocator->Allocate(sizeof(FFLiResourceMultiHeader), rio::FileDevice::cBufferMinAlignment)))
-    , m_pDatabaseFile(static_cast<FFLiDatabaseFile*>(pAllocator->Allocate(sizeof(FFLiDatabaseFile), rio::FileDevice::cBufferMinAlignment)))
-    , m_pFileWriteBuffer(CreateFileWriteBuffer(pAllocator))
+FFLiManager::FFLiManager(const FFLInitDesc* pInitDesc)
+    : m_pResourceMultiHeader(static_cast<FFLiResourceMultiHeader*>(rio::MemUtil::alloc(sizeof(FFLiResourceMultiHeader), rio::FileDevice::cBufferMinAlignment)))
+    , m_pDatabaseFile(static_cast<FFLiDatabaseFile*>(rio::MemUtil::alloc(sizeof(FFLiDatabaseFile), rio::FileDevice::cBufferMinAlignment)))
+    , m_pFileWriteBuffer(static_cast<FFLiFileWriteBuffer*>(rio::MemUtil::alloc(sizeof(FFLiFileWriteBuffer), rio::FileDevice::cBufferMinAlignment)))
     , m_ResourceManager(m_pResourceMultiHeader)
-    , m_DatabaseManager(m_pDatabaseFile, m_pFileWriteBuffer, &m_SystemContext, &m_Allocator)
+    , m_DatabaseManager(m_pDatabaseFile, m_pFileWriteBuffer, &m_SystemContext)
     , m_CharModelCreateParam(&m_DatabaseManager, &m_ResourceManager, &m_ShaderCallback)
     , m_InitDesc(*pInitDesc)
-    , m_CopySurface(pAllocator)
+    , m_CopySurface()
     , m_IsSetupGPU(false)
-    , _29ad(0)
 {
-    u32 allocatorSize = pAllocator->GetRestSize();
-    m_Allocator.Init(pAllocator->Allocate(allocatorSize, 1), allocatorSize);
 }
 
 FFLiManager::~FFLiManager()
 {
+    if (m_pResourceMultiHeader != nullptr)
+    {
+        rio::MemUtil::free(m_pResourceMultiHeader);
+        m_pResourceMultiHeader = nullptr;
+    }
+    if (m_pDatabaseFile != nullptr)
+    {
+        rio::MemUtil::free(m_pDatabaseFile);
+        m_pDatabaseFile = nullptr;
+    }
+    if (m_pFileWriteBuffer != nullptr)
+    {
+        rio::MemUtil::free(m_pFileWriteBuffer);
+        m_pFileWriteBuffer = nullptr;
+    }
 }
 
 FFLResult FFLiManager::AfterConstruct(const FFLInitDesc* pInitDesc, const FFLResourceDesc* pResDesc)
@@ -206,26 +190,12 @@ FFLResult FFLiManager::FlushQuota(bool force)
 
 namespace {
 
-FFLResult InitResImpl(void* pBuffer, const FFLInitDesc* pInitDesc, const FFLResourceDesc* pResDesc)
+FFLResult InitResImpl(const FFLInitDesc* pInitDesc, const FFLResourceDesc* pResDesc)
 {
     if (FFLiManager::IsConstruct())
         return FFL_RESULT_OK;
 
-    return FFLiManager::Create(pBuffer, pInitDesc, pResDesc);
-}
-
-u32 TempMemorySize(bool b)
-{
-    // ???
-    return b ? 0x0A0000 : 0x520000;
-}
-
-FFLiFileWriteBuffer* CreateFileWriteBuffer(FFLiBufferAllocator* pAllocator)
-{
-    if (!pAllocator->CanAllocate(sizeof(FFLiFileWriteBuffer), rio::FileDevice::cBufferMinAlignment))
-        return NULL;
-
-    return static_cast<FFLiFileWriteBuffer*>(pAllocator->Allocate(sizeof(FFLiFileWriteBuffer), rio::FileDevice::cBufferMinAlignment));
+    return FFLiManager::Create(pInitDesc, pResDesc);
 }
 
 }

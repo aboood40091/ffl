@@ -26,13 +26,10 @@ struct FFLiRawMaskTextureDesc
 };
 NN_STATIC_ASSERT(sizeof(FFLiRawMaskTextureDesc) == 0x20);
 
-u32 FFLiGetBufferRawMask();
-
-class   FFLiBufferAllocator;
 struct  FFLiCharInfo;
 class   FFLiShaderCallback;
 
-void FFLiInitDrawParamRawMask(FFLiRawMaskDrawParam* pDrawParam, const FFLiCharInfo* pCharInfo, s32 resolution, s32 leftEyeIndex, s32 rightEyeIndex, const FFLiRawMaskTextureDesc* pDesc, FFLiBufferAllocator* pAllocator);
+void FFLiInitDrawParamRawMask(FFLiRawMaskDrawParam* pDrawParam, const FFLiCharInfo* pCharInfo, s32 resolution, s32 leftEyeIndex, s32 rightEyeIndex, const FFLiRawMaskTextureDesc* pDesc);
 void FFLiInvalidateRawMask(FFLiRawMaskDrawParam* pDrawParam);
 void FFLiDrawRawMask(const FFLiRawMaskDrawParam* pDrawParam, const FFLiShaderCallback* pCallback);
 

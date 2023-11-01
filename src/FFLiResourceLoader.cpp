@@ -5,8 +5,6 @@
 #include <nn/ffl/FFLiUtil.h>
 #include <nn/ffl/FFLiZlibInflator.h>
 
-#include <nn/ffl/detail/FFLiBufferAllocatorForZlib.h>
-
 #include <filedevice/rio_FileDeviceMgr.h>
 
 #include <cstring>
@@ -217,8 +215,7 @@ namespace {
 
 bool Uncompress(void* pDst, const void* pSrc, FFLiResourceUncompressBuffer* pBuffer, const FFLiResourcePartsInfo& partsInfo)
 {
-    FFLiBufferAllocatorForZlib allocator(pBuffer->TempBuffer(), pBuffer->TempBufferSize());
-    FFLiZlibInflator inflator(allocator, FFLiResourceWindowBitsToZlibWindowBits(FFLiResourceWindowBits(partsInfo.windowBits)));
+    FFLiZlibInflator inflator(FFLiResourceWindowBitsToZlibWindowBits(FFLiResourceWindowBits(partsInfo.windowBits)));
 
     void* dst = pDst;
     u32 dstSize = partsInfo.dataSize;

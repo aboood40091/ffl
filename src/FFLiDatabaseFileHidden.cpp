@@ -3,7 +3,6 @@
 #include <nn/ffl/FFLiDateTime.h>
 #include <nn/ffl/FFLiMiddleDB.h>
 
-#include <nn/ffl/detail/FFLiAllocator.h>
 #include <nn/ffl/detail/FFLiCrc.h>
 
 #include <algorithm>
@@ -74,16 +73,16 @@ void ShuffleIndices(u16* pIndices, u16 num)
 
 }
 
-FFLResult FFLiDatabaseFileHidden::UpdateMiddleDBRandom(FFLiMiddleDB* pMiddleDB, FFLiAllocator* pAllocator) const
+FFLResult FFLiDatabaseFileHidden::UpdateMiddleDBRandom(FFLiMiddleDB* pMiddleDB) const
 {
-    u16* pIndices = static_cast<u16*>(pAllocator->Allocate(sizeof(u16) * GetMiiDataNum()));
+    u16* pIndices = new u16[GetMiiDataNum()];
     if (pIndices == NULL)
         return FFL_RESULT_OUT_OF_MEMORY;
 
     u16 num = NumOfGenderWithIndex(pIndices, pMiddleDB->HiddenParam().Gender());
     if (num == 0)
     {
-        pAllocator->Free(pIndices);
+        delete[] pIndices;
         return FFL_RESULT_HDB_EMPTY;
     }
 
@@ -93,7 +92,7 @@ FFLResult FFLiDatabaseFileHidden::UpdateMiddleDBRandom(FFLiMiddleDB* pMiddleDB, 
         for (u16 i = 0; i < num; i++)
             pMiddleDB->Add(GetImpl(pIndices[i]));
 
-    pAllocator->Free(pIndices);
+    delete[] pIndices;
     return FFL_RESULT_OK;
 }
 
@@ -207,7 +206,7 @@ bool FFLiDatabaseFileHidden::IsValid() const
     return IsValidIdentifier() && IsValidCrc();
 }
 
-FFLResult FFLiDatabaseFileHidden::UpdateMiddleDB(FFLiMiddleDB* pMiddleDB, FFLiAllocator* pAllocator) const
+FFLResult FFLiDatabaseFileHidden::UpdateMiddleDB(FFLiMiddleDB* pMiddleDB) const
 {
     FFLResult result;
 
@@ -217,7 +216,7 @@ FFLResult FFLiDatabaseFileHidden::UpdateMiddleDB(FFLiMiddleDB* pMiddleDB, FFLiAl
         result = FFL_RESULT_ERROR;
         break;
     case FFL_MIDDLE_DB_TYPE_HIDDEN_PARAM_RANDOM_UPDATE:
-        result = UpdateMiddleDBRandom(pMiddleDB, pAllocator);
+        result = UpdateMiddleDBRandom(pMiddleDB);
         break;
     case FFL_MIDDLE_DB_TYPE_HIDDEN_PARAM_TIME_UPDATE_REVERSE:
         result = UpdateMiddleDBTime(pMiddleDB, true);

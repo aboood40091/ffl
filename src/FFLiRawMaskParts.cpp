@@ -2,10 +2,10 @@
 #include <nn/ffl/FFLiShaderCallback.h>
 #include <nn/ffl/FFLiUtil.h>
 
-#include <nn/ffl/detail/FFLiBufferAllocator.h>
 #include <nn/ffl/detail/FFLiBug.h>
 
 #include <math/rio_Matrix.h>
+#include <misc/rio_MemUtil.h>
 
 #if RIO_IS_CAFE
 #include <cafe/gx2.h>
@@ -17,30 +17,17 @@ namespace {
 
 void CalcMVMatrix(rio::Matrix34f* pMVMatrix, const FFLiRawMaskPartsDesc* pDesc);
 
-void InitPrimitive(FFLPrimitiveParam* pPrimitive, FFLiBufferAllocator* pAllocator);
-void InitAttributes(FFLAttributeBufferParam* pAttributes, FFLiOriginPosition originPosition, FFLiBufferAllocator* pAllocator, const rio::BaseMtx44f* pMVPMatrix);
+void InitPrimitive(FFLPrimitiveParam* pPrimitive);
+void InitAttributes(FFLAttributeBufferParam* pAttributes, FFLiOriginPosition originPosition, const rio::BaseMtx44f* pMVPMatrix);
 
 void InvalidatePrimitive(FFLPrimitiveParam* pPrimitive);
 void InvalidateAttributes(FFLAttributeBufferParam* pAttributes);
 
-void InitAttributesForFill(FFLAttributeBufferParam* pAttributes, FFLiBufferAllocator* pAllocator);
+void InitAttributesForFill(FFLAttributeBufferParam* pAttributes);
 
 }
 
-u32 FFLiGetBufferRawMaskParts()
-{
-    const u32 INDEX_BUFFER_SIZE = sizeof(u16) * 4;
-    const u32 POSITION_BUFFER_SIZE = sizeof(FFLVec4) * 4;
-    const u32 TEXCOORD_BUFFER_SIZE = sizeof(FFLVec2) * 4;
-
-    u32 ret  = rio::Drawer::cVtxAlignment; // max(rio::Drawer::cIdxAlignment, rio::Drawer::cVtxAlignment)
-    ret     += FFLiRoundUp(FFLiBugCanVgtFixedIndexSize(FFLiBugCanSwapSize(INDEX_BUFFER_SIZE)), rio::Drawer::cIdxAlignment);
-    ret     += FFLiRoundUp(FFLiBugCanSwapSize(POSITION_BUFFER_SIZE), rio::Drawer::cVtxAlignment);
-    ret     += FFLiRoundUp(FFLiBugCanSwapSize(TEXCOORD_BUFFER_SIZE), rio::Drawer::cVtxAlignment);
-    return ret;
-}
-
-void FFLiInitDrawParamRawMaskParts(FFLiRawMaskPartsDrawParam* pDrawParam, const FFLiRawMaskPartsDesc* pDesc, const rio::BaseMtx44f* pProjMatrix, FFLiBufferAllocator* pAllocator)
+void FFLiInitDrawParamRawMaskParts(FFLiRawMaskPartsDrawParam* pDrawParam, const FFLiRawMaskPartsDesc* pDesc, const rio::BaseMtx44f* pProjMatrix)
 {
     rio::Matrix44f mvpMatrix;
     rio::Matrix34f mvMatrix;
@@ -49,8 +36,8 @@ void FFLiInitDrawParamRawMaskParts(FFLiRawMaskPartsDrawParam* pDrawParam, const 
     mvpMatrix.fromMatrix34(mvMatrix);
     mvpMatrix.setMul(static_cast<const rio::Matrix44f&>(*pProjMatrix), mvpMatrix);
 
-    InitPrimitive(&pDrawParam->primitiveParam, pAllocator);
-    InitAttributes(&pDrawParam->attributeBufferParam, pDesc->originPos, pAllocator, &mvpMatrix);
+    InitPrimitive(&pDrawParam->primitiveParam);
+    InitAttributes(&pDrawParam->attributeBufferParam, pDesc->originPos, &mvpMatrix);
     pDrawParam->cullMode = FFL_CULL_MODE_MAX;
 }
 
@@ -60,10 +47,10 @@ void FFLiInvalidateDrawParamRawMaskParts(FFLiRawMaskPartsDrawParam* pDrawParam)
     InvalidateAttributes(&pDrawParam->attributeBufferParam);
 }
 
-void FFLiInitDrawParamRawMaskPartsFill(FFLiRawMaskPartsDrawParam* pDrawParam, FFLiBufferAllocator* pAllocator)
+void FFLiInitDrawParamRawMaskPartsFill(FFLiRawMaskPartsDrawParam* pDrawParam)
 {
-    InitPrimitive(&pDrawParam->primitiveParam, pAllocator);
-    InitAttributesForFill(&pDrawParam->attributeBufferParam, pAllocator);
+    InitPrimitive(&pDrawParam->primitiveParam);
+    InitAttributesForFill(&pDrawParam->attributeBufferParam);
     pDrawParam->cullMode = FFL_CULL_MODE_MAX;
 }
 
@@ -83,9 +70,9 @@ void CalcMVMatrix(rio::Matrix34f* pMVMatrix, const FFLiRawMaskPartsDesc* pDesc)
     );
 }
 
-void* Allocate(FFLiBufferAllocator* pAllocator, u32 size, u32 alignment)
+void* Allocate(u32 size, u32 alignment)
 {
-    return FFLiAllocateBufferAllocator(pAllocator, size, alignment);
+    return rio::MemUtil::alloc(size, alignment);
 }
 
 void EndianSwap(void* ptr, u32 size)
@@ -93,7 +80,7 @@ void EndianSwap(void* ptr, u32 size)
     FFLiBugEndianSwap(ptr, size);
 }
 
-void InitPrimitive(FFLPrimitiveParam* pPrimitive, FFLiBufferAllocator* pAllocator)
+void InitPrimitive(FFLPrimitiveParam* pPrimitive)
 {
     const u32 INDEX_BUFFER_SIZE = sizeof(u16) * 4;
 
@@ -102,7 +89,7 @@ void InitPrimitive(FFLPrimitiveParam* pPrimitive, FFLiBufferAllocator* pAllocato
 
     pPrimitive->primitiveType = rio::Drawer::TRIANGLE_STRIP;
     pPrimitive->indexCount = 4;
-    pPrimitive->pIndexBuffer = FFLiBugVgtFixedIndexPtr(Allocate(pAllocator, FFLiBugCanVgtFixedIndexSize(FFLiBugCanSwapSize(INDEX_BUFFER_SIZE)), rio::Drawer::cIdxAlignment));
+    pPrimitive->pIndexBuffer = FFLiBugVgtFixedIndexPtr(Allocate(FFLiBugCanVgtFixedIndexSize(FFLiBugCanSwapSize(INDEX_BUFFER_SIZE)), rio::Drawer::cIdxAlignment));
 
     std::memcpy(pPrimitive->pIndexBuffer, INDEX_BUFFER, INDEX_BUFFER_SIZE);
     EndianSwap(pPrimitive->pIndexBuffer, INDEX_BUFFER_SIZE);
@@ -162,7 +149,7 @@ void CalcAttribute(FFLVec4* pPosBuf, FFLVec2* pTexBuf, FFLiOriginPosition origin
     }
 }
 
-void InitAttributes(FFLAttributeBufferParam* pAttributes, FFLiOriginPosition originPosition, FFLiBufferAllocator* pAllocator, const rio::BaseMtx44f* pMVPMatrix)
+void InitAttributes(FFLAttributeBufferParam* pAttributes, FFLiOriginPosition originPosition, const rio::BaseMtx44f* pMVPMatrix)
 {
     const u32 POSITION_BUFFER_SIZE = sizeof(FFLVec4) * 4;
     const u32 TEXCOORD_BUFFER_SIZE = sizeof(FFLVec2) * 4;
@@ -177,8 +164,8 @@ void InitAttributes(FFLAttributeBufferParam* pAttributes, FFLiOriginPosition ori
 
     std::memcpy(pAttributes, &ATTRIBUTES, sizeof(FFLAttributeBufferParam));
 
-    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_POSITION].ptr = Allocate(pAllocator, FFLiBugCanSwapSize(POSITION_BUFFER_SIZE), rio::Drawer::cVtxAlignment);
-    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_TEXCOORD].ptr = Allocate(pAllocator, FFLiBugCanSwapSize(TEXCOORD_BUFFER_SIZE), rio::Drawer::cVtxAlignment);
+    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_POSITION].ptr = Allocate(FFLiBugCanSwapSize(POSITION_BUFFER_SIZE), rio::Drawer::cVtxAlignment);
+    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_TEXCOORD].ptr = Allocate(FFLiBugCanSwapSize(TEXCOORD_BUFFER_SIZE), rio::Drawer::cVtxAlignment);
 
     CalcAttribute(
         static_cast<FFLVec4*>(pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_POSITION].ptr),
@@ -218,7 +205,7 @@ void InvalidateAttributes(FFLAttributeBufferParam* pAttributes)
 #endif // RIO_IS_CAFE
 }
 
-void InitAttributesForFill(FFLAttributeBufferParam* pAttributes, FFLiBufferAllocator* pAllocator)
+void InitAttributesForFill(FFLAttributeBufferParam* pAttributes)
 {
     const u32 POSITION_BUFFER_SIZE = sizeof(FFLVec4) * 4;
 
@@ -240,7 +227,7 @@ void InitAttributesForFill(FFLAttributeBufferParam* pAttributes, FFLiBufferAlloc
 
     std::memcpy(pAttributes, &ATTRIBUTES, sizeof(FFLAttributeBufferParam));
 
-    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_POSITION].ptr = Allocate(pAllocator, FFLiBugCanSwapSize(POSITION_BUFFER_SIZE), rio::Drawer::cVtxAlignment);
+    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_POSITION].ptr = Allocate(FFLiBugCanSwapSize(POSITION_BUFFER_SIZE), rio::Drawer::cVtxAlignment);
 
     std::memcpy(pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_POSITION].ptr, POSITION_BUFFER, POSITION_BUFFER_SIZE);
     EndianSwap(pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_POSITION].ptr, POSITION_BUFFER_SIZE);

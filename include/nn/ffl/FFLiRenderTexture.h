@@ -16,15 +16,12 @@ struct FFLiRenderTexture
 };
 //NN_STATIC_ASSERT(sizeof(FFLiRenderTexture) == 0x9C);
 
-u32 FFLiGetBufferRenderTexture(u32 width, u32 height, rio::TextureFormat format, u32 numMips);
-
 struct FFLColor;
 
-class   FFLiBufferAllocator;
 struct  FFLiRenderTextureBuffer;
 class   FFLiShaderCallback;
 
-void FFLiInitRenderTexture(FFLiRenderTexture* pRenderTexture, u32 width, u32 height, rio::TextureFormat format, u32 numMips, FFLiBufferAllocator* pAllocator);
+void FFLiInitRenderTexture(FFLiRenderTexture* pRenderTexture, u32 width, u32 height, rio::TextureFormat format, u32 numMips);
 void FFLiInvalidateRenderTexture(FFLiRenderTexture* pRenderTexture);
 void FFLiSetupRenderTexture(FFLiRenderTexture* pRenderTexture, const FFLColor* pClearColor, agl::TextureData* pDepthBuffer, u32 mipLevel, const FFLiShaderCallback* pCallback);
 void FFLiFlushRenderTexture(FFLiRenderTexture* pRenderTexture);

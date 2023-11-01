@@ -11,9 +11,8 @@ extern "C" {
 typedef struct FFLInitDesc FFLInitDesc;
 typedef struct FFLResourceDesc FFLResourceDesc;
 
-FFLResult FFLInitResEx(void* pBuffer, const FFLInitDesc* pInitDesc, const FFLResourceDesc* pResDesc);
+FFLResult FFLInitResEx(const FFLInitDesc* pInitDesc, const FFLResourceDesc* pResDesc);
 void FFLInitResGPUStep(void);
-u32 FFLGetWorkSize(const FFLInitDesc* pInitDesc);
 FFLResult FFLFlushQuota(void);
 FFLResult FFLExit(void);
 BOOL FFLIsAvailable(void);

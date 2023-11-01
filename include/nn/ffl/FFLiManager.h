@@ -11,20 +11,16 @@
 #include <nn/ffl/FFLiShaderCallback.h>
 #include <nn/ffl/FFLiSystemContext.h>
 
-#include <nn/ffl/detail/FFLiAllocator.h>
 #include <nn/ffl/detail/FFLiCopySurface.h>
 
 struct FFLResourceDesc;
 
-class   FFLiBufferAllocator;
 struct  FFLiDatabaseFile;
 struct  FFLiFileWriteBuffer;
 struct  FFLiResourceMultiHeader;
 
-FFLResult FFLiInitResEx(void* pBuffer, const FFLInitDesc* pInitDesc, const FFLResourceDesc* pResDesc);
+FFLResult FFLiInitResEx(const FFLInitDesc* pInitDesc, const FFLResourceDesc* pResDesc);
 void FFLiInitResGPUStep();
-
-u32 FFLiGetWorkSize(const FFLInitDesc* pInitDesc);
 
 extern "C" FFLResult FFLiFlushQuota(bool force);    // No idea why this in particular is extern "C"
 
@@ -37,16 +33,14 @@ bool FFLiIsAvailable();
 class FFLiManager
 {
 public:
-    static FFLResult Create(void* pBuffer, const FFLInitDesc* pInitDesc, const FFLResourceDesc* pResDesc);
+    static FFLResult Create(const FFLInitDesc* pInitDesc, const FFLResourceDesc* pResDesc);
     static FFLResult Destroy();
 
     static bool IsConstruct();
     static FFLiManager* GetInstance();
 
-    static u32 GetBufferSize(const FFLInitDesc* pInitDesc);
-
 private:
-    FFLiManager(const FFLInitDesc* pInitDesc, FFLiBufferAllocator* pAllocator);
+    FFLiManager(const FFLInitDesc* pInitDesc);
     ~FFLiManager();
 
     FFLResult AfterConstruct(const FFLInitDesc* pInitDesc, const FFLResourceDesc* pResDesc);
@@ -105,21 +99,17 @@ public:
     FFLResult FlushQuota(bool force);
 
 private:
-    FFLiAllocator               m_Allocator;
     FFLiSystemContext           m_SystemContext;
     FFLiResourceMultiHeader*    m_pResourceMultiHeader;
     FFLiDatabaseFile*           m_pDatabaseFile;
     FFLiFileWriteBuffer*        m_pFileWriteBuffer;
-    u32                         _3c[0x1704 / sizeof(u32)];  // Deleted
     FFLiResourceManager         m_ResourceManager;
     FFLiDatabaseManager         m_DatabaseManager;
     FFLiShaderCallback          m_ShaderCallback;
     FFLiCharModelCreateParam    m_CharModelCreateParam;
     FFLInitDesc                 m_InitDesc;
-    void*                       _2964;  // Removed
     FFLiCopySurface             m_CopySurface;
     bool                        m_IsSetupGPU;
-    u8                          _29ad;
 };
 //NN_STATIC_ASSERT(sizeof(FFLiManager) == 0x29B0);
 

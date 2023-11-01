@@ -132,7 +132,7 @@ private:
     union
     {
         u8                      m_ParamData[FFLI_MIDDLE_DB_PARAM_SIZE];
-        
+
         FFLiMiddleDBHiddenParam m_HiddenParam;
         FFLiMiddleDBRandomParam m_RandomParam;
         FFLiMiddleDBNetParam    m_NetParam;

@@ -8,12 +8,9 @@
 
 #include <common/aglTextureData.h>
 
-class FFLiBufferAllocator;
 class FFLiResourceLoader;
 class FFLiResourceManager;
 
-u32 FFLiGetTextureMaxSizeWithAlign(const FFLiResourceManager* pResourceManager, FFLResourceType resourceType, FFLiTexturePartsType partsType);
-
-FFLResult FFLiLoadTextureWithAllocate(agl::TextureData** ppTextureData, FFLiTexturePartsType partsType, u32 index, FFLiResourceLoader* pResLoader, FFLiBufferAllocator* pAllocator);
+FFLResult FFLiLoadTextureWithAllocate(agl::TextureData** ppTextureData, FFLiTexturePartsType partsType, u32 index, FFLiResourceLoader* pResLoader);
 
 #endif // FFLI_TEXTURE_H_

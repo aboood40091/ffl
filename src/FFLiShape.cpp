@@ -3,7 +3,6 @@
 #include <nn/ffl/FFLiResourceLoader.h>
 #include <nn/ffl/FFLiShape.h>
 
-#include <nn/ffl/detail/FFLiBufferAllocator.h>
 #include <nn/ffl/detail/FFLiBug.h>
 #include <nn/ffl/detail/FFLiResourceShape.h>
 
@@ -57,10 +56,10 @@ bool FFLiCanDrawShape(const FFLDrawParam* pDrawParam)
     return pDrawParam->primitiveParam.indexCount != 0;
 }
 
-FFLResult FFLiLoadShape(FFLDrawParam* pDrawParam, FFLBoundingBox* pBoundingBox, FFLiCharModel* pModel, FFLiShapePartsType partsType, u16 index, FFLiResourceLoader* pResLoader, FFLiBufferAllocator* pAllocator)
+FFLResult FFLiLoadShape(FFLDrawParam* pDrawParam, FFLBoundingBox* pBoundingBox, FFLiCharModel* pModel, FFLiShapePartsType partsType, u16 index, FFLiResourceLoader* pResLoader)
 {
     u32 size = pResLoader->GetShapeAlignedMaxSize(partsType);
-    void* pData = pAllocator->Allocate(size, rio::FileDevice::cBufferMinAlignment);
+    void* pData = rio::MemUtil::alloc(size, rio::FileDevice::cBufferMinAlignment);
 
     FFLResult result = pResLoader->LoadShape(pData, &size, partsType, index);
     if (result != FFL_RESULT_OK)

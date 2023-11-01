@@ -43,7 +43,7 @@ const char* TEXTURE_SAMPLER_NAME[1] = {
 
 }
 
-bool FFLiCopySurfaceShader::SetupCPU(FFLiBufferAllocator* pAllocator)
+bool FFLiCopySurfaceShader::SetupCPU()
 {
     u32 location = m_Shader.getFragmentSamplerLocation(TEXTURE_SAMPLER_NAME[0]);
     if (location == u32(-1))

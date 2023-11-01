@@ -4,11 +4,9 @@
 #include <nn/ffl/FFLResult.h>
 
 struct FFLCharModelSource;
-struct FFLCharModelBuffer;
 struct FFLCharModelDesc;
 struct FFLShaderCallback;
 
-class   FFLiBufferAllocator;
 struct  FFLiCharModel;
 class   FFLiCharModelCreateParam;
 class   FFLiManager;
@@ -20,7 +18,7 @@ public:
     FFLiCharModelCreator(FFLiCharModelCreateParam* pParam, FFLiManager* pManager);
     ~FFLiCharModelCreator();
 
-    FFLResult ExecuteCPUStep(FFLiCharModel* pModel, const FFLCharModelSource* pSource, const FFLCharModelDesc* pDesc, FFLCharModelBuffer* pBuffer);
+    FFLResult ExecuteCPUStep(FFLiCharModel* pModel, const FFLCharModelSource* pSource, const FFLCharModelDesc* pDesc);
     void ExecuteGPUStep(FFLiCharModel* pModel, const FFLShaderCallback* pCallback);
     void AfterExecuteGPUStep(FFLiCharModel* pModel);
 

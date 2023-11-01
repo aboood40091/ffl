@@ -5,16 +5,6 @@
 
 static_assert(sizeof(FFLiCharModel) == sizeof(FFLCharModel));
 
-u32 FFLGetBufferSizeCharModel(const FFLCharModelDesc* pDesc)
-{
-    return FFLiGetBufferSizeCharModel(pDesc);
-}
-
-u32 FFLGetTempBufferSizeCharModel(const FFLCharModelDesc* pDesc)
-{
-    return FFLiGetTempBufferSizeCharModel(pDesc);
-}
-
 namespace {
 
 FFLiCharModel* GetCharModel(FFLCharModel* pModel)
@@ -24,9 +14,9 @@ FFLiCharModel* GetCharModel(FFLCharModel* pModel)
 
 }
 
-FFLResult FFLInitCharModelCPUStep(FFLCharModel* pModel, const FFLCharModelSource* pSource, const FFLCharModelDesc* pDesc, FFLCharModelBuffer* pBuffer)
+FFLResult FFLInitCharModelCPUStep(FFLCharModel* pModel, const FFLCharModelSource* pSource, const FFLCharModelDesc* pDesc)
 {
-    return FFLiInitCharModelCPUStep(GetCharModel(pModel), pSource, pDesc, pBuffer);
+    return FFLiInitCharModelCPUStep(GetCharModel(pModel), pSource, pDesc);
 }
 
 void FFLInitCharModelGPUStep(FFLCharModel* pModel)

@@ -6,15 +6,13 @@
 #include <common/aglTextureSampler.h>
 #include <gpu/rio_Shader.h>
 
-class FFLiBufferAllocator;
-
 class FFLiCopySurfaceShader
 {
 public:
     FFLiCopySurfaceShader();
     ~FFLiCopySurfaceShader();
 
-    bool SetupCPU(FFLiBufferAllocator* pAllocator);
+    bool SetupCPU();
     void SetupGPU();
 
     void Bind() const;

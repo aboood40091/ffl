@@ -3,20 +3,18 @@
 
 #include <nn/ffl/FFLiZlibInterface.h>
 
-#include <nn/ffl/detail/FFLiZlibAllocator.h>
-
 #include <zlib.h>
 
 class FFLiZlibInflator : public FFLiZlibInterface
 {
 public:
-    FFLiZlibInflator(FFLiAllocatorInterface& allocatorInterface, s32 windowBits);
+    FFLiZlibInflator(s32 windowBits);
     virtual ~FFLiZlibInflator();
 
     virtual s32 Process(void** ppDst, u32* pDstSize, const void** ppSrc, u32* pSrcSize, s32 flush);
 
 private:
-    FFLiZlibAllocator   m_ZlibAllocator;
+    u32                 _0[4 / sizeof(u32)];    // Deleted
     z_stream            m_Stream;
     bool                m_IsStreamEnd;
 };

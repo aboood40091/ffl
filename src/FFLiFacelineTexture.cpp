@@ -11,12 +11,12 @@
 #include <nn/ffl/FFLiTexture.h>
 #include <nn/ffl/FFLiUtil.h>
 
-#include <nn/ffl/detail/FFLiBufferAllocator.h>
 #include <nn/ffl/detail/FFLiBug.h>
 #include <nn/ffl/detail/FFLiCharInfo.h>
 #include <nn/ffl/detail/FFLiCopySurface.h>
 
 #include <gpu/rio_RenderState.h>
+#include <misc/rio_MemUtil.h>
 
 #include <cstring>
 
@@ -26,18 +26,15 @@ u32 GetWidth(u32 resolution);
 u32 GetHeight(u32 resolution);
 u32 GetNumMips(u32 width, u32 height, bool enableMipMap);
 
-u32 GetTextureBufferSize(u32 width, u32 height, u32 numMips);
-u32 GetDrawParamBufferSize();
-
 rio::TextureFormat GetTextureFormat(bool useOffScreenSrgbFetch);
 
-void* Allocate(FFLiBufferAllocator* pAllocator, u32 size, u32 alignment);
+void* Allocate(u32 size, u32 alignment);
 
 void EndianSwap(void* ptr, u32 size);
 
-void InitPrimitive(FFLPrimitiveParam* pPrimitive, FFLiBufferAllocator* pAllocator);
-void InitAttributes(FFLAttributeBufferParam* pAttributes, u32 resolution, FFLiBufferAllocator* pAllocator);
-void InitDrawParamWithoutModulate(FFLDrawParam* pDrawParam, u32 resolution, FFLiBufferAllocator* pAllocator);
+void InitPrimitive(FFLPrimitiveParam* pPrimitive);
+void InitAttributes(FFLAttributeBufferParam* pAttributes, u32 resolution);
+void InitDrawParamWithoutModulate(FFLDrawParam* pDrawParam, u32 resolution);
 
 void InvalidatePrimitive(FFLPrimitiveParam* pPrimitive);
 void InvalidateAttributes(FFLAttributeBufferParam* pAttributes);
@@ -45,42 +42,24 @@ void InvalidateDrawParam(FFLDrawParam* pDrawParam);
 
 }
 
-u32 FFLiGetBufferSizeFacelineTexture(u32 resolution, bool enableMipMap)
-{
-    u32 width = GetWidth(resolution);
-    u32 height = GetHeight(resolution);
-    u32 numMips = GetNumMips(width, height, enableMipMap);
-    return GetTextureBufferSize(width, height, numMips);
-}
-
-u32 FFLiGetTempBufferSizeFacelineTexture(u32 resolution, bool enableMipMap, FFLiResourceManager* pResourceManager, FFLResourceType resourceType)
-{
-    u32 ret  = FFLiGetTextureMaxSizeWithAlign(pResourceManager, resourceType, FFLI_TEXTURE_PARTS_TYPE_FACELINE);
-    ret     += FFLiGetTextureMaxSizeWithAlign(pResourceManager, resourceType, FFLI_TEXTURE_PARTS_TYPE_FACE_MAKEUP);
-    ret     += FFLiGetTextureMaxSizeWithAlign(pResourceManager, resourceType, FFLI_TEXTURE_PARTS_TYPE_BEARD);
-    ret     += GetDrawParamBufferSize() * 3;
-
-    return ret;
-}
-
-void FFLiInitFacelineTexture(FFLiRenderTexture* pRenderTexture, u32 resolution, bool enableMipMap, FFLiBufferAllocator* pAllocator)
+void FFLiInitFacelineTexture(FFLiRenderTexture* pRenderTexture, u32 resolution, bool enableMipMap)
 {
     u32 width = GetWidth(resolution);
     u32 height = GetHeight(resolution);
     u32 numMips = GetNumMips(width, height, enableMipMap);
     rio::TextureFormat format = GetTextureFormat(FFLiUseOffScreenSrgbFetch());
-    FFLiInitRenderTexture(pRenderTexture, width, height, format, numMips, pAllocator);
+    FFLiInitRenderTexture(pRenderTexture, width, height, format, numMips);
 }
 
-FFLResult FFLiInitTempObjectFacelineTexture(FFLiFacelineTextureTempObject* pObject, FFLiRenderTexture* pRenderTexture, const FFLiCharInfo* pCharInfo, u32 resolution, bool enableMipMap, FFLiResourceLoader* pResLoader, FFLiBufferAllocator* pAllocator, FFLiRenderTextureBuffer* pRenderTextureBuffer)
+FFLResult FFLiInitTempObjectFacelineTexture(FFLiFacelineTextureTempObject* pObject, FFLiRenderTexture* pRenderTexture, const FFLiCharInfo* pCharInfo, u32 resolution, bool enableMipMap, FFLiResourceLoader* pResLoader, FFLiRenderTextureBuffer* pRenderTextureBuffer)
 {
     std::memset(pObject, 0, sizeof(FFLiFacelineTextureTempObject));
 
-    FFLResult result = FFLiLoadTextureWithAllocate(&pObject->pTextureFaceLine, FFLI_TEXTURE_PARTS_TYPE_FACELINE, pCharInfo->parts.faceLine, pResLoader, pAllocator);
+    FFLResult result = FFLiLoadTextureWithAllocate(&pObject->pTextureFaceLine, FFLI_TEXTURE_PARTS_TYPE_FACELINE, pCharInfo->parts.faceLine, pResLoader);
     if (result != FFL_RESULT_OK)
         return result;
 
-    result = FFLiLoadTextureWithAllocate(&pObject->pTextureFaceMake, FFLI_TEXTURE_PARTS_TYPE_FACE_MAKEUP, pCharInfo->parts.faceMakeup, pResLoader, pAllocator);
+    result = FFLiLoadTextureWithAllocate(&pObject->pTextureFaceMake, FFLI_TEXTURE_PARTS_TYPE_FACE_MAKEUP, pCharInfo->parts.faceMakeup, pResLoader);
     if (result != FFL_RESULT_OK)
         return result;
 
@@ -89,14 +68,14 @@ FFLResult FFLiInitTempObjectFacelineTexture(FFLiFacelineTextureTempObject* pObje
 
     if (enableBeardTexture)
     {
-        result = FFLiLoadTextureWithAllocate(&pObject->pTextureFaceBeard, FFLI_TEXTURE_PARTS_TYPE_BEARD, beardType - 3, pResLoader, pAllocator);
+        result = FFLiLoadTextureWithAllocate(&pObject->pTextureFaceBeard, FFLI_TEXTURE_PARTS_TYPE_BEARD, beardType - 3, pResLoader);
         if (result != FFL_RESULT_OK)
             return result;
     }
 
-    InitDrawParamWithoutModulate(&pObject->drawParamFaceLine, resolution, pAllocator);
-    InitDrawParamWithoutModulate(&pObject->drawParamFaceMake, resolution, pAllocator);
-    InitDrawParamWithoutModulate(&pObject->drawParamFaceBeard, resolution, pAllocator);
+    InitDrawParamWithoutModulate(&pObject->drawParamFaceLine, resolution);
+    InitDrawParamWithoutModulate(&pObject->drawParamFaceMake, resolution);
+    InitDrawParamWithoutModulate(&pObject->drawParamFaceBeard, resolution);
 
     FFLiInitModulateFaceLine(&pObject->drawParamFaceLine.modulateParam, *pObject->pTextureFaceLine);
     FFLiInitModulateFaceMake(&pObject->drawParamFaceMake.modulateParam, *pObject->pTextureFaceMake);
@@ -183,24 +162,6 @@ u32 GetNumMips(u32 width, u32 height, bool enableMipMap)
     return ret;
 }
 
-u32 GetTextureBufferSize(u32 width, u32 height, u32 numMips)
-{
-    return FFLiGetBufferRenderTexture(width, height, rio::TEXTURE_FORMAT_R8_G8_B8_A8_UNORM, numMips);
-}
-
-u32 GetDrawParamBufferSize()
-{
-    const u32 INDEX_BUFFER_SIZE = sizeof(u16) * 4;
-    const u32 POSITION_BUFFER_SIZE = sizeof(FFLVec4) * 4;
-    const u32 TEXCOORD_BUFFER_SIZE = sizeof(FFLVec2) * 4;
-
-    u32 ret  = rio::Drawer::cVtxAlignment; // max(rio::Drawer::cIdxAlignment, rio::Drawer::cVtxAlignment)
-    ret     += FFLiRoundUp(FFLiBugCanVgtFixedIndexSize(FFLiBugCanSwapSize(INDEX_BUFFER_SIZE)), rio::Drawer::cIdxAlignment);
-    ret     += FFLiRoundUp(FFLiBugCanSwapSize(POSITION_BUFFER_SIZE), rio::Drawer::cVtxAlignment);
-    ret     += FFLiRoundUp(FFLiBugCanSwapSize(TEXCOORD_BUFFER_SIZE), rio::Drawer::cVtxAlignment);
-    return ret;
-}
-
 rio::TextureFormat GetTextureFormat(bool useOffScreenSrgbFetch)
 {
     if (useOffScreenSrgbFetch)
@@ -210,9 +171,9 @@ rio::TextureFormat GetTextureFormat(bool useOffScreenSrgbFetch)
         return rio::TEXTURE_FORMAT_R8_G8_B8_A8_UNORM;
 }
 
-void* Allocate(FFLiBufferAllocator* pAllocator, u32 size, u32 alignment)
+void* Allocate(u32 size, u32 alignment)
 {
-    return pAllocator->Allocate(size, alignment);
+    return rio::MemUtil::alloc(size, alignment);
 }
 
 void EndianSwap(void* ptr, u32 size)
@@ -220,7 +181,7 @@ void EndianSwap(void* ptr, u32 size)
     FFLiBugEndianSwap(ptr, size);
 }
 
-void InitPrimitive(FFLPrimitiveParam* pPrimitive, FFLiBufferAllocator* pAllocator)
+void InitPrimitive(FFLPrimitiveParam* pPrimitive)
 {
     const u32 INDEX_BUFFER_SIZE = sizeof(u16) * 4;
 
@@ -229,13 +190,13 @@ void InitPrimitive(FFLPrimitiveParam* pPrimitive, FFLiBufferAllocator* pAllocato
 
     pPrimitive->primitiveType = rio::Drawer::TRIANGLE_STRIP;
     pPrimitive->indexCount = 4;
-    pPrimitive->pIndexBuffer = FFLiBugVgtFixedIndexPtr(Allocate(pAllocator, FFLiBugCanSwapSize(FFLiBugCanVgtFixedIndexSize(INDEX_BUFFER_SIZE)), rio::Drawer::cIdxAlignment));
+    pPrimitive->pIndexBuffer = FFLiBugVgtFixedIndexPtr(Allocate(FFLiBugCanSwapSize(FFLiBugCanVgtFixedIndexSize(INDEX_BUFFER_SIZE)), rio::Drawer::cIdxAlignment));
 
     std::memcpy(pPrimitive->pIndexBuffer, INDEX_BUFFER, INDEX_BUFFER_SIZE);
     EndianSwap(pPrimitive->pIndexBuffer, INDEX_BUFFER_SIZE);
 }
 
-void InitAttributes(FFLAttributeBufferParam* pAttributes, u32 resolution, FFLiBufferAllocator* pAllocator)
+void InitAttributes(FFLAttributeBufferParam* pAttributes, u32 resolution)
 {
     const u32 POSITION_BUFFER_SIZE = sizeof(FFLVec4) * 4;
     const u32 TEXCOORD_BUFFER_SIZE = sizeof(FFLVec2) * 4;
@@ -258,14 +219,14 @@ void InitAttributes(FFLAttributeBufferParam* pAttributes, u32 resolution, FFLiBu
 
     pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_POSITION].size = POSITION_BUFFER_SIZE;
     pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_POSITION].stride = sizeof(FFLVec4);
-    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_POSITION].ptr = Allocate(pAllocator, FFLiBugCanSwapSize(POSITION_BUFFER_SIZE), rio::Drawer::cVtxAlignment);
+    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_POSITION].ptr = Allocate(FFLiBugCanSwapSize(POSITION_BUFFER_SIZE), rio::Drawer::cVtxAlignment);
 
     std::memcpy(pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_POSITION].ptr, POSITION_BUFFER, POSITION_BUFFER_SIZE);
     EndianSwap(pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_POSITION].ptr, POSITION_BUFFER_SIZE);
 
     pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_TEXCOORD].size = TEXCOORD_BUFFER_SIZE;
     pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_TEXCOORD].stride = sizeof(FFLVec2);
-    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_TEXCOORD].ptr = Allocate(pAllocator, FFLiBugCanSwapSize(TEXCOORD_BUFFER_SIZE), rio::Drawer::cVtxAlignment);
+    pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_TEXCOORD].ptr = Allocate(FFLiBugCanSwapSize(TEXCOORD_BUFFER_SIZE), rio::Drawer::cVtxAlignment);
 
     std::memcpy(pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_TEXCOORD].ptr, TEXCOORD_BUFFER, TEXCOORD_BUFFER_SIZE);
     EndianSwap(pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_TEXCOORD].ptr, TEXCOORD_BUFFER_SIZE);
@@ -283,11 +244,11 @@ void InitAttributes(FFLAttributeBufferParam* pAttributes, u32 resolution, FFLiBu
     pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_COLOR].ptr = NULL;
 }
 
-void InitDrawParamWithoutModulate(FFLDrawParam* pDrawParam, u32 resolution, FFLiBufferAllocator* pAllocator)
+void InitDrawParamWithoutModulate(FFLDrawParam* pDrawParam, u32 resolution)
 {
     pDrawParam->cullMode = FFL_CULL_MODE_MAX;
-    InitPrimitive(&pDrawParam->primitiveParam, pAllocator);
-    InitAttributes(&pDrawParam->attributeBufferParam, resolution, pAllocator);
+    InitPrimitive(&pDrawParam->primitiveParam);
+    InitAttributes(&pDrawParam->attributeBufferParam, resolution);
 }
 
 void InvalidatePrimitive(FFLPrimitiveParam* pPrimitive)

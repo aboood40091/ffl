@@ -5,21 +5,17 @@
 
 #include <gpu/rio_VertexArray.h>
 
-class FFLiBufferAllocator;
-
 class FFLiCopySurfaceDrawer
 {
 public:
     FFLiCopySurfaceDrawer();
     ~FFLiCopySurfaceDrawer();
 
-    void SetupCPU(FFLiBufferAllocator* pAllocator);
+    void SetupCPU();
     void SetupGPU(u32 positionLocation, u32 texCoordLocation);
 
     void SetAttributeBuffer();
     void Draw();
-
-    static u32 GetBufferSize();
 
 private:
     struct Attribute

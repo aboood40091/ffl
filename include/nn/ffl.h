@@ -6,7 +6,6 @@
 #include <nn/ffl/FFLBirthPlatform.h>
 #include <nn/ffl/FFLBoundingBox.h>
 #include <nn/ffl/FFLCharModel.h>
-#include <nn/ffl/FFLCharModelBuffer.h>
 #include <nn/ffl/FFLCharModelDesc.h>
 #include <nn/ffl/FFLCharModelSource.h>
 #include <nn/ffl/FFLColor.h>

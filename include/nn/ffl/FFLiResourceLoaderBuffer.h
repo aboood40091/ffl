@@ -3,12 +3,10 @@
 
 #include <nn/ffl/FFLiResourceUncompressBuffer.h>
 
-class FFLiFsCommandBuffer;
-
 class FFLiResourceLoaderBuffer
 {
 public:
-    FFLiResourceLoaderBuffer(const FFLiResourceManager* pResourceManager, FFLiBufferAllocator* pAllocator, FFLResourceType resourceType);
+    FFLiResourceLoaderBuffer(const FFLiResourceManager* pResourceManager, FFLResourceType resourceType);
     ~FFLiResourceLoaderBuffer();
 
     FFLiResourceUncompressBuffer& GetUncompressBuffer()
@@ -21,14 +19,9 @@ public:
         return m_ResourceUncompressBuffer;
     }
 
-    FFLiFsCommandBuffer* GetCommandBuffer() const
-    {
-        return m_pFsCommandBuffer;
-    }
-
 private:
     FFLiResourceUncompressBuffer    m_ResourceUncompressBuffer;
-    FFLiFsCommandBuffer*            m_pFsCommandBuffer;
+    void*                           _8; // Deleted
 };
 NN_STATIC_ASSERT(sizeof(FFLiResourceLoaderBuffer) == 0xC);
 

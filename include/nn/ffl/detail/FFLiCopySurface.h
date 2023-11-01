@@ -7,15 +7,11 @@
 #include <common/aglRenderBuffer.h>
 #include <common/aglRenderTarget.h>
 
-class FFLiBufferAllocator;
-
 class FFLiCopySurface
 {
 public:
-    FFLiCopySurface(FFLiBufferAllocator* pAllocator);
+    FFLiCopySurface();
     ~FFLiCopySurface();
-
-    static u32 GetBufferSize();
 
     void SetupGPU();
 

@@ -3,30 +3,17 @@
 #include <nn/ffl/FFLiResourceManager.h>
 #include <nn/ffl/FFLiTexture.h>
 
-#include <nn/ffl/detail/FFLiBufferAllocator.h>
-
 #define TEXTURE_DATA_MAX_ALIGNMENT   (0x800)
 
-u32 FFLiGetTextureMaxSizeWithAlign(const FFLiResourceManager* pResourceManager, FFLResourceType resourceType, FFLiTexturePartsType partsType)
-{
-    u32 ret  = TEXTURE_DATA_MAX_ALIGNMENT;
-    ret     += sizeof(agl::TextureData);
-
-    if (!pResourceManager->IsExpand(resourceType))
-        ret += pResourceManager->GetTextureAlignedMaxSize(resourceType, partsType);
-
-    return ret;
-}
-
-FFLResult FFLiLoadTextureWithAllocate(agl::TextureData** ppTextureData, FFLiTexturePartsType partsType, u32 index, FFLiResourceLoader* pResLoader, FFLiBufferAllocator* pAllocator)
+FFLResult FFLiLoadTextureWithAllocate(agl::TextureData** ppTextureData, FFLiTexturePartsType partsType, u32 index, FFLiResourceLoader* pResLoader)
 {
     u32 size = pResLoader->GetTextureAlignedMaxSize(partsType);
 
     void* pData = NULL;
     if (!pResLoader->IsExpand())
-        pData = pAllocator->Allocate(size, TEXTURE_DATA_MAX_ALIGNMENT);
+        pData = rio::MemUtil::alloc(size, TEXTURE_DATA_MAX_ALIGNMENT);
 
-    *ppTextureData = new (pAllocator->Allocate(sizeof(agl::TextureData), 4)) agl::TextureData;
+    *ppTextureData = new agl::TextureData;
 
     if (!pResLoader->IsExpand())
     {

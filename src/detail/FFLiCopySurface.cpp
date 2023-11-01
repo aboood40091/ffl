@@ -1,31 +1,19 @@
 #include <nn/ffl/FFLiMipMapUtil.h>
 
-#include <nn/ffl/detail/FFLiBufferAllocator.h>
 #include <nn/ffl/detail/FFLiCopySurface.h>
 
 #if RIO_IS_CAFE
 #include <cafe/gx2.h>
 #endif // RIO_IS_CAFE
 
-FFLiCopySurface::FFLiCopySurface(FFLiBufferAllocator* pAllocator)
+FFLiCopySurface::FFLiCopySurface()
 {
-    u32 size = GetBufferSize();
-    void* pBuffer = pAllocator->Allocate(size);
-
-    FFLiBufferAllocator allocator;
-    allocator.Init(pBuffer, size);
-
-    m_Shader.SetupCPU(&allocator);
-    m_Drawer.SetupCPU(&allocator);
+    m_Shader.SetupCPU();
+    m_Drawer.SetupCPU();
 }
 
 FFLiCopySurface::~FFLiCopySurface()
 {
-}
-
-u32 FFLiCopySurface::GetBufferSize()
-{
-    return FFLiCopySurfaceDrawer::GetBufferSize();
 }
 
 void FFLiCopySurface::SetupGPU()

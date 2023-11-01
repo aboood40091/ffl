@@ -11,7 +11,6 @@
 #include <nn/ffl/FFLiTexture.h>
 #include <nn/ffl/FFLiUtil.h>
 
-#include <nn/ffl/detail/FFLiBufferAllocator.h>
 #include <nn/ffl/detail/FFLiCharInfo.h>
 #include <nn/ffl/detail/FFLiCopySurface.h>
 
@@ -19,53 +18,19 @@
 
 namespace {
 
-u32 ExpressionFlagCount(u32 expressionFlag);
-
-u32 GetTextureBufferSize(u32 resolution, u32 numMips);
-
 rio::TextureFormat GetTextureFormat(bool useOffScreenSrgbFetch);
 
-FFLiRenderTexture* FFLiRenderTextureAllocate(FFLiBufferAllocator* pAllocator);
+FFLiRenderTexture* FFLiRenderTextureAllocate();
 
 bool CanUseExpression(u32 expressionFlag, FFLExpression expression);
 
-void InitRawMask(FFLiMaskTexturesTempObject* pObject, u32 expressionFlag, FFLiBufferAllocator* pAllocator);
+void InitRawMask(FFLiMaskTexturesTempObject* pObject, u32 expressionFlag);
 
 void SetupExpressionCharInfo(FFLiCharInfo* pExpressionCharInfo, const FFLiCharInfo* pCharInfo, FFLExpression expression);
 
 }
 
-u32 FFLiGetBufferSizeMaskTextures(u32 expressionFlag, u32 resolution, bool enableMipMap)
-{
-    u32 count = ExpressionFlagCount(expressionFlag);
-
-    u32 numMips = enableMipMap ? FFLiGetMipMapNum(resolution, resolution) : 1;
-
-    u32 ret  = FFLiRoundUp(GetTextureBufferSize(resolution, numMips) * count, 4);
-    ret     += FFLiRoundUp(sizeof(FFLiRenderTexture), 4) * count;
-
-    return ret;
-}
-
-u32 FFLiGetTempBufferSizeMaskTextures(u32 expressionFlag, u32 resolution, bool enableMipMap, FFLiResourceManager* pResourceManager, FFLResourceType resourceType)
-{
-    u32 count = ExpressionFlagCount(expressionFlag);
-    u32 eyeCount = FFLiGetMaxEyeNum(count);
-    u32 mouthCount = FFLiGetMaxMouthNum(count);
-
-    u32 ret  = FFLiGetTextureMaxSizeWithAlign(pResourceManager, resourceType, FFLI_TEXTURE_PARTS_TYPE_EYE) * eyeCount;
-    ret     += FFLiGetTextureMaxSizeWithAlign(pResourceManager, resourceType, FFLI_TEXTURE_PARTS_TYPE_MOUTH) * mouthCount;
-    ret     += FFLiGetTextureMaxSizeWithAlign(pResourceManager, resourceType, FFLI_TEXTURE_PARTS_TYPE_EYEBROW);
-    ret     += FFLiGetTextureMaxSizeWithAlign(pResourceManager, resourceType, FFLI_TEXTURE_PARTS_TYPE_MOLE);
-    ret     += FFLiGetTextureMaxSizeWithAlign(pResourceManager, resourceType, FFLI_TEXTURE_PARTS_TYPE_MUSTACHE);
-
-    ret     += sizeof(FFLiRawMaskDrawParam) * count;
-    ret     += FFLiGetBufferRawMask() * count;
-
-    return ret;
-}
-
-FFLExpression FFLiInitMaskTextures(FFLiMaskTextures* pMaskTextures, u32 expressionFlag, u32 resolution, bool enableMipMap, FFLiBufferAllocator* pAllocator)
+FFLExpression FFLiInitMaskTextures(FFLiMaskTextures* pMaskTextures, u32 expressionFlag, u32 resolution, bool enableMipMap)
 {
     FFLExpression expression = FFL_EXPRESSION_MAX;
 
@@ -82,23 +47,23 @@ FFLExpression FFLiInitMaskTextures(FFLiMaskTextures* pMaskTextures, u32 expressi
         if (expression == FFL_EXPRESSION_MAX)
             expression = FFLExpression(i);
 
-        pMaskTextures->pRenderTextures[i] = FFLiRenderTextureAllocate(pAllocator);
+        pMaskTextures->pRenderTextures[i] = FFLiRenderTextureAllocate();
         rio::TextureFormat format = GetTextureFormat(FFLiUseOffScreenSrgbFetch());
-        FFLiInitRenderTexture(pMaskTextures->pRenderTextures[i], resolution, resolution, format, numMips, pAllocator);
+        FFLiInitRenderTexture(pMaskTextures->pRenderTextures[i], resolution, resolution, format, numMips);
     }
 
     return expression;
 }
 
-FFLResult FFLiInitTempObjectMaskTextures(FFLiMaskTexturesTempObject* pObject, const FFLiMaskTextures* pMaskTextures, const FFLiCharInfo* pCharInfo, u32 expressionFlag, u32 resolution, bool enableMipMap, FFLiResourceLoader* pResLoader, FFLiBufferAllocator* pAllocator, FFLiRenderTextureBuffer* pRenderTextureBuffer)
+FFLResult FFLiInitTempObjectMaskTextures(FFLiMaskTexturesTempObject* pObject, const FFLiMaskTextures* pMaskTextures, const FFLiCharInfo* pCharInfo, u32 expressionFlag, u32 resolution, bool enableMipMap, FFLiResourceLoader* pResLoader, FFLiRenderTextureBuffer* pRenderTextureBuffer)
 {
     std::memset(pObject, 0, sizeof(FFLiMaskTexturesTempObject));
 
-    FFLResult result = FFLiLoadPartsTextures(&pObject->partsTextures, pCharInfo, expressionFlag, pResLoader, pAllocator);
+    FFLResult result = FFLiLoadPartsTextures(&pObject->partsTextures, pCharInfo, expressionFlag, pResLoader);
     if (result != FFL_RESULT_OK)
         return result;
 
-    InitRawMask(pObject, expressionFlag, pAllocator);
+    InitRawMask(pObject, expressionFlag);
 
     for (u32 i = 0; i < FFL_EXPRESSION_MAX; i++)
     {
@@ -129,8 +94,7 @@ FFLResult FFLiInitTempObjectMaskTextures(FFLiMaskTexturesTempObject* pObject, co
                 resolution,
                 FFLiCharInfoAndTypeToEyeIndex(pCharInfo, element.eyeTextureType[0]),
                 FFLiCharInfoAndTypeToEyeIndex(pCharInfo, element.eyeTextureType[1]),
-                &desc,
-                pAllocator
+                &desc
             );
         }
     }
@@ -174,22 +138,6 @@ void FFLiRenderMaskTextures(FFLiMaskTextures* pMaskTextures, FFLiMaskTexturesTem
 
 namespace {
 
-u32 ExpressionFlagCount(u32 expressionFlag)
-{
-    u32 ret = 0;
-
-    for (u32 i = 0; i < FFL_EXPRESSION_MAX; i++)
-        if (expressionFlag & 1 << i)
-            ret++;
-
-    return ret;
-}
-
-u32 GetTextureBufferSize(u32 resolution, u32 numMips)
-{
-    return FFLiGetBufferRenderTexture(resolution, resolution, rio::TEXTURE_FORMAT_R8_G8_B8_A8_UNORM, numMips);
-}
-
 rio::TextureFormat GetTextureFormat(bool useOffScreenSrgbFetch)
 {
     if (useOffScreenSrgbFetch)
@@ -199,9 +147,9 @@ rio::TextureFormat GetTextureFormat(bool useOffScreenSrgbFetch)
         return rio::TEXTURE_FORMAT_R8_G8_B8_A8_UNORM;
 }
 
-FFLiRenderTexture* FFLiRenderTextureAllocate(FFLiBufferAllocator* pAllocator)
+FFLiRenderTexture* FFLiRenderTextureAllocate()
 {
-    return new (FFLiAllocateBufferAllocator(pAllocator, sizeof(FFLiRenderTexture), 4)) FFLiRenderTexture;
+    return new FFLiRenderTexture;
 }
 
 bool CanUseExpression(u32 expressionFlag, FFLExpression expression)
@@ -209,11 +157,11 @@ bool CanUseExpression(u32 expressionFlag, FFLExpression expression)
     return (expressionFlag & 1 << expression) != 0;
 }
 
-void InitRawMask(FFLiMaskTexturesTempObject* pObject, u32 expressionFlag, FFLiBufferAllocator* pAllocator)
+void InitRawMask(FFLiMaskTexturesTempObject* pObject, u32 expressionFlag)
 {
     for (u32 i = 0; i < FFL_EXPRESSION_MAX; i++)
         if (CanUseExpression(expressionFlag, FFLExpression(i)))
-            pObject->pRawMaskDrawParam[i] = static_cast<FFLiRawMaskDrawParam*>(FFLiAllocateBufferAllocator(pAllocator, sizeof(FFLiRawMaskDrawParam)));
+            pObject->pRawMaskDrawParam[i] = new FFLiRawMaskDrawParam;
 }
 
 struct CorrectParam

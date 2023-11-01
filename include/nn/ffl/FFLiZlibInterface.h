@@ -3,8 +3,6 @@
 
 #include <nn/ffl/types.h>
 
-class FFLiAllocator;
-
 class FFLiZlibInterface
 {
 public:
