@@ -7,7 +7,6 @@
 
 #include <nn/ffl/FFLiCharModelCreateParam.h>
 #include <nn/ffl/FFLiDatabaseManager.h>
-#include <nn/ffl/FFLiFsClient.h>
 #include <nn/ffl/FFLiResourceManager.h>
 #include <nn/ffl/FFLiShaderCallback.h>
 #include <nn/ffl/FFLiSystemContext.h>
@@ -18,7 +17,6 @@
 struct FFLResourceDesc;
 
 class   FFLiBufferAllocator;
-class   FFLiCompressor;
 struct  FFLiDatabaseFile;
 struct  FFLiFileWriteBuffer;
 struct  FFLiResourceMultiHeader;
@@ -90,11 +88,6 @@ public:
         return m_InitDesc;
     }
 
-    FFLiCompressor* GetCompressor() const
-    {
-        return m_pCompressor;
-    }
-
     FFLiCopySurface& GetCopySurface()
     {
         return m_CopySurface;
@@ -117,17 +110,17 @@ private:
     FFLiResourceMultiHeader*    m_pResourceMultiHeader;
     FFLiDatabaseFile*           m_pDatabaseFile;
     FFLiFileWriteBuffer*        m_pFileWriteBuffer;
-    FFLiFsClient                m_FsClient;
+    u32                         _3c[0x1704 / sizeof(u32)];  // Deleted
     FFLiResourceManager         m_ResourceManager;
     FFLiDatabaseManager         m_DatabaseManager;
     FFLiShaderCallback          m_ShaderCallback;
     FFLiCharModelCreateParam    m_CharModelCreateParam;
     FFLInitDesc                 m_InitDesc;
-    FFLiCompressor*             m_pCompressor;
+    void*                       _2964;  // Removed
     FFLiCopySurface             m_CopySurface;
     bool                        m_IsSetupGPU;
     u8                          _29ad;
 };
-NN_STATIC_ASSERT(sizeof(FFLiManager) == 0x29B0);
+//NN_STATIC_ASSERT(sizeof(FFLiManager) == 0x29B0);
 
 #endif // FFLI_MANAGER_H_

@@ -1,32 +1,31 @@
 #include <nn/ffl/detail/FFLiAllocator.h>
 
+#include <misc/rio_MemUtil.h>
+
 FFLiAllocator::FFLiAllocator()
-    : m_HeapHandle(MEM_HEAP_INVALID_HANDLE)
 {
 }
 
 FFLiAllocator::~FFLiAllocator()
 {
-    if (IsValid())
-        MEMDestroyExpHeap(m_HeapHandle);
 }
 
 void FFLiAllocator::Init(void* pBuffer, u32 size)
 {
-    m_HeapHandle = MEMCreateExpHeap(pBuffer, size);
+    // TODO: Custom heap implementation using "pBuffer" and "size"
 }
 
 bool FFLiAllocator::IsValid() const
 {
-    return m_HeapHandle != MEM_HEAP_INVALID_HANDLE;
+    return true;
 }
 
 void* FFLiAllocator::Allocate(u32 size, u32 alignment)
 {
-    return MEMAllocFromExpHeapEx(m_HeapHandle, size, alignment);
+    return rio::MemUtil::alloc(size, alignment);
 }
 
 void FFLiAllocator::Free(void* ptr)
 {
-    MEMFreeToExpHeap(m_HeapHandle, ptr);
+    rio::MemUtil::free(ptr);
 }

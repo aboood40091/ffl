@@ -26,8 +26,6 @@ public:
 
     void InvalidateShapes(FFLiCharModel* pModel);
 
-    void SetupRenderTextureBuffer(FFLiRenderTextureBuffer& renderTextureBuffer, const FFLCharModelDesc* pDesc, FFLiBufferAllocator* pAllocator) const;
-
 private:
     FFLiCharModelCreateParam*   m_pCharModelCreateParam;
     FFLiManager*                m_pManager;

@@ -1,13 +1,11 @@
 #include <nn/ffl/detail/FFLiBufferAllocator.h>
 #include <nn/ffl/detail/FFLiCopySurfaceDrawer.h>
 
-#include <cafe/gx2.h>
+#include <gpu/rio_Drawer.h>
 
 #include <cstring>
 
 FFLiCopySurfaceDrawer::FFLiCopySurfaceDrawer()
-    : m_pPositionBuffer(NULL)
-    , m_pTexCoordBuffer(NULL)
 {
 }
 
@@ -36,34 +34,39 @@ void FFLiCopySurfaceDrawer::SetupCPU(FFLiBufferAllocator* pAllocator)
     };
     NN_STATIC_ASSERT(sizeof(TEXCOORD_BUFFER) == TEXCOORD_BUFFER_SIZE);
 
-    m_pPositionBuffer = static_cast<FFLVec2*>(pAllocator->Allocate(POSITION_BUFFER_SIZE, GX2_VERTEX_BUFFER_ALIGNMENT));
-    m_pTexCoordBuffer = static_cast<FFLVec2*>(pAllocator->Allocate(TEXCOORD_BUFFER_SIZE, GX2_VERTEX_BUFFER_ALIGNMENT));
+    m_Position.pBuffer = static_cast<FFLVec2*>(pAllocator->Allocate(POSITION_BUFFER_SIZE, rio::Drawer::cVtxAlignment));
+    m_TexCoord.pBuffer = static_cast<FFLVec2*>(pAllocator->Allocate(TEXCOORD_BUFFER_SIZE, rio::Drawer::cVtxAlignment));
 
-    std::memcpy(m_pPositionBuffer, POSITION_BUFFER, POSITION_BUFFER_SIZE);
-    std::memcpy(m_pTexCoordBuffer, TEXCOORD_BUFFER, TEXCOORD_BUFFER_SIZE);
+    std::memcpy(m_Position.pBuffer, POSITION_BUFFER, POSITION_BUFFER_SIZE);
+    std::memcpy(m_TexCoord.pBuffer, TEXCOORD_BUFFER, TEXCOORD_BUFFER_SIZE);
 }
 
-void FFLiCopySurfaceDrawer::SetupGPU()
+void FFLiCopySurfaceDrawer::SetupGPU(u32 positionLocation, u32 texCoordLocation)
 {
     const u32 POSITION_BUFFER_SIZE = sizeof(FFLVec2) * 4;
     const u32 TEXCOORD_BUFFER_SIZE = sizeof(FFLVec2) * 4;
 
-    GX2Invalidate(GX2_INVALIDATE_CPU_ATTRIB_BUFFER, m_pPositionBuffer, POSITION_BUFFER_SIZE);
-    GX2Invalidate(GX2_INVALIDATE_CPU_ATTRIB_BUFFER, m_pTexCoordBuffer, TEXCOORD_BUFFER_SIZE);
+    m_Position.vertexStream.setLayout(positionLocation, rio::VertexStream::FORMAT_32_32_FLOAT, 0);
+    m_Position.vertexBuffer.setStride(sizeof(FFLVec2));
+    m_Position.vertexBuffer.setDataInvalidate(m_Position.pBuffer, POSITION_BUFFER_SIZE);
+
+    m_TexCoord.vertexStream.setLayout(texCoordLocation, rio::VertexStream::FORMAT_32_32_FLOAT, 0);
+    m_TexCoord.vertexBuffer.setStride(sizeof(FFLVec2));
+    m_TexCoord.vertexBuffer.setDataInvalidate(m_TexCoord.pBuffer, TEXCOORD_BUFFER_SIZE);
+
+    m_VertexArray.addAttribute(m_Position.vertexStream, m_Position.vertexBuffer);
+    m_VertexArray.addAttribute(m_TexCoord.vertexStream, m_TexCoord.vertexBuffer);
+    m_VertexArray.process();
 }
 
-void FFLiCopySurfaceDrawer::SetAttributeBuffer(u32 positionBufferIndex, u32 texCoordBufferIndex)
+void FFLiCopySurfaceDrawer::SetAttributeBuffer()
 {
-    const u32 POSITION_BUFFER_SIZE = sizeof(FFLVec2) * 4;
-    const u32 TEXCOORD_BUFFER_SIZE = sizeof(FFLVec2) * 4;
-
-    GX2SetAttribBuffer(positionBufferIndex, POSITION_BUFFER_SIZE, sizeof(FFLVec2), m_pPositionBuffer);
-    GX2SetAttribBuffer(texCoordBufferIndex, TEXCOORD_BUFFER_SIZE, sizeof(FFLVec2), m_pTexCoordBuffer);
+    m_VertexArray.bind();
 }
 
 void FFLiCopySurfaceDrawer::Draw()
 {
-    GX2Draw(GX2_PRIMITIVE_TRIANGLE_STRIP, 4);
+    rio::Drawer::DrawArrays(rio::Drawer::TRIANGLE_STRIP, 4);
 }
 
 u32 FFLiCopySurfaceDrawer::GetBufferSize()
@@ -71,10 +74,10 @@ u32 FFLiCopySurfaceDrawer::GetBufferSize()
     const u32 POSITION_BUFFER_SIZE = sizeof(FFLVec2) * 4;
     const u32 TEXCOORD_BUFFER_SIZE = sizeof(FFLVec2) * 4;
 
-    u32 ret  = GX2_VERTEX_BUFFER_ALIGNMENT;
+    u32 ret  = rio::Drawer::cVtxAlignment;
     ret     += POSITION_BUFFER_SIZE;
 
-    ret     += GX2_VERTEX_BUFFER_ALIGNMENT;
+    ret     += rio::Drawer::cVtxAlignment;
     ret     += TEXCOORD_BUFFER_SIZE;
 
     return ret;

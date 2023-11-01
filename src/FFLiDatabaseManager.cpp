@@ -9,9 +9,9 @@
 
 #include <cstring>
 
-FFLiDatabaseManager::FFLiDatabaseManager(FFLiDatabaseFile* pFile, FFLiFileWriteBuffer* pWriteBuffer, FFLiSystemContext* pContext, FFLiFsClient* pClient, FFLiAllocator* pAllocator)
+FFLiDatabaseManager::FFLiDatabaseManager(FFLiDatabaseFile* pFile, FFLiFileWriteBuffer* pWriteBuffer, FFLiSystemContext* pContext, FFLiAllocator* pAllocator)
     : m_pSystemContext(pContext)
-    , m_DatabaseFileAccessor(pClient, pFile, pWriteBuffer, pAllocator)
+    , m_DatabaseFileAccessor(pFile, pWriteBuffer, pAllocator)
     , m_DatabaseRandom(pContext->RandomContext())
     , m_pAllocator(pAllocator)
 {
@@ -148,7 +148,7 @@ FFLResult FFLiDatabaseManager::PickupCharInfo(FFLiCharInfo* pCharInfo, FFLDataSo
         result = GetCharInfoFromDefault(pCharInfo, index);
         break;
     case FFL_DATA_SOURCE_MIDDLE_DB:
-        if (magic == 'FFMA')
+        if (magic == 0x46464D41)    // FFMA
             result = static_cast<const FFLiMiddleDB*>(pBuffer)->GetCharInfo(pCharInfo, index);
         break;
     case FFL_DATA_SOURCE_STORE_DATA_OFFICIAL:
@@ -198,7 +198,7 @@ FFLResult FFLiDatabaseManager::UpdateMiddleDB(FFLiMiddleDB* pMiddleDB)
         return m_DatabaseFileAccessor.GetDatabaseFile()->hidden.UpdateMiddleDB(pMiddleDB, m_pAllocator);
     case FFL_MIDDLE_DB_TYPE_RANDOM_PARAM:
         return m_DatabaseRandom.UpdateMiddleDB(pMiddleDB);
+    default:
+        return FFL_RESULT_ERROR;
     }
-
-    return FFL_RESULT_ERROR;
 }

@@ -9,11 +9,10 @@
 #include <nn/ffl/FFLiTextureTempObject.h>
 #include <nn/ffl/FFLiUtil.h>
 
-FFLiCharModelCreateParam::FFLiCharModelCreateParam(FFLiDatabaseManager* pDatabaseManager, FFLiResourceManager* pResourceManager, FFLiShaderCallback* pCallback, bool isShaderAvailable)
+FFLiCharModelCreateParam::FFLiCharModelCreateParam(FFLiDatabaseManager* pDatabaseManager, FFLiResourceManager* pResourceManager, FFLiShaderCallback* pCallback)
     : m_pDatabaseManager(pDatabaseManager)
     , m_pResourceManager(pResourceManager)
     , m_pShaderCallback(pCallback)
-    , m_IsShaderAvailable(isShaderAvailable)
 {
 }
 
@@ -31,7 +30,7 @@ bool FFLiCharModelCreateParam::IsEnabledMipMap(FFLResolution resolution)
     return resolution & FFL_RESOLUTION_MIP_MAP_ENABLE_MASK;
 }
 
-bool FFLiCharModelCreateParam::CheckModelDesc(const FFLCharModelDesc* pDesc, bool isShaderAvailable)
+bool FFLiCharModelCreateParam::CheckModelDesc(const FFLCharModelDesc* pDesc)
 {
     if (pDesc == NULL)
         return false;
@@ -45,15 +44,12 @@ bool FFLiCharModelCreateParam::CheckModelDesc(const FFLCharModelDesc* pDesc, boo
     if ((pDesc->modelFlag & 7) == 0)
         return false;
 
-    if (pDesc->compressTexture && !isShaderAvailable)
-        return false;
-
     return true;
 }
 
 u32 FFLiCharModelCreateParam::GetBufferSize(const FFLCharModelDesc* pDesc) const
 {
-    if (!CheckModelDesc(pDesc, m_IsShaderAvailable))
+    if (!CheckModelDesc(pDesc))
         return 0;
 
     FFLResolution _resolution = pDesc->resolution;
@@ -69,8 +65,8 @@ u32 FFLiCharModelCreateParam::GetBufferSize(const FFLCharModelDesc* pDesc) const
     for (u32 shapePartsType = 0; shapePartsType < FFLI_SHAPE_PARTS_TYPE_MAX; ++shapePartsType)
         bufferSize += m_pResourceManager->GetShapeAlignedMaxSize(resourceType, FFLiShapePartsType(shapePartsType));
 
-    bufferSize += FFLiGetBufferSizeFacelineTexture(resolution, isEnabledMipMap, pDesc->compressTexture);
-    bufferSize += FFLiGetBufferSizeMaskTextures(pDesc->expressionFlag, resolution, isEnabledMipMap, pDesc->compressTexture);
+    bufferSize += FFLiGetBufferSizeFacelineTexture(resolution, isEnabledMipMap);
+    bufferSize += FFLiGetBufferSizeMaskTextures(pDesc->expressionFlag, resolution, isEnabledMipMap);
     bufferSize += FFLiGetTextureMaxSizeWithAlign(m_pResourceManager, resourceType, FFLI_TEXTURE_PARTS_TYPE_CAP);
     bufferSize += FFLiGetTextureMaxSizeWithAlign(m_pResourceManager, resourceType, FFLI_TEXTURE_PARTS_TYPE_NOSELINE);
     bufferSize += FFLiGetTextureMaxSizeWithAlign(m_pResourceManager, resourceType, FFLI_TEXTURE_PARTS_TYPE_GLASS);
@@ -80,7 +76,7 @@ u32 FFLiCharModelCreateParam::GetBufferSize(const FFLCharModelDesc* pDesc) const
 
 u32 FFLiCharModelCreateParam::GetTempBufferSize(const FFLCharModelDesc* pDesc) const
 {
-    if (!CheckModelDesc(pDesc, m_IsShaderAvailable))
+    if (!CheckModelDesc(pDesc))
         return 0;
 
     FFLResolution _resolution = pDesc->resolution;
@@ -92,27 +88,10 @@ u32 FFLiCharModelCreateParam::GetTempBufferSize(const FFLCharModelDesc* pDesc) c
     if (!m_pResourceManager->IsValid(resourceType))
         return 0;
 
-    u32 bufferSize = FFLiGetTempBufferSizeMaskTextures(pDesc->expressionFlag, resolution, isEnabledMipMap, pDesc->compressTexture, m_pResourceManager, resourceType);
+    u32 bufferSize = FFLiGetTempBufferSizeMaskTextures(pDesc->expressionFlag, resolution, isEnabledMipMap, m_pResourceManager, resourceType);
     bufferSize += sizeof(FFLiTextureTempObject);
-    bufferSize += FFLiGetTempBufferSizeFacelineTexture(resolution, isEnabledMipMap, pDesc->compressTexture, m_pResourceManager, resourceType);
-    bufferSize += GetCompressBufferSize(pDesc);
+    bufferSize += FFLiGetTempBufferSizeFacelineTexture(resolution, isEnabledMipMap, m_pResourceManager, resourceType);
     bufferSize += FFLiResourceUncompressBuffer::GetBufferSize(m_pResourceManager, resourceType);
 
     return bufferSize;
-}
-
-u32 FFLiCharModelCreateParam::GetCompressBufferSize(const FFLCharModelDesc* pDesc) const
-{
-    if (pDesc->compressTexture)
-    {
-        FFLResolution _resolution = pDesc->resolution;
-        u32 resolution = GetResolution(_resolution);
-        bool isEnabledMipMap = IsEnabledMipMap(_resolution);
-
-        u32 bufferSize  = FFLiMax(FFLiGetCompressBufferSizeFacelineTexture  (resolution, isEnabledMipMap), 0u);
-        bufferSize      = FFLiMax(FFLiGetCompressBufferSizeMaskTexture      (resolution, isEnabledMipMap), bufferSize);
-
-        return bufferSize;
-    }
-    return 0;
 }

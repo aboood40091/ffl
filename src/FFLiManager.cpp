@@ -1,6 +1,5 @@
 #include <nn/ffl/FFLResourceDesc.h>
 
-#include <nn/ffl/FFLiCompressor.h>
 #include <nn/ffl/FFLiDatabaseFile.h>
 #include <nn/ffl/FFLiManager.h>
 #include <nn/ffl/FFLiResourceHeader.h>
@@ -8,17 +7,9 @@
 #include <nn/ffl/detail/FFLiBufferAllocator.h>
 #include <nn/ffl/detail/FFLiFileWriteBuffer.h>
 
+#include <filedevice/rio_FileDevice.h>
+
 #include <new>
-
-// --------------------------------------------------------------------------
-
-#include <nn/ffl/version.h>
-#include <nn/middleware.h>
-
-#define MACRO_TO_STR_2(x)   #x
-#define MACRO_TO_STR(x)     MACRO_TO_STR_2(x)
-
-#define FFL_MIDDLEWARE_SYMBOL "FFL_" MACRO_TO_STR(FFL_VERSION_MAJOR) "_" MACRO_TO_STR(FFL_VERSION_MINOR) "_" MACRO_TO_STR(FFL_VERSION_MICRO)
 
 // --------------------------------------------------------------------------
 
@@ -40,7 +31,6 @@ FFLResult InitResImpl(void* pBuffer, const FFLInitDesc* pInitDesc, const FFLReso
 u32 TempMemorySize(bool);
 
 FFLiFileWriteBuffer* CreateFileWriteBuffer(FFLiBufferAllocator* pAllocator);
-FFLiCompressor* CreateCompressor(const void* pShaderData, FFLiBufferAllocator* pAllocator);
 
 }
 
@@ -94,7 +84,7 @@ FFLResult FFLiManager::Create(void* pBuffer, const FFLInitDesc* pInitDesc, const
     FFLResult result = g_FFLManager->AfterConstruct(pInitDesc, pResDesc);
     if (result != FFL_RESULT_OK && result != FFL_RESULT_ODB_EMPTY)
         Destroy();
-    
+
     return result;
 }
 
@@ -132,13 +122,6 @@ u32 FFLiManager::GetBufferSize(const FFLInitDesc* pInitDesc)
     ret     += sizeof(FFLiResourceMultiHeader);
     ret     += sizeof(FFLiDatabaseFile);
     ret     += sizeof(FFLiFileWriteBuffer);
-
-    if (pInitDesc->pShaderData != NULL)
-    {
-        ret += sizeof(FFLiCompressor);
-        ret += FFLiCompressor::GetBufferSize(pInitDesc->pShaderData);
-    }
-
     ret     += FFLiCopySurface::GetBufferSize();
     ret     += TempMemorySize(pInitDesc->_10);
 
@@ -146,14 +129,13 @@ u32 FFLiManager::GetBufferSize(const FFLInitDesc* pInitDesc)
 }
 
 FFLiManager::FFLiManager(const FFLInitDesc* pInitDesc, FFLiBufferAllocator* pAllocator)
-    : m_pResourceMultiHeader(static_cast<FFLiResourceMultiHeader*>(pAllocator->Allocate(sizeof(FFLiResourceMultiHeader), FS_IO_BUFFER_ALIGN)))
-    , m_pDatabaseFile(static_cast<FFLiDatabaseFile*>(pAllocator->Allocate(sizeof(FFLiDatabaseFile), FS_IO_BUFFER_ALIGN)))
+    : m_pResourceMultiHeader(static_cast<FFLiResourceMultiHeader*>(pAllocator->Allocate(sizeof(FFLiResourceMultiHeader), rio::FileDevice::cBufferMinAlignment)))
+    , m_pDatabaseFile(static_cast<FFLiDatabaseFile*>(pAllocator->Allocate(sizeof(FFLiDatabaseFile), rio::FileDevice::cBufferMinAlignment)))
     , m_pFileWriteBuffer(CreateFileWriteBuffer(pAllocator))
-    , m_ResourceManager(m_pResourceMultiHeader, &m_FsClient)
-    , m_DatabaseManager(m_pDatabaseFile, m_pFileWriteBuffer, &m_SystemContext, &m_FsClient, &m_Allocator)
-    , m_CharModelCreateParam(&m_DatabaseManager, &m_ResourceManager, &m_ShaderCallback, pInitDesc->pShaderData != NULL)
+    , m_ResourceManager(m_pResourceMultiHeader)
+    , m_DatabaseManager(m_pDatabaseFile, m_pFileWriteBuffer, &m_SystemContext, &m_Allocator)
+    , m_CharModelCreateParam(&m_DatabaseManager, &m_ResourceManager, &m_ShaderCallback)
     , m_InitDesc(*pInitDesc)
-    , m_pCompressor(CreateCompressor(pInitDesc->pShaderData, pAllocator))
     , m_CopySurface(pAllocator)
     , m_IsSetupGPU(false)
     , _29ad(0)
@@ -171,27 +153,15 @@ FFLResult FFLiManager::AfterConstruct(const FFLInitDesc* pInitDesc, const FFLRes
     if (!m_SystemContext.AfterConstruct())
         return FFL_RESULT_UNKNOWN_17;
 
-    if (!m_FsClient.Init(pInitDesc->pChangeParams) != FS_STATUS_OK)
-        return FFL_RESULT_FS_ERROR;
-
-    if (m_pCompressor != NULL)
-        if (!m_pCompressor->SetupCPU(pInitDesc->pShaderData))
-            return FFL_RESULT_ERROR;
-
     FFLResult result = m_ResourceManager.AfterConstruct();
     if (result != FFL_RESULT_OK)
         return result;
 
     if (pResDesc == NULL)
     {
-        FFLiFsCommandBuffer* pCommandBuffer = static_cast<FFLiFsCommandBuffer*>(m_Allocator.Allocate(FFLI_FS_COMMAND_SIZE));
-        result = m_ResourceManager.LoadResourceHeader(pCommandBuffer);
-        m_Allocator.Free(pCommandBuffer);
+        result = m_ResourceManager.LoadResourceHeader();
         if (result != FFL_RESULT_OK)
-        {
-            m_FsClient.Shutdown();
             return result;
-        }
     }
     else
     {
@@ -199,10 +169,7 @@ FFLResult FFLiManager::AfterConstruct(const FFLInitDesc* pInitDesc, const FFLRes
         {
             result = m_ResourceManager.AttachCache(pResDesc->pData[i], pResDesc->size[i], FFLResourceType(i));
             if (result != FFL_RESULT_OK)
-            {
-                m_FsClient.Shutdown();
                 return result;
-            }
         }
     }
 
@@ -216,18 +183,13 @@ FFLResult FFLiManager::AfterConstruct(const FFLInitDesc* pInitDesc, const FFLRes
 FFLResult FFLiManager::BeforeDestruct()
 {
     FFLResult result = FFL_RESULT_OK;
-
     SetResultIfError(&result, m_DatabaseManager.BeforeDestruct());
-
-    if (m_FsClient.ShutdownIfValid() != FS_STATUS_OK)
-        SetResultIfError(&result, FFL_RESULT_FS_ERROR);
-
     return result;
 }
 
 bool FFLiManager::CanInitCharModel() const
 {
-    return m_CopySurface.CanInitCharModel(m_IsSetupGPU, m_pCompressor != NULL);
+    return m_CopySurface.CanInitCharModel(m_IsSetupGPU);
 }
 
 void FFLiManager::SetupGPU()
@@ -235,9 +197,6 @@ void FFLiManager::SetupGPU()
     m_IsSetupGPU = true;
 
     m_CopySurface.SetupGPU();
-
-    if (m_pCompressor != NULL)
-        m_pCompressor->SetupGPU();
 }
 
 FFLResult FFLiManager::FlushQuota(bool force)
@@ -249,12 +208,9 @@ namespace {
 
 FFLResult InitResImpl(void* pBuffer, const FFLInitDesc* pInitDesc, const FFLResourceDesc* pResDesc)
 {
-    NN_DEFINE_MIDDLEWARE(moduleInfo, "Nintendo", FFL_MIDDLEWARE_SYMBOL);
-    NN_USING_MIDDLEWARE(moduleInfo);
-
     if (FFLiManager::IsConstruct())
         return FFL_RESULT_OK;
-    
+
     return FFLiManager::Create(pBuffer, pInitDesc, pResDesc);
 }
 
@@ -266,18 +222,10 @@ u32 TempMemorySize(bool b)
 
 FFLiFileWriteBuffer* CreateFileWriteBuffer(FFLiBufferAllocator* pAllocator)
 {
-    if (!pAllocator->CanAllocate(sizeof(FFLiFileWriteBuffer), FS_IO_BUFFER_ALIGN))
+    if (!pAllocator->CanAllocate(sizeof(FFLiFileWriteBuffer), rio::FileDevice::cBufferMinAlignment))
         return NULL;
 
-    return static_cast<FFLiFileWriteBuffer*>(pAllocator->Allocate(sizeof(FFLiFileWriteBuffer), FS_IO_BUFFER_ALIGN));
-}
-
-FFLiCompressor* CreateCompressor(const void* pShaderData, FFLiBufferAllocator* pAllocator)
-{
-    if (pShaderData == NULL)
-        return NULL;
-
-    return new (pAllocator->Allocate(sizeof(FFLiCompressor), 4)) FFLiCompressor(pAllocator, pShaderData);
+    return static_cast<FFLiFileWriteBuffer*>(pAllocator->Allocate(sizeof(FFLiFileWriteBuffer), rio::FileDevice::cBufferMinAlignment));
 }
 
 }

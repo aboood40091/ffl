@@ -1,7 +1,10 @@
 #ifndef FFLI_COPY_SURFACE_SHADER_H_
 #define FFLI_COPY_SURFACE_SHADER_H_
 
-#include <nn/ffl/FFLiUtilShader.h>
+#include <nn/ffl/types.h>
+
+#include <common/aglTextureSampler.h>
+#include <gpu/rio_Shader.h>
 
 class FFLiBufferAllocator;
 
@@ -16,17 +19,13 @@ public:
 
     void Bind() const;
 
-    void SetTexture(const GX2Texture* pGX2Texture, u32 mipLevel);
-
-    static u32 GetBufferSize();
+    void SetTexture(const agl::TextureData& textureData, u32 mipLevel);
 
 private:
-    FFLiUtilShader::FetchShader m_FetchShader;
-    GX2VertexShader*            m_pVertexShader;
-    GX2PixelShader*             m_pPixelShader;
-    GX2Sampler                  m_Sampler;
-    u32                         m_SamplerLocation;
+    rio::Shader         m_Shader;
+    agl::TextureSampler m_Sampler;
+    u32                 m_SamplerLocation;
 };
-NN_STATIC_ASSERT(sizeof(FFLiCopySurfaceShader) == 0x3C);
+//NN_STATIC_ASSERT(sizeof(FFLiCopySurfaceShader) == 0x3C);
 
 #endif // FFLI_COPY_SURFACE_SHADER_H_

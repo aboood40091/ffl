@@ -3,13 +3,13 @@
 
 #include <nn/ffl/FFLResult.h>
 
-#include <cafe/fs.h>
+#include <filedevice/rio_FileDevice.h>
 
 u64 FFLiGetMiiStudioTitleID();
 
-FSStatus FFLiGetResourcePath(char* pDst, u32 size, const char* filename);
-FSStatus FFLiGetDatabasePath(char* pDst, u32 size, u64 titleID, const char* filename);
+rio::RawErrorCode FFLiGetResourcePath(char* pDst, u32 size, const char* filename);
+rio::RawErrorCode FFLiGetDatabasePath(char* pDst, u32 size, u64 titleID, const char* filename);
 
-FFLResult FFLiConvertFSStatusToFFLResult(FSStatus status);
+FFLResult FFLiConvertFSStatusToFFLResult(rio::RawErrorCode status);
 
 #endif // FFLI_PATH_H_

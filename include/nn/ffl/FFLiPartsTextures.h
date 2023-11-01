@@ -4,7 +4,7 @@
 #include <nn/ffl/FFLExpression.h>
 #include <nn/ffl/FFLResult.h>
 
-#include <cafe/gx2.h>
+#include <common/aglTextureData.h>
 
 enum FFLiEyeTextureType
 {
@@ -29,11 +29,11 @@ enum FFLiMouthTextureType
 
 struct FFLiPartsTextures
 {
-    GX2Texture* pTexturesEye[FFLI_EYE_TEXTURE_TYPE_MAX];
-    GX2Texture* pTexturesMouth[FFLI_MOUTH_TEXTURE_TYPE_MAX];
-    GX2Texture* pTextureEyebrow;
-    GX2Texture* pTextureMustache;
-    GX2Texture* pTextureMole;
+    agl::TextureData*   pTexturesEye[FFLI_EYE_TEXTURE_TYPE_MAX];
+    agl::TextureData*   pTexturesMouth[FFLI_MOUTH_TEXTURE_TYPE_MAX];
+    agl::TextureData*   pTextureEyebrow;
+    agl::TextureData*   pTextureMustache;
+    agl::TextureData*   pTextureMole;
 };
 NN_STATIC_ASSERT(sizeof(FFLiPartsTextures) == 0x38);
 

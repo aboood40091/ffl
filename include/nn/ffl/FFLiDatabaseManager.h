@@ -15,7 +15,7 @@ class   FFLiSystemContext;
 class FFLiDatabaseManager
 {
 public:
-    FFLiDatabaseManager(FFLiDatabaseFile* pFile, FFLiFileWriteBuffer* pWriteBuffer, FFLiSystemContext* pContext, FFLiFsClient* pClient, FFLiAllocator* pAllocator);
+    FFLiDatabaseManager(FFLiDatabaseFile* pFile, FFLiFileWriteBuffer* pWriteBuffer, FFLiSystemContext* pContext, FFLiAllocator* pAllocator);
     ~FFLiDatabaseManager();
 
     FFLiDatabaseFileAccessor& GetDatabaseFileAccessor()

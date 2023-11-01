@@ -2,18 +2,27 @@
 #include <nn/ffl/FFLiPath.h>
 #include <nn/ffl/FFLiSystemContext.h>
 
-#include <nn/act.h>
-
 #include <cstring>
+
+#if RIO_IS_CAFE
+
+#include <nn/act.h>
 
 namespace nn { namespace act {
 
 // Thanks for deprecating this, Nintendo... :/
 
-Result GetTransferableIdEx(u64* pTransferableId, u32 uniqueId, u8 slotNo);
+Result
+GetTransferableIdEx(u64* pTransferableId, u32 uniqueId, u8 slotNo)
+#ifdef __WUT__
+   asm("GetTransferableIdEx__Q2_2nn3actFPULUiUc");
+#else
+;
+#endif // __WUT__
 
 } } // namespace nn::act
 
+#endif // RIO_IS_CAFE
 
 FFLiSystemContext::FFLiSystemContext()
 {
@@ -50,6 +59,7 @@ u64 FFLiSystemContext::TitleID() const
 
 bool FFLiSystemContext::AfterConstruct()
 {
+#if RIO_IS_CAFE
     if (nn::act::Initialize().IsFailure())
         return false;
 
@@ -63,6 +73,9 @@ bool FFLiSystemContext::AfterConstruct()
         return false;
 
     std::memcpy(&m_AuthorID, &id, sizeof(FFLiAuthorID));
+#else
+    std::memset(&m_AuthorID, 0, sizeof(FFLiAuthorID));
+#endif // RIO_IS_CAFE
     m_TitleID = FFLiGetMiiStudioTitleID();
     return true;
 }

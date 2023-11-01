@@ -21,7 +21,7 @@ void FFLiBufferAllocator::Init(void* pBuffer, u32 size)
 void* FFLiBufferAllocator::Allocate(u32 size, u32 alignment)
 {
     u32 bufferPtr = (u32)m_pBuffer;
-    void* ptr = (void*)(bufferPtr + (alignment - 1) & ~(alignment - 1));
+    void* ptr = (void*)((bufferPtr + (alignment - 1)) & ~(alignment - 1));
     m_pBuffer = (void*)((u32)ptr + size);
     m_Size -= (u32)ptr - bufferPtr + size;
     return ptr;

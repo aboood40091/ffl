@@ -5,7 +5,6 @@
 
 #include <nn/ffl/FFLiPartsTextures.h>
 
-class   FFLiCompressorParam;
 struct  FFLiRawMaskDrawParam;
 struct  FFLiRenderTexture;
 
@@ -13,8 +12,8 @@ struct FFLiMaskTexturesTempObject
 {
     FFLiPartsTextures       partsTextures;
     FFLiRawMaskDrawParam*   pRawMaskDrawParam[FFL_EXPRESSION_MAX];
-    FFLiRenderTexture*      pRenderTexture;
-    FFLiCompressorParam*    pCompressorParam[FFL_EXPRESSION_MAX];
+    void*                   _84;
+    void*                   _88[FFL_EXPRESSION_MAX];    // Removed
 };
 NN_STATIC_ASSERT(sizeof(FFLiMaskTexturesTempObject) == 0xD4);
 

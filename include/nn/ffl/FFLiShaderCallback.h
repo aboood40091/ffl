@@ -3,7 +3,7 @@
 
 #include <nn/ffl/types.h>
 
-#include <cafe/mat.h>
+#include <math/rio_MathTypes.h>
 
 struct FFLDrawParam;
 struct FFLShaderCallback;
@@ -23,7 +23,7 @@ public:
 
     void Set(const FFLShaderCallback* pCallback);
 
-    void CallSetMatrix(const Mat44& mat) const;
+    void CallSetMatrix(const rio::BaseMtx44f& mat) const;
     void CallDraw(const FFLDrawParam& drawParam) const;
     void CallSetContextState() const;
 

@@ -4,7 +4,7 @@
 #include <nn/ffl/FFLDrawParam.h>
 #include <nn/ffl/FFLVec.h>
 
-#include <cafe/mat.h>
+#include <math/rio_MathTypes.h>
 
 struct FFLiRawMaskPartsDrawParam : FFLDrawParam
 {
@@ -32,7 +32,7 @@ u32 FFLiGetBufferRawMaskParts();
 class FFLiBufferAllocator;
 class FFLiShaderCallback;
 
-void FFLiInitDrawParamRawMaskParts(FFLiRawMaskPartsDrawParam* pDrawParam, const FFLiRawMaskPartsDesc* pDesc, const Mat44* pProjMatrix, FFLiBufferAllocator* pAllocator);
+void FFLiInitDrawParamRawMaskParts(FFLiRawMaskPartsDrawParam* pDrawParam, const FFLiRawMaskPartsDesc* pDesc, const rio::BaseMtx44f* pProjMatrix, FFLiBufferAllocator* pAllocator);
 void FFLiInvalidateDrawParamRawMaskParts(FFLiRawMaskPartsDrawParam* pDrawParam);
 void FFLiInitDrawParamRawMaskPartsFill(FFLiRawMaskPartsDrawParam* pDrawParam, FFLiBufferAllocator* pAllocator);
 void FFLiDrawRawMaskParts(const FFLiRawMaskPartsDrawParam* pDrawParam, const FFLiShaderCallback* pCallback);

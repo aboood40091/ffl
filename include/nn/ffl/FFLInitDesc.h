@@ -3,16 +3,14 @@
 
 #include <nn/ffl/FFLFontRegion.h>
 
-#include <cafe/fs.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 typedef struct FFLInitDesc
 {
-    const void*             pShaderData;
-    FSStateChangeParams*    pChangeParams;
+    const void*             _0; // Removed
+    void*                   _4; // Removed
     FFLFontRegion           fontRegion;
     BOOL                    _c;
     BOOL                    _10;

@@ -7,7 +7,6 @@
 #include <nn/ffl/FFLiCharModel.h>
 #include <nn/ffl/FFLiCharModelCreateParam.h>
 #include <nn/ffl/FFLiCharModelCreator.h>
-#include <nn/ffl/FFLiCompressor.h>
 #include <nn/ffl/FFLiFacelineTexture.h>
 #include <nn/ffl/FFLiResourceLoader.h>
 #include <nn/ffl/FFLiResourceLoaderBuffer.h>
@@ -17,12 +16,13 @@
 #include <nn/ffl/FFLiShape.h>
 #include <nn/ffl/FFLiShapePartsType.h>
 #include <nn/ffl/FFLiShapeType.h>
-#include <nn/ffl/FFLiTemp.h>
 #include <nn/ffl/FFLiTexture.h>
 #include <nn/ffl/FFLiTextureTempObject.h>
 #include <nn/ffl/FFLiUtil.h>
 
 #include <nn/ffl/detail/FFLiBufferAllocator.h>
+
+#include <math/rio_Matrix.h>
 
 #include <cstring>
 
@@ -69,10 +69,10 @@ void SetupDrawParam(FFLiCharModel* pModel);
 
 FFLResult FFLiCharModelCreator::ExecuteCPUStep(FFLiCharModel* pModel, const FFLCharModelSource* pSource, const FFLCharModelDesc* pDesc, FFLCharModelBuffer* pBuffer)
 {
-    if (!FFLiCharModelCreateParam::CheckModelDesc(pDesc, m_pManager->GetCompressor() != NULL))
+    if (!FFLiCharModelCreateParam::CheckModelDesc(pDesc))
         return FFL_RESULT_ERROR;
 
-    std::memset(pModel, 0, sizeof(FFLiCharModel));
+    std::memset((char*)pModel, 0, sizeof(FFLiCharModel));
 
     pModel->charModelDesc = *pDesc;
     pModel->pBuffer = pBuffer->pBuffer;
@@ -103,21 +103,17 @@ FFLResult FFLiCharModelCreator::ExecuteCPUStep(FFLiCharModel* pModel, const FFLC
     pModel->pTextureTempObject = static_cast<FFLiTextureTempObject*>(tempAllocator.Allocate(sizeof(FFLiTextureTempObject), 4));
 
     FFLiRenderTextureBuffer renderTextureBuffer;
-    SetupRenderTextureBuffer(renderTextureBuffer, pDesc, &tempAllocator);
+    std::memset(&renderTextureBuffer, 0, sizeof(FFLiRenderTextureBuffer));
 
-    pModel->expression = FFLiInitMaskTextures(&pModel->maskTextures, pDesc->expressionFlag, resolution, isEnabledMipMap, pDesc->compressTexture, &allocator);
+    pModel->expression = FFLiInitMaskTextures(&pModel->maskTextures, pDesc->expressionFlag, resolution, isEnabledMipMap, &allocator);
 
-    bool compressUseUB = false;
-    if (m_pManager->GetCompressor() != NULL)
-        compressUseUB = m_pManager->GetCompressor()->UseUB();
-
-    result = FFLiInitTempObjectMaskTextures(&pModel->pTextureTempObject->maskTextures, &pModel->maskTextures, &pModel->charInfo, pDesc->expressionFlag, resolution, isEnabledMipMap, pDesc->compressTexture, compressUseUB, &resLoader, &tempAllocator, &renderTextureBuffer);
+    result = FFLiInitTempObjectMaskTextures(&pModel->pTextureTempObject->maskTextures, &pModel->maskTextures, &pModel->charInfo, pDesc->expressionFlag, resolution, isEnabledMipMap, &resLoader, &tempAllocator, &renderTextureBuffer);
     if (result != FFL_RESULT_OK)
         return result;
 
-    FFLiInitFacelineTexture(&pModel->facelineRenderTexture, resolution, isEnabledMipMap, pDesc->compressTexture, &allocator);
+    FFLiInitFacelineTexture(&pModel->facelineRenderTexture, resolution, isEnabledMipMap, &allocator);
 
-    result = FFLiInitTempObjectFacelineTexture(&pModel->pTextureTempObject->facelineTexture, &pModel->facelineRenderTexture, &pModel->charInfo, resolution, isEnabledMipMap, pDesc->compressTexture, compressUseUB, &resLoader, &tempAllocator, &renderTextureBuffer);
+    result = FFLiInitTempObjectFacelineTexture(&pModel->pTextureTempObject->facelineTexture, &pModel->facelineRenderTexture, &pModel->charInfo, resolution, isEnabledMipMap, &resLoader, &tempAllocator, &renderTextureBuffer);
     if (result != FFL_RESULT_OK)
         return result;
 
@@ -138,19 +134,16 @@ FFLResult FFLiCharModelCreator::ExecuteCPUStep(FFLiCharModel* pModel, const FFLC
 void FFLiCharModelCreator::ExecuteGPUStep(FFLiCharModel* pModel, const FFLShaderCallback* pCallback)
 {
     u32 resolution = FFLiCharModelCreateParam::GetResolution(pModel->charModelDesc.resolution);
-    bool isEnabledMipMap = FFLiCharModelCreateParam::IsEnabledMipMap(pModel->charModelDesc.resolution);
 
     FFLiShaderCallback shaderCallback;
     shaderCallback.Set(pCallback);
 
     shaderCallback.CallSetContextState();
 
-    Mat44 mat;
-    MAT44Identity(&mat);
-    shaderCallback.CallSetMatrix(mat);
+    shaderCallback.CallSetMatrix(rio::Matrix44f::ident);
 
-    FFLiRenderMaskTextures(&pModel->maskTextures, &pModel->pTextureTempObject->maskTextures, &shaderCallback, &m_pManager->GetCopySurface(), &m_pManager->GetCompressor()->GetCompressorImplBC3());
-    FFLiRenderFacelineTexture(&pModel->facelineRenderTexture, &pModel->charInfo, resolution, &pModel->pTextureTempObject->facelineTexture, &shaderCallback, &m_pManager->GetCopySurface(), &m_pManager->GetCompressor()->GetCompressorImplBC1());
+    FFLiRenderMaskTextures(&pModel->maskTextures, &pModel->pTextureTempObject->maskTextures, &shaderCallback, &m_pManager->GetCopySurface());
+    FFLiRenderFacelineTexture(&pModel->facelineRenderTexture, &pModel->charInfo, resolution, &pModel->pTextureTempObject->facelineTexture, &shaderCallback, &m_pManager->GetCopySurface());
 
     AfterExecuteGPUStep(pModel);
 
@@ -196,9 +189,9 @@ FFLiShapeType ConvertShapePartsTypeToShapeType(FFLiShapePartsType partsType)
         return FFLI_SHAPE_TYPE_OPA_FOREHEAD_1;
     case FFLI_SHAPE_PARTS_TYPE_FOREHEAD_2:
         return FFLI_SHAPE_TYPE_OPA_FOREHEAD_2;
+    default:
+        return FFLI_SHAPE_TYPE_MAX;
     }
-
-    return FFLI_SHAPE_TYPE_MAX;
 }
 
 void UpdateBoundingBox(FFLBoundingBox* pDst, const FFLBoundingBox* pSrc)
@@ -432,9 +425,9 @@ const FFLiShapeTypeInfo& GetShapeTypeInfo(FFLModelType type)
         return SHAPE_TYPE_INFO_0;
     case FFL_MODEL_TYPE_1:
         return SHAPE_TYPE_INFO_1;
+    default:
+        return SHAPE_TYPE_INFO_0;
     }
-
-    return SHAPE_TYPE_INFO_0;
 }
 
 static const FFLModelType MODEL_TYPE[2] = {
@@ -447,7 +440,7 @@ void SetupDrawParam(FFLiCharModel* pModel)
     FFLCullMode hairCullMode = FFL_CULL_MODE_BACK;
 
     pModel->drawParam[FFLI_SHAPE_TYPE_OPA_FACELINE].cullMode = FFL_CULL_MODE_BACK;
-    FFLiInitModulateShapeFaceline(&pModel->drawParam[FFLI_SHAPE_TYPE_OPA_FACELINE].modulateParam, pModel->facelineRenderTexture.gx2Texture);
+    FFLiInitModulateShapeFaceline(&pModel->drawParam[FFLI_SHAPE_TYPE_OPA_FACELINE].modulateParam, pModel->facelineRenderTexture.textureData);
 
     pModel->drawParam[FFLI_SHAPE_TYPE_OPA_BEARD].cullMode = FFL_CULL_MODE_BACK;
     FFLiInitModulateShapeBeard(&pModel->drawParam[FFLI_SHAPE_TYPE_OPA_BEARD].modulateParam, pModel->charInfo.parts.beardColor);
@@ -472,7 +465,7 @@ void SetupDrawParam(FFLiCharModel* pModel)
             drawParamHair.cullMode = hairCullMode;
             FFLiInitModulateShapeHair(&drawParamHair.modulateParam, pModel->charInfo.parts.hairColor);
 
-            const GX2Texture* pCapTexture = pModel->pCapTexture;
+            const agl::TextureData* pCapTexture = pModel->pCapTexture;
             if (pCapTexture != NULL)
             {
                 FFLDrawParam& drawParamCap = pModel->drawParam[shapeTypeInfo.capIndex];
@@ -486,17 +479,17 @@ void SetupDrawParam(FFLiCharModel* pModel)
     if (pMaskRenderTexture != NULL)
     {
         pModel->drawParam[FFLI_SHAPE_TYPE_XLU_MASK].cullMode = FFL_CULL_MODE_BACK;
-        FFLiInitModulateShapeMask(&pModel->drawParam[FFLI_SHAPE_TYPE_XLU_MASK].modulateParam, pMaskRenderTexture->gx2Texture);
+        FFLiInitModulateShapeMask(&pModel->drawParam[FFLI_SHAPE_TYPE_XLU_MASK].modulateParam, pMaskRenderTexture->textureData);
     }
 
-    const GX2Texture* pNoselineTexture = pModel->pNoselineTexture;
+    const agl::TextureData* pNoselineTexture = pModel->pNoselineTexture;
     if (pNoselineTexture != NULL)
     {
         pModel->drawParam[FFLI_SHAPE_TYPE_XLU_NOSELINE].cullMode = FFL_CULL_MODE_BACK;
         FFLiInitModulateShapeNoseline(&pModel->drawParam[FFLI_SHAPE_TYPE_XLU_NOSELINE].modulateParam, *pNoselineTexture);
     }
 
-    const GX2Texture* pGlassTexture = pModel->pGlassTexture;
+    const agl::TextureData* pGlassTexture = pModel->pGlassTexture;
     if (pGlassTexture != NULL)
     {
         pModel->drawParam[FFLI_SHAPE_TYPE_XLU_GLASS].cullMode = FFL_CULL_MODE_NONE;
@@ -517,13 +510,13 @@ namespace {
 void InvalidateTextures(FFLiCharModel* pModel)
 {
     if (pModel->pCapTexture != NULL)
-        FFLiInvalidateTexture(pModel->pCapTexture);
+        pModel->pCapTexture->invalidateGPUCache();
 
     if (pModel->pNoselineTexture != NULL)
-        FFLiInvalidateTexture(pModel->pNoselineTexture);
+        pModel->pNoselineTexture->invalidateGPUCache();
 
     if (pModel->pGlassTexture != NULL)
-        FFLiInvalidateTexture(pModel->pGlassTexture);
+        pModel->pGlassTexture->invalidateGPUCache();
 }
 
 }
@@ -532,17 +525,4 @@ void FFLiCharModelCreator::AfterExecuteGPUStep(FFLiCharModel* pModel)
 {
     InvalidateShapes(pModel);
     InvalidateTextures(pModel);
-
-    FFLiTempSetContextState(NULL);
-}
-
-void FFLiCharModelCreator::SetupRenderTextureBuffer(FFLiRenderTextureBuffer& renderTextureBuffer, const FFLCharModelDesc* pDesc, FFLiBufferAllocator* pAllocator) const
-{
-    std::memset(&renderTextureBuffer, 0, sizeof(FFLiRenderTextureBuffer));
-
-    if (pDesc->compressTexture)
-    {
-        renderTextureBuffer.size = m_pCharModelCreateParam->GetCompressBufferSize(pDesc);
-        renderTextureBuffer.pBuffer = pAllocator->Allocate(renderTextureBuffer.size);
-    }
 }

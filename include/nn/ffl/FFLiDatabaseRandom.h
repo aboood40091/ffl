@@ -1,11 +1,10 @@
 #ifndef FFLI_DATABASE_RANDOM_H_
 #define FFLI_DATABASE_RANDOM_H_
 
+#include <nn/ffl/FFLAge.h>
+#include <nn/ffl/FFLGender.h>
+#include <nn/ffl/FFLRace.h>
 #include <nn/ffl/FFLResult.h>
-
-enum FFLAge;
-enum FFLGender;
-enum FFLRace;
 
 struct  FFLiCharInfo;
 class   FFLiMiddleDB;

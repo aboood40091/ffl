@@ -27,9 +27,9 @@ struct FFLiCharModel
     FFLiTextureTempObject*  pTextureTempObject;
     FFLDrawParam            drawParam[FFLI_SHAPE_TYPE_MAX];
     FFLiRenderTexture       facelineRenderTexture;
-    GX2Texture*             pCapTexture;
-    GX2Texture*             pGlassTexture;
-    GX2Texture*             pNoselineTexture;
+    agl::TextureData*       pCapTexture;
+    agl::TextureData*       pGlassTexture;
+    agl::TextureData*       pNoselineTexture;
     FFLiMaskTextures        maskTextures;
     FFLVec3                 beardPos;
     FFLVec3                 hairPos;
@@ -38,7 +38,11 @@ struct FFLiCharModel
     FFLModelType            modelType;
     FFLBoundingBox          boundingBox[3];
 };
-NN_STATIC_ASSERT(sizeof(FFLiCharModel) == 0x7DC);
+#if RIO_IS_CAFE
+NN_STATIC_ASSERT(sizeof(FFLiCharModel) == 0xA70);
+#else
+NN_STATIC_ASSERT(sizeof(FFLiCharModel) == 0x950);
+#endif // RIO_IS_CAFE
 
 struct FFLCharModelSource;
 struct FFLCharModelBuffer;

@@ -69,8 +69,8 @@ u32 FFLiCoordinate::FlipValue(FFLiSnorm10_10_10_2* pVec, u32 value)
         return 0x200;
 
     else
-        return 0x400 - value & 0x3ff;
-    
+        return (0x400 - value) & 0x3ff;
+
 }
 
 s8 FFLiCoordinate::FlipValue(FFLiSnorm8_8_8_8* pVec, s8 value)

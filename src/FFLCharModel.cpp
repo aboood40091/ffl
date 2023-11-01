@@ -3,6 +3,8 @@
 #include <nn/ffl/FFLiCharModel.h>
 #include <nn/ffl/FFLiManager.h>
 
+static_assert(sizeof(FFLiCharModel) == sizeof(FFLCharModel));
+
 u32 FFLGetBufferSizeCharModel(const FFLCharModelDesc* pDesc)
 {
     return FFLiGetBufferSizeCharModel(pDesc);

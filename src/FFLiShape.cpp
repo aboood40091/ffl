@@ -1,6 +1,5 @@
 #include <nn/ffl/FFLiCharModel.h>
 #include <nn/ffl/FFLiCoordinate.h>
-#include <nn/ffl/FFLiInvalidate.h>
 #include <nn/ffl/FFLiResourceLoader.h>
 #include <nn/ffl/FFLiShape.h>
 
@@ -9,6 +8,12 @@
 #include <nn/ffl/detail/FFLiResourceShape.h>
 
 #include <cstring>
+
+#include <gpu/rio_VertexStream.h>
+
+#if RIO_IS_CAFE
+#include <cafe/gx2.h>
+#endif // RIO_IS_CAFE
 
 union F32BitCast
 {
@@ -55,7 +60,7 @@ bool FFLiCanDrawShape(const FFLDrawParam* pDrawParam)
 FFLResult FFLiLoadShape(FFLDrawParam* pDrawParam, FFLBoundingBox* pBoundingBox, FFLiCharModel* pModel, FFLiShapePartsType partsType, u16 index, FFLiResourceLoader* pResLoader, FFLiBufferAllocator* pAllocator)
 {
     u32 size = pResLoader->GetShapeAlignedMaxSize(partsType);
-    void* pData = pAllocator->Allocate(size, FS_IO_BUFFER_ALIGN);
+    void* pData = pAllocator->Allocate(size, rio::FileDevice::cBufferMinAlignment);
 
     FFLResult result = pResLoader->LoadShape(pData, &size, partsType, index);
     if (result != FFL_RESULT_OK)
@@ -71,7 +76,7 @@ FFLResult FFLiLoadShape(FFLDrawParam* pDrawParam, FFLBoundingBox* pBoundingBox, 
             { NaN, NaN, NaN }
         };
         NN_STATIC_ASSERT(sizeof(INVALID_BOUNDING_BOX) == sizeof(FFLBoundingBox));
-        *pBoundingBox = *(FFLBoundingBox*)&INVALID_BOUNDING_BOX;
+        std::memcpy(pBoundingBox, INVALID_BOUNDING_BOX, sizeof(FFLBoundingBox));
     }
     else
     {
@@ -84,8 +89,7 @@ FFLResult FFLiLoadShape(FFLDrawParam* pDrawParam, FFLBoundingBox* pBoundingBox, 
         }
 
         pDrawParam->primitiveParam.pIndexBuffer = const_cast<void*>(FFLiGetResourceShapeElement(&pDrawParam->primitiveParam.indexCount, pData, partsType, FFLI_RESOURCE_SHAPE_ELEMENT_TYPE_INDEX));
-        pDrawParam->primitiveParam.indexFormat = GX2_INDEX_FORMAT_U16;
-        pDrawParam->primitiveParam.primitiveType = GX2_PRIMITIVE_TRIANGLES;
+        pDrawParam->primitiveParam.primitiveType = rio::Drawer::TRIANGLES;
 
         if (partsType == FFLI_SHAPE_PARTS_TYPE_HAIR_1)
         {
@@ -175,20 +179,22 @@ void FFLiAdjustShape(FFLDrawParam* pDrawParam, FFLBoundingBox* pBoundingBox, f32
 
 void FFLiInvalidateShape(FFLDrawParam* pDrawParam)
 {
+#if RIO_IS_CAFE
     for (u32 i = 0; i < FFL_ATTRIBUTE_BUFFER_TYPE_MAX; i++)
     {
         FFLAttributeBuffer& attribute = pDrawParam->attributeBufferParam.attributeBuffers[i];
         if (attribute.ptr != NULL)
-            FFLiInvalidate(GX2_INVALIDATE_CPU_ATTRIB_BUFFER, attribute.ptr, attribute.size);
+            GX2Invalidate(GX2_INVALIDATE_CPU_ATTRIB_BUFFER, attribute.ptr, attribute.size);
     }
 
     FFLPrimitiveParam& primitive = pDrawParam->primitiveParam;
     if (primitive.pIndexBuffer != NULL)
-        FFLiInvalidate(
+        GX2Invalidate(
             GX2_INVALIDATE_CPU_ATTRIB_BUFFER,
             primitive.pIndexBuffer,
             sizeof(u16) * primitive.indexCount  // Apparently Nintendo forgot the index count is 4
         );
+#endif // RIO_IS_CAFE
 }
 
 namespace {
@@ -207,53 +213,58 @@ FFLiResourceShapeElementType GetElementType(FFLAttributeBufferType type)
         return FFLI_RESOURCE_SHAPE_ELEMENT_TYPE_TANGENT;
     case FFL_ATTRIBUTE_BUFFER_TYPE_COLOR:
         return FFLI_RESOURCE_SHAPE_ELEMENT_TYPE_COLOR;
+    default:
+        return FFLI_RESOURCE_SHAPE_ELEMENT_TYPE_POSITION;
     }
-    return FFLI_RESOURCE_SHAPE_ELEMENT_TYPE_POSITION;
 }
 
-u32 FormatToStride(GX2AttribFormat format)
+u32 FormatToStride(rio::VertexStream::Format format)
 {
     switch (format)
     {
-    case GX2_ATTRIB_FORMAT_32_32_FLOAT:
+    case rio::VertexStream::FORMAT_32_32_FLOAT:
         return 8;
-    case GX2_ATTRIB_FORMAT_32_32_32_FLOAT:
-    case GX2_ATTRIB_FORMAT_32_32_32_32_FLOAT:
+    case rio::VertexStream::FORMAT_32_32_32_FLOAT:
+    case rio::VertexStream::FORMAT_32_32_32_32_FLOAT:
         return 16;
-    case GX2_ATTRIB_FORMAT_8_8_8_8_UNORM:
-    case GX2_ATTRIB_FORMAT_8_8_8_8_SNORM:
-    case GX2_ATTRIB_FORMAT_10_10_10_2_SNORM:
+    case rio::VertexStream::FORMAT_8_8_8_8_UNORM:
+    case rio::VertexStream::FORMAT_8_8_8_8_SNORM:
+    case rio::VertexStream::FORMAT_10_10_10_2_SNORM:
         return 4;
+    default:
+        return 0;
     }
-    return 0;
 }
 
 u32 GetStride(FFLAttributeBufferType type, u32 size)
 {
-    u32 stride = 0;
+    u32 stride;
 
     switch (type)
     {
     case FFL_ATTRIBUTE_BUFFER_TYPE_POSITION:
-        stride = FormatToStride(GX2_ATTRIB_FORMAT_32_32_32_FLOAT);
+        stride = FormatToStride(rio::VertexStream::FORMAT_32_32_32_FLOAT);
         break;
     case FFL_ATTRIBUTE_BUFFER_TYPE_TEXCOORD:
-        stride = FormatToStride(GX2_ATTRIB_FORMAT_32_32_FLOAT);
+        stride = FormatToStride(rio::VertexStream::FORMAT_32_32_FLOAT);
         break;
     case FFL_ATTRIBUTE_BUFFER_TYPE_NORMAL:
-        stride = FormatToStride(GX2_ATTRIB_FORMAT_10_10_10_2_SNORM);
+        stride = FormatToStride(rio::VertexStream::FORMAT_10_10_10_2_SNORM);
         break;
     case FFL_ATTRIBUTE_BUFFER_TYPE_TANGENT:
-        stride = FormatToStride(GX2_ATTRIB_FORMAT_8_8_8_8_SNORM);
+        stride = FormatToStride(rio::VertexStream::FORMAT_8_8_8_8_SNORM);
         break;
     case FFL_ATTRIBUTE_BUFFER_TYPE_COLOR:
-        stride = FormatToStride(GX2_ATTRIB_FORMAT_8_8_8_8_UNORM);
+        stride = FormatToStride(rio::VertexStream::FORMAT_8_8_8_8_UNORM);
+        break;
+    default:
+        stride = 0;
         break;
     }
 
     if (stride >= size)
         stride = 0;
-    
+
     return stride;
 }
 

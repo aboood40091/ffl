@@ -66,7 +66,7 @@ void ShuffleIndices(u16* pIndices, u16 num)
         u32 random = holdrand >> 16 & 0xffff;
         u16 iRandom = i + (random - (random / range) * range);
         holdrand = holdrand * 83409763L + 1444837343L;
-        
+
         if (iRandom != i)
             std::swap(pIndices[iRandom], pIndices[i]);
     }
@@ -133,10 +133,10 @@ static void ParamFindNext(FFLiMiddleDBTimeUpdateParam& param)
     while (true)
     {
         ParamAdvance(param);
-        
+
         if (param.index == 0xffff)
             break;
-        
+
         if (param.gender == FFL_GENDER_MAX)
             break;
 
@@ -164,7 +164,7 @@ FFLResult FFLiDatabaseFileHidden::UpdateMiddleDBTime(FFLiMiddleDB* pMiddleDB, bo
         pMiddleDB->Add(GetImpl(param.index));
         ParamFindNext(param);
     }
-    
+
     return
         pMiddleDB->StoredSize() != 0
             ? FFL_RESULT_OK
@@ -173,7 +173,7 @@ FFLResult FFLiDatabaseFileHidden::UpdateMiddleDBTime(FFLiMiddleDB* pMiddleDB, bo
 
 void FFLiDatabaseFileHidden::Init()
 {
-    m_Magic = 'FFHA';
+    m_Magic = 0x46464841;   // FFHA
 
     m_StartIndex = 0xffff;
     m_EndIndex = 0xffff;
@@ -199,7 +199,7 @@ bool FFLiDatabaseFileHidden::IsValidCrc() const
 
 bool FFLiDatabaseFileHidden::IsValidIdentifier() const
 {
-    return m_Magic == 'FFHA';
+    return m_Magic == 0x46464841;   // FFHA
 }
 
 bool FFLiDatabaseFileHidden::IsValid() const

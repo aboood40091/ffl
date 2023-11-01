@@ -32,7 +32,7 @@ bool FFLiDatabaseFileOfficial::FindRegularList(u32* pIndex, const FFLCreateID* p
 
 void FFLiDatabaseFileOfficial::Init()
 {
-    m_Magic = 'FFOC';
+    m_Magic = 0x46464F43;   // FFOC
 
     _4 = 0;
 
@@ -55,7 +55,7 @@ bool FFLiDatabaseFileOfficial::IsValidCrc() const
 
 bool FFLiDatabaseFileOfficial::IsValidIdentifier() const
 {
-    return m_Magic == 'FFOC';
+    return m_Magic == 0x46464F43;   // FFOC
 }
 
 bool FFLiDatabaseFileOfficial::IsValid() const
@@ -75,10 +75,10 @@ bool FFLiDatabaseFileOfficial::Get(FFLiCharInfo* pCharInfo, u16 miiDataIndex, bo
 
     const FFLiMiiDataOfficial& official = GetImpl(miiDataIndex);
     const FFLCreateID* pCreateID = &official.CreatorID();
-    
+
     if (FFLiIsNullMiiID(pCreateID))
         return false;
-    
+
     if (FFLiIsTemporaryMiiID(pCreateID))
         return false;
 

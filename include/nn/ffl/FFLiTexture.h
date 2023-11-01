@@ -6,7 +6,7 @@
 
 #include <nn/ffl/FFLiTexturePartsType.h>
 
-#include <cafe/gx2.h>
+#include <common/aglTextureData.h>
 
 class FFLiBufferAllocator;
 class FFLiResourceLoader;
@@ -14,8 +14,6 @@ class FFLiResourceManager;
 
 u32 FFLiGetTextureMaxSizeWithAlign(const FFLiResourceManager* pResourceManager, FFLResourceType resourceType, FFLiTexturePartsType partsType);
 
-FFLResult FFLiLoadTextureWithAllocate(GX2Texture** ppGX2Texture, FFLiTexturePartsType partsType, u32 index, FFLiResourceLoader* pResLoader, FFLiBufferAllocator* pAllocator);
-
-void FFLiInvalidateTexture(GX2Texture* pGX2Texture);
+FFLResult FFLiLoadTextureWithAllocate(agl::TextureData** ppTextureData, FFLiTexturePartsType partsType, u32 index, FFLiResourceLoader* pResLoader, FFLiBufferAllocator* pAllocator);
 
 #endif // FFLI_TEXTURE_H_

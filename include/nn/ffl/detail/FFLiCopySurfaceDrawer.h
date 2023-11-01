@@ -3,6 +3,8 @@
 
 #include <nn/ffl/FFLVec.h>
 
+#include <gpu/rio_VertexArray.h>
+
 class FFLiBufferAllocator;
 
 class FFLiCopySurfaceDrawer
@@ -12,17 +14,30 @@ public:
     ~FFLiCopySurfaceDrawer();
 
     void SetupCPU(FFLiBufferAllocator* pAllocator);
-    void SetupGPU();
+    void SetupGPU(u32 positionLocation, u32 texCoordLocation);
 
-    void SetAttributeBuffer(u32 positionBufferIndex, u32 texCoordBufferIndex);
+    void SetAttributeBuffer();
     void Draw();
 
     static u32 GetBufferSize();
 
 private:
-    FFLVec2*    m_pPositionBuffer;
-    FFLVec2*    m_pTexCoordBuffer;
+    struct Attribute
+    {
+        Attribute()
+            : pBuffer(NULL)
+        {
+        }
+
+        FFLVec2*            pBuffer;
+        rio::VertexStream   vertexStream;
+        rio::VertexBuffer   vertexBuffer;
+    };
+
+    Attribute           m_Position;
+    Attribute           m_TexCoord;
+    rio::VertexArray    m_VertexArray;
 };
-NN_STATIC_ASSERT(sizeof(FFLiCopySurfaceDrawer) == 8);
+//NN_STATIC_ASSERT(sizeof(FFLiCopySurfaceDrawer) == 8);
 
 #endif // FFLI_COPY_SURFACE_DRAWER_H_

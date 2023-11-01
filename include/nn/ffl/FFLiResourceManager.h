@@ -8,16 +8,13 @@
 
 #include <nn/ffl/detail/FFLiResourceCache.h>
 
-class   FFLiFsClient;
-class   FFLiFsCommand;
-struct  FFLiFsCommandBuffer;
 struct  FFLiResourceHeader;
 struct  FFLiResourceMultiHeader;
 
 class FFLiResourceManager
 {
 public:
-    FFLiResourceManager(FFLiResourceMultiHeader* pHeader, FFLiFsClient* pClient);
+    FFLiResourceManager(FFLiResourceMultiHeader* pHeader);
     ~FFLiResourceManager();
 
     static const char* GetRelativeResourcePath(FFLResourceType resourceType, bool LG);
@@ -25,8 +22,8 @@ public:
 
     FFLResult AfterConstruct();
 
-    FFLResult LoadResourceHeader(FFLiFsCommandBuffer* pCommandBuffer);
-    FFLResult LoadResourceHeaderImpl(FFLiFsCommand* pCommand);
+    FFLResult LoadResourceHeader();
+    FFLResult LoadResourceHeaderImpl();
 
     FFLResult AttachCache(const void* pData, u32 size, FFLResourceType resourceType);
     bool IsCached() const;
@@ -43,11 +40,6 @@ public:
 
     u32 GetUncompressBufferSize(FFLResourceType resourceType) const;
 
-    FFLiFsClient* GetClient() const
-    {
-        return m_pFsClient;
-    }
-
     FFLiResourceCache& GetResourceCache()
     {
         return m_ResourceCache;
@@ -62,7 +54,7 @@ public:
 
 private:
     FFLiResourceMultiHeader*    m_pResourceMultiHeader;
-    FFLiFsClient*               m_pFsClient;
+    void*                       _4; // Deleted
     FFLiResourceCache           m_ResourceCache;
     char                        m_Path[FFL_RESOURCE_TYPE_MAX][FFL_PATH_MAX_LEN];
 };

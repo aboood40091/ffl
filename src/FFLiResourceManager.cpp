@@ -1,10 +1,10 @@
-#include <nn/ffl/FFLiFsCommand.h>
-#include <nn/ffl/FFliFsFile.h>
 #include <nn/ffl/FFLiPath.h>
 #include <nn/ffl/FFLiResourceHeader.h>
 #include <nn/ffl/FFLiResourceManager.h>
 #include <nn/ffl/FFLiResourceUtil.h>
 #include <nn/ffl/FFLiUtil.h>
+
+#include <filedevice/rio_FileDeviceMgr.h>
 
 #include <cstring>
 
@@ -23,12 +23,11 @@ const char* RESOUCE_FILE_NAME[2][FFL_RESOURCE_TYPE_MAX] = {
 
 }
 
-FFLiResourceManager::FFLiResourceManager(FFLiResourceMultiHeader* pHeader, FFLiFsClient* pClient)
+FFLiResourceManager::FFLiResourceManager(FFLiResourceMultiHeader* pHeader)
     : m_pResourceMultiHeader(pHeader)
-    , m_pFsClient(pClient)
 {
     std::memset(m_pResourceMultiHeader, 0, sizeof(FFLiResourceMultiHeader));
-    std::memset(m_Path, 0, FFL_RESOURCE_TYPE_MAX * FFL_PATH_MAX_LEN);
+    std::memset(m_Path, 0, (s32)FFL_RESOURCE_TYPE_MAX * (s32)FFL_PATH_MAX_LEN);
 }
 
 FFLiResourceManager::~FFLiResourceManager()
@@ -42,7 +41,7 @@ const char* FFLiResourceManager::GetRelativeResourcePath(FFLResourceType resourc
 
 FFLResult FFLiResourceManager::GetResourcePath(char* pDst, u32 size, FFLResourceType resourceType, bool LG)
 {
-    FSStatus status = FFLiGetResourcePath(pDst, size, GetRelativeResourcePath(resourceType, LG));
+    rio::RawErrorCode status = FFLiGetResourcePath(pDst, size, GetRelativeResourcePath(resourceType, LG));
     return FFLiConvertFSStatusToFFLResult(status);
 }
 
@@ -57,32 +56,31 @@ FFLResult FFLiResourceManager::AfterConstruct()
     return FFL_RESULT_OK;
 }
 
-FFLResult FFLiResourceManager::LoadResourceHeader(FFLiFsCommandBuffer* pCommandBuffer)
+FFLResult FFLiResourceManager::LoadResourceHeader()
 {
-    FFLiFsCommand* pCommand = FFLiFsCommand::PlacementNew(pCommandBuffer, m_pFsClient);
-    FFLResult result = LoadResourceHeaderImpl(pCommand);
-    FFLiFsCommand::PlacementDelete(pCommand);
-    return result;
+    return LoadResourceHeaderImpl();
 }
 
-FFLResult FFLiResourceManager::LoadResourceHeaderImpl(FFLiFsCommand* pCommand)
+FFLResult FFLiResourceManager::LoadResourceHeaderImpl()
 {
-    FFLiFsFile file(pCommand);
+    rio::FileHandle fileHandle;
+    rio::NativeFileDevice* device = rio::FileDeviceMgr::instance()->getNativeFileDevice();
 
     for (u32 i = 0; i < FFL_RESOURCE_TYPE_MAX; i++)
     {
         FFLiResourceHeader* pHeader = &(m_pResourceMultiHeader->header[i]);
 
-        if (file.Open(GetPath(FFLResourceType(i)), "r") != FS_STATUS_OK)
+        if (!device->tryOpen(&fileHandle, GetPath(FFLResourceType(i)), rio::FileDevice::FILE_OPEN_FLAG_READ))
             return FFL_RESULT_FILE_INVALID;
 
-        if (file.Read(pHeader, sizeof(FFLiResourceHeader), 1) != 1)
+        u32 readSize = 0;
+        if (!(fileHandle.tryRead(&readSize, (u8*)pHeader, sizeof(FFLiResourceHeader)) && readSize == sizeof(FFLiResourceHeader)))
         {
-            file.Close();
+            fileHandle.tryClose();
             return FFL_RESULT_FILE_INVALID;
         }
 
-        if (file.Close() != FS_STATUS_OK)
+        if (!fileHandle.tryClose())
             return FFL_RESULT_FILE_INVALID;
 
         FFLResult result = FFLiIsVaildResourceHeader(pHeader);
@@ -124,12 +122,12 @@ FFLiResourceHeader* FFLiResourceManager::HeaderFromFile(FFLResourceType resource
 
 u32 FFLiResourceManager::GetTextureAlignedMaxSize(FFLResourceType resourceType, FFLiTexturePartsType partsType) const
 {
-    return FFLiRoundUp(Header(resourceType)->GetTextureMaxSize(partsType), FS_IO_BUFFER_ALIGN);
+    return FFLiRoundUp(Header(resourceType)->GetTextureMaxSize(partsType), rio::FileDevice::cBufferMinAlignment);
 }
 
 u32 FFLiResourceManager::GetShapeAlignedMaxSize(FFLResourceType resourceType, FFLiShapePartsType partsType) const
 {
-    return FFLiRoundUp(Header(resourceType)->GetShapeMaxSize(partsType), FS_IO_BUFFER_ALIGN);
+    return FFLiRoundUp(Header(resourceType)->GetShapeMaxSize(partsType), rio::FileDevice::cBufferMinAlignment);
 }
 
 bool FFLiResourceManager::IsValid(FFLResourceType resourceType) const
@@ -150,7 +148,7 @@ bool FFLiResourceManager::IsExpand(FFLResourceType resourceType) const
 
 u32 FFLiResourceManager::GetUncompressBufferSize(FFLResourceType resourceType) const
 {
-    return FFLiRoundUp(Header(resourceType)->GetUncompressBufferSize() + FS_IO_BUFFER_ALIGN, FS_IO_BUFFER_ALIGN);
+    return FFLiRoundUp(Header(resourceType)->GetUncompressBufferSize() + rio::FileDevice::cBufferMinAlignment, rio::FileDevice::cBufferMinAlignment);
 }
 
 const char* FFLiResourceManager::GetPath(FFLResourceType resourceType) const

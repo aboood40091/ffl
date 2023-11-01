@@ -3,7 +3,7 @@
 
 #include <nn/ffl/detail/FFLiBufferAllocator.h>
 
-#include <cafe/fs.h>
+#include <filedevice/rio_FileDevice.h>
 
 static u32 GetTempBufferSize()
 {
@@ -11,7 +11,7 @@ static u32 GetTempBufferSize()
 }
 
 FFLiResourceUncompressBuffer::FFLiResourceUncompressBuffer(const FFLiResourceManager* pResourceManager, FFLiBufferAllocator* pAllocator, FFLResourceType resourceType)
-    : m_pBuffer(pAllocator->Allocate(pResourceManager->GetUncompressBufferSize(resourceType), FS_IO_BUFFER_ALIGN))
+    : m_pBuffer(pAllocator->Allocate(pResourceManager->GetUncompressBufferSize(resourceType), rio::FileDevice::cBufferMinAlignment))
     , m_pTempBuffer(pAllocator->Allocate(GetTempBufferSize()))
 {
 }
@@ -37,7 +37,7 @@ u32 FFLiResourceUncompressBuffer::TempBufferSize() const
 
 u32 FFLiResourceUncompressBuffer::GetBufferSize(const FFLiResourceManager* pResourceManager, FFLResourceType resourceType)
 {
-    u32 ret  = FS_IO_BUFFER_ALIGN;
+    u32 ret  = rio::FileDevice::cBufferMinAlignment;
     ret     += GetTempBufferSize();
     ret     += pResourceManager->GetUncompressBufferSize(resourceType);
 

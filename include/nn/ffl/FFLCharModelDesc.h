@@ -14,7 +14,7 @@ typedef struct FFLCharModelDesc
     u32             expressionFlag;
     u32             modelFlag;
     FFLResourceType resourceType;
-    BOOL            compressTexture;
+    BOOL            _10;    // Removed
 }
 FFLCharModelDesc;
 NN_STATIC_ASSERT(sizeof(FFLCharModelDesc) == 0x14);

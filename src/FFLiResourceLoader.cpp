@@ -1,4 +1,3 @@
-#include <nn/ffl/FFLiFsCommand.h>
 #include <nn/ffl/FFLiResourceHeader.h>
 #include <nn/ffl/FFLiResourceLoader.h>
 #include <nn/ffl/FFLiResourceLoaderBuffer.h>
@@ -7,6 +6,8 @@
 #include <nn/ffl/FFLiZlibInflator.h>
 
 #include <nn/ffl/detail/FFLiBufferAllocatorForZlib.h>
+
+#include <filedevice/rio_FileDeviceMgr.h>
 
 #include <cstring>
 
@@ -19,8 +20,6 @@ bool Uncompress(void* pDst, const void* pSrc, FFLiResourceUncompressBuffer* pBuf
 FFLiResourceLoader::FFLiResourceLoader(FFLiResourceManager* pResourceManager, FFLiResourceLoaderBuffer* pResLoaderBuffer, FFLResourceType resourceType)
     : m_pResourceManager(pResourceManager)
     , m_pBuffer(pResLoaderBuffer)
-    , m_pFsCommand(FFLiFsCommand::PlacementNew(pResLoaderBuffer->GetCommandBuffer(), pResourceManager->GetClient()))
-    , m_FsFile(m_pFsCommand)
     , m_ResourceType(resourceType)
 {
 }
@@ -28,8 +27,6 @@ FFLiResourceLoader::FFLiResourceLoader(FFLiResourceManager* pResourceManager, FF
 FFLiResourceLoader::~FFLiResourceLoader()
 {
     Close();
-
-    FFLiFsCommand::PlacementDelete(m_pFsCommand);
 }
 
 bool FFLiResourceLoader::IsExpand() const
@@ -44,12 +41,12 @@ FFLiResourceHeader* FFLiResourceLoader::Header() const
 
 u32 FFLiResourceLoader::GetTextureAlignedMaxSize(FFLiTexturePartsType partsType) const
 {
-    return FFLiRoundUp(Header()->GetTextureMaxSize(partsType), FS_IO_BUFFER_ALIGN);
+    return FFLiRoundUp(Header()->GetTextureMaxSize(partsType), rio::FileDevice::cBufferMinAlignment);
 }
 
 u32 FFLiResourceLoader::GetShapeAlignedMaxSize(FFLiShapePartsType partsType) const
 {
-    return FFLiRoundUp(Header()->GetShapeMaxSize(partsType), FS_IO_BUFFER_ALIGN);
+    return FFLiRoundUp(Header()->GetShapeMaxSize(partsType), rio::FileDevice::cBufferMinAlignment);
 }
 
 FFLResult FFLiResourceLoader::LoadTexture(void* pData, u32* pSize, FFLiTexturePartsType partsType, u32 index)
@@ -131,7 +128,7 @@ FFLResult FFLiResourceLoader::LoadFromCache(void* pData, const FFLiResourceParts
 
 FFLResult FFLiResourceLoader::LoadFromFile(void* pData, const FFLiResourcePartsInfo& partsInfo)
 {
-    if (OpenIfClosed() != FS_STATUS_OK)
+    if (OpenIfClosed() != rio::RAW_ERROR_OK)
         return FFL_RESULT_RES_FS_ERROR;
 
     if (partsInfo.strategy == FFLI_RESOURCE_STRATEGY_UNCOMPRESSED)
@@ -165,32 +162,62 @@ FFLResult FFLiResourceLoader::GetPointerFromCache(void** ppPtr, const FFLiResour
     return FFL_RESULT_OK;
 }
 
-FSStatus FFLiResourceLoader::OpenIfClosed()
+rio::RawErrorCode FFLiResourceLoader::OpenIfClosed()
 {
-    if (m_FsFile.IsOpened())
-        return FS_STATUS_OK;
+    if (m_FileHandle.getDevice() != nullptr)
+        return rio::RAW_ERROR_OK;
 
-    return m_FsFile.Open(m_pResourceManager->GetPath(m_ResourceType), "r");
+    rio::NativeFileDevice* device = rio::FileDeviceMgr::instance()->getNativeFileDevice();
+    if (!device->tryOpen(&m_FileHandle, m_pResourceManager->GetPath(m_ResourceType), rio::FileDevice::FILE_OPEN_FLAG_READ))
+    {
+        rio::RawErrorCode status = m_FileHandle.getDevice()->getLastRawError();
+        RIO_ASSERT(status != rio::RAW_ERROR_OK);
+        return status;
+    }
+
+    return rio::RAW_ERROR_OK;
 }
 
-FSStatus FFLiResourceLoader::ReadWithPos(void* pDst, u32 pos, u32 size)
+rio::RawErrorCode FFLiResourceLoader::ReadWithPos(void* pDst, u32 pos, u32 size)
 {
-    return m_FsFile.ReadWithPos(pDst, FFLiRoundUp(size, FS_IO_BUFFER_ALIGN), 1, pos);
+    if (!m_FileHandle.trySeek(pos, rio::FileDevice::SEEK_ORIGIN_BEGIN))
+    {
+        rio::RawErrorCode status = m_FileHandle.getDevice()->getLastRawError();
+        RIO_ASSERT(status != rio::RAW_ERROR_OK);
+        return status;
+    }
+
+    u32 readSize = 0;
+    if (!m_FileHandle.tryRead(&readSize, (u8*)pDst, FFLiRoundUp(size, rio::FileDevice::cBufferMinAlignment)))
+    {
+        rio::RawErrorCode status = m_FileHandle.getDevice()->getLastRawError();
+        RIO_ASSERT(status != rio::RAW_ERROR_OK);
+        return status;
+    }
+
+    return rio::RAW_ERROR_OK;
 }
 
-FSStatus FFLiResourceLoader::Close()
+rio::RawErrorCode FFLiResourceLoader::Close()
 {
-    if (!m_FsFile.IsOpened())
-        return FS_STATUS_OK;
+    if (m_FileHandle.getDevice() == nullptr)
+        return rio::RAW_ERROR_OK;
 
-    return m_FsFile.Close();
+    if (!m_FileHandle.tryClose())
+    {
+        rio::RawErrorCode status = m_FileHandle.getDevice()->getLastRawError();
+        RIO_ASSERT(status != rio::RAW_ERROR_OK);
+        return status;
+    }
+
+    return rio::RAW_ERROR_OK;
 }
 
 namespace {
 
 bool Uncompress(void* pDst, const void* pSrc, FFLiResourceUncompressBuffer* pBuffer, const FFLiResourcePartsInfo& partsInfo)
 {
-    FFLiBufferAllocatorForZlib allocator(pBuffer->TempBuffer(), pBuffer->TempBufferSize()); 
+    FFLiBufferAllocatorForZlib allocator(pBuffer->TempBuffer(), pBuffer->TempBufferSize());
     FFLiZlibInflator inflator(allocator, FFLiResourceWindowBitsToZlibWindowBits(FFLiResourceWindowBits(partsInfo.windowBits)));
 
     void* dst = pDst;

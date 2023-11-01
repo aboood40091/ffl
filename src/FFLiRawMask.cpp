@@ -4,6 +4,9 @@
 
 #include <nn/ffl/detail/FFLiCharInfo.h>
 
+#include <gfx/rio_Projection.h>
+#include <gpu/rio_RenderState.h>
+
 namespace {
 
 enum
@@ -31,37 +34,36 @@ u32 FFLiGetBufferRawMask()
 
 void FFLiInitDrawParamRawMask(FFLiRawMaskDrawParam* pDrawParam, const FFLiCharInfo* pCharInfo, s32 resolution, s32 leftEyeIndex, s32 rightEyeIndex, const FFLiRawMaskTextureDesc* pDesc, FFLiBufferAllocator* pAllocator)
 {
-    Mat44 projMatrix;
     RawMasks rawMasks;
-
     CalcRawMask(&rawMasks, pCharInfo, resolution, leftEyeIndex, rightEyeIndex);
 
-    MTXOrtho(projMatrix.mtx, 0.0f, resolution, 0.0f, resolution, -200.0f, 200.0f);
+    const rio::OrthoProjection proj = rio::OrthoProjection(-200.0f, 200.0f, 0.0f, resolution, 0.0f, resolution);
+    const rio::BaseMtx44f& projMatrix = proj.getMatrix();
 
     FFLiInitModulateMustache(&pDrawParam->drawParamRawMaskPartsMustache[0].modulateParam, pCharInfo->parts.beardColor, *(pDesc->pTexturesMustache[0]));
     FFLiInitDrawParamRawMaskParts(&(pDrawParam->drawParamRawMaskPartsMustache[0]), &(rawMasks.rawMaskPartsDescMustache[0]), &projMatrix, pAllocator);
 
     FFLiInitModulateMustache(&pDrawParam->drawParamRawMaskPartsMustache[1].modulateParam, pCharInfo->parts.beardColor, *(pDesc->pTexturesMustache[1]));
     FFLiInitDrawParamRawMaskParts(&(pDrawParam->drawParamRawMaskPartsMustache[1]), &(rawMasks.rawMaskPartsDescMustache[1]), &projMatrix, pAllocator);
-    
+
     FFLiInitModulateMouth(&pDrawParam->drawParamRawMaskPartsMouth.modulateParam, pCharInfo->parts.mouthColor, *pDesc->pTextureMouth);
     FFLiInitDrawParamRawMaskParts(&pDrawParam->drawParamRawMaskPartsMouth, &rawMasks.rawMaskPartsDescMouth, &projMatrix, pAllocator);
-    
+
     FFLiInitModulateEyebrow(&pDrawParam->drawParamRawMaskPartsEyebrow[0].modulateParam, pCharInfo->parts.eyebrowColor, *(pDesc->pTexturesEyebrow[0]));
     FFLiInitDrawParamRawMaskParts(&(pDrawParam->drawParamRawMaskPartsEyebrow[0]), &(rawMasks.rawMaskPartsDescEyebrow[0]), &projMatrix, pAllocator);
-    
+
     FFLiInitModulateEyebrow(&pDrawParam->drawParamRawMaskPartsEyebrow[1].modulateParam, pCharInfo->parts.eyebrowColor, *(pDesc->pTexturesEyebrow[1]));
     FFLiInitDrawParamRawMaskParts(&(pDrawParam->drawParamRawMaskPartsEyebrow[1]), &(rawMasks.rawMaskPartsDescEyebrow[1]), &projMatrix, pAllocator);
-    
+
     FFLiInitModulateEye(&pDrawParam->drawParamRawMaskPartsEye[0].modulateParam, pCharInfo->parts.eyeColor, pCharInfo->parts.eyeType, *(pDesc->pTexturesEye[0]));
     FFLiInitDrawParamRawMaskParts(&(pDrawParam->drawParamRawMaskPartsEye[0]), &(rawMasks.rawMaskPartsDescEye[0]), &projMatrix, pAllocator);
-    
+
     FFLiInitModulateEye(&pDrawParam->drawParamRawMaskPartsEye[1].modulateParam, pCharInfo->parts.eyeColor, pCharInfo->parts.eyeType, *(pDesc->pTexturesEye[1]));
     FFLiInitDrawParamRawMaskParts(&(pDrawParam->drawParamRawMaskPartsEye[1]), &(rawMasks.rawMaskPartsDescEye[1]), &projMatrix, pAllocator);
-    
+
     FFLiInitModulateMole(&pDrawParam->drawParamRawMaskPartsMole.modulateParam, *pDesc->pTextureMole);
     FFLiInitDrawParamRawMaskParts(&pDrawParam->drawParamRawMaskPartsMole, &rawMasks.rawMaskPartsDescMole, &projMatrix, pAllocator);
-    
+
     FFLiInitModulateFill(&pDrawParam->drawParamRawMaskPartsFill.modulateParam);
     FFLiInitDrawParamRawMaskPartsFill(&pDrawParam->drawParamRawMaskPartsFill, pAllocator);
 }
@@ -81,23 +83,20 @@ void FFLiInvalidateRawMask(FFLiRawMaskDrawParam* pDrawParam)
 
 void FFLiDrawRawMask(const FFLiRawMaskDrawParam* pDrawParam, const FFLiShaderCallback* pCallback)
 {
-    GX2SetAlphaTest(GX2_ENABLE, GX2_COMPARE_GREATER, 0.0f);
-    GX2SetColorControl(GX2_LOGIC_OP_NONE, 0xFF, GX2_DISABLE, GX2_ENABLE);
-    GX2SetDepthOnlyControl(GX2_DISABLE, GX2_DISABLE, GX2_COMPARE_LESS);
-    GX2SetCullOnlyControl(GX2_FRONT_FACE_CCW, GX2_DISABLE, GX2_DISABLE);
-    GX2SetBlendControl(
-        GX2_RENDER_TARGET_0,
-        
-        GX2_BLEND_ONE_MINUS_DST_ALPHA,
-        GX2_BLEND_DST_ALPHA,
-        GX2_BLEND_COMBINE_ADD,
-        
-        GX2_ENABLE,
-        
-        GX2_BLEND_ONE,
-        GX2_BLEND_ONE,
-        GX2_BLEND_COMBINE_MAX
+    rio::RenderState renderState;
+  //renderState.setAlphaTestEnable(true);   // TODO: Does disabling this cause problems?
+    renderState.setBlendEnable(true);
+    renderState.setDepthEnable(false, false);
+    renderState.setCullingMode(rio::Graphics::CULLING_MODE_NONE);
+    renderState.setBlendFactorSeparate(
+        rio::Graphics::BLEND_MODE_ONE_MINUS_DST_ALPHA, rio::Graphics::BLEND_MODE_DST_ALPHA,
+        rio::Graphics::BLEND_MODE_ONE, rio::Graphics::BLEND_MODE_ONE
     );
+    renderState.setBlendEquationSeparate(
+        rio::Graphics::BLEND_FUNC_ADD,
+        rio::Graphics::BLEND_FUNC_MAX
+    );
+    renderState.apply();
 
     FFLiDrawRawMaskParts(&(pDrawParam->drawParamRawMaskPartsMustache[0]), pCallback);
     FFLiDrawRawMaskParts(&(pDrawParam->drawParamRawMaskPartsMustache[1]), pCallback);
@@ -108,47 +107,20 @@ void FFLiDrawRawMask(const FFLiRawMaskDrawParam* pDrawParam, const FFLiShaderCal
     FFLiDrawRawMaskParts(&(pDrawParam->drawParamRawMaskPartsEye[1]), pCallback);
     FFLiDrawRawMaskParts(&pDrawParam->drawParamRawMaskPartsMole, pCallback);
 
-    GX2SetTargetChannelMasks(
-        GX2_CHANNEL_MASK_A,
-        GX2_CHANNEL_MASK_NONE,
-        GX2_CHANNEL_MASK_NONE,
-        GX2_CHANNEL_MASK_NONE,
-        GX2_CHANNEL_MASK_NONE,
-        GX2_CHANNEL_MASK_NONE,
-        GX2_CHANNEL_MASK_NONE,
-        GX2_CHANNEL_MASK_NONE
-    );
-    GX2SetBlendControl(
-        GX2_RENDER_TARGET_0,
-        
-        GX2_BLEND_ZERO,
-        GX2_BLEND_ZERO,
-        GX2_BLEND_COMBINE_ADD,
-
-        GX2_DISABLE,
-
-        GX2_BLEND_ZERO,
-        GX2_BLEND_ZERO,
-        GX2_BLEND_COMBINE_ADD
-    );
-    GX2SetAlphaTest(GX2_DISABLE, GX2_COMPARE_ALWAYS, 0.0f);
+    renderState.setColorMask(false, false, false, true);
+    renderState.applyColorMask();
+    renderState.setBlendFactor(rio::Graphics::BLEND_MODE_ZERO, rio::Graphics::BLEND_MODE_ZERO);
+    renderState.setBlendEquation(rio::Graphics::BLEND_FUNC_ADD);
+    renderState.applyBlendAndFastZ();
+  //renderState.setAlphaTestEnable(false);
+  //renderState.applyAlphaTest();
 
     FFLiDrawRawMaskParts(&pDrawParam->drawParamRawMaskPartsFill, pCallback);
 
-    GX2SetBlendControl(
-        GX2_RENDER_TARGET_0,
-        
-        GX2_BLEND_SRC_ALPHA,
-        GX2_BLEND_ONE,
-        GX2_BLEND_COMBINE_ADD,
-
-        GX2_DISABLE,
-
-        GX2_BLEND_ONE,
-        GX2_BLEND_ONE,
-        GX2_BLEND_COMBINE_ADD
-    );
-    GX2SetAlphaTest(GX2_ENABLE, GX2_COMPARE_GREATER, 0.0f);
+    renderState.setBlendFactor(rio::Graphics::BLEND_MODE_SRC_ALPHA, rio::Graphics::BLEND_MODE_ONE);
+    renderState.applyBlendAndFastZ();
+  //renderState.setAlphaTestEnable(true);   // TODO: Does disabling this cause problems?
+  //renderState.applyAlphaTest();
 
     FFLiDrawRawMaskParts(&(pDrawParam->drawParamRawMaskPartsMustache[0]), pCallback);
     FFLiDrawRawMaskParts(&(pDrawParam->drawParamRawMaskPartsMustache[1]), pCallback);
@@ -159,17 +131,10 @@ void FFLiDrawRawMask(const FFLiRawMaskDrawParam* pDrawParam, const FFLiShaderCal
     FFLiDrawRawMaskParts(&(pDrawParam->drawParamRawMaskPartsEye[1]), pCallback);
     FFLiDrawRawMaskParts(&pDrawParam->drawParamRawMaskPartsMole, pCallback);
 
-    GX2SetTargetChannelMasks(
-        GX2_CHANNEL_MASK_RGBA,
-        GX2_CHANNEL_MASK_NONE,
-        GX2_CHANNEL_MASK_NONE,
-        GX2_CHANNEL_MASK_NONE,
-        GX2_CHANNEL_MASK_NONE,
-        GX2_CHANNEL_MASK_NONE,
-        GX2_CHANNEL_MASK_NONE,
-        GX2_CHANNEL_MASK_NONE
-    );
-    GX2SetAlphaTest(GX2_DISABLE, GX2_COMPARE_GREATER, 0.0f);
+    renderState.setColorMask(true, true, true, true);
+    renderState.applyColorMask();
+  //renderState.setAlphaTestEnable(false);
+  //renderState.applyAlphaTest();
 }
 
 namespace {
@@ -193,7 +158,7 @@ void CalcRawMask(RawMasks* pRawMasks, const FFLiCharInfo* pCharInfo, s32 resolut
     f32 baseScale = resolution * (1.f / 64.f);
 
     f32 eyeSpacingX = pCharInfo->parts.eyeSpacingX * SPACING_MUL;
-    
+
     f32 eyeBaseScale = 0.4f * pCharInfo->parts.eyeScale + 1.0f;
     f32 eyeBaseScaleY = 0.12f * pCharInfo->parts.eyeScaleY + 0.64f;
     f32 eyeScaleX = 5.34375f * eyeBaseScale;
@@ -205,7 +170,7 @@ void CalcRawMask(RawMasks* pRawMasks, const FFLiCharInfo* pCharInfo, s32 resolut
     f32 eyeRotate = (eyeBaseRotate % 32) * (360.f / 32.f);
 
     f32 eyebrowSpacingX = pCharInfo->parts.eyebrowSpacingX * SPACING_MUL;
-    
+
     f32 eyebrowBaseScale = 0.4f * pCharInfo->parts.eyebrowScale + 1.0f;
     f32 eyebrowBaseScaleY = 0.12f * pCharInfo->parts.eyebrowScaleY + 0.64f;
     f32 eyebrowScaleX = 5.0625f * eyebrowBaseScale;

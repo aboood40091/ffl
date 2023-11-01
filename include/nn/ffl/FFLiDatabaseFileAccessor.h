@@ -1,17 +1,16 @@
 #ifndef FFLI_DATABASE_FILE_ACCESSOR_H_
 #define FFLI_DATABASE_FILE_ACCESSOR_H_
 
-#include <nn/ffl/FFLiFsCommand.h>
+#include <nn/ffl/types.h>
 
 class FFLiAllocator;
 class FFLiDatabaseFile;
 class FFLiFileWriteBuffer;
-class FFLiFsClient;
 
 class FFLiDatabaseFileAccessor
 {
 public:
-    FFLiDatabaseFileAccessor(FFLiFsClient* pClient, FFLiDatabaseFile* pFile, FFLiFileWriteBuffer* pWriteBuffer, FFLiAllocator* pAllocator);
+    FFLiDatabaseFileAccessor(FFLiDatabaseFile* pFile, FFLiFileWriteBuffer* pWriteBuffer, FFLiAllocator* pAllocator);
     ~FFLiDatabaseFileAccessor();
 
     FFLiDatabaseFile* GetDatabaseFile() const
@@ -23,7 +22,7 @@ public:
 
     FFLResult AfterConstruct(u64 titleID);
     FFLResult BootLoad();
-    FFLResult BootLoadImpl(FFLiFsCommand* pCommand);
+    FFLResult BootLoadImpl();
     FFLResult AdjustRegularListOfficial();
 
     FFLResult BeforeDestruct();
@@ -41,8 +40,8 @@ public:
     bool IsExistFile(const char* pPath);
 
 private:
-    FFLiFsClient*           m_pFsClient;
-    FFLiFsCommand           m_FsCommand;
+    void*                   _0;                         // Deleted
+    u32                     _4[0xA84 / sizeof(u32)];    // Deleted
     FFLiDatabaseFile*       m_pDatabaseFile;
     FFLiFileWriteBuffer*    m_pFileWriteBuffer;
     FFLiAllocator*          m_pAllocator;

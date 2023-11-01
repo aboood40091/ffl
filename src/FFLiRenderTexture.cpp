@@ -1,6 +1,5 @@
 #include <nn/ffl/FFLColor.h>
 
-#include <nn/ffl/FFLiInvalidate.h>
 #include <nn/ffl/FFLiMipMapUtil.h>
 #include <nn/ffl/FFLiRenderTexture.h>
 #include <nn/ffl/FFLiRenderTextureBuffer.h>
@@ -10,103 +9,223 @@
 
 #include <nn/ffl/detail/FFLiBufferAllocator.h>
 
+#include <detail/aglTextureDataUtil.h>
+#include <gpu/rio_RenderState.h>
+
+#if RIO_IS_CAFE
+#include <cafe/gx2.h>
+#endif // RIO_IS_CAFE
+
 #include <cstring>
 
-u32 FFLiGetBufferRenderTexture(u32 width, u32 height, GX2SurfaceFormat format, u32 numMips)
+u32 FFLiGetBufferRenderTexture(u32 width, u32 height, rio::TextureFormat format, u32 numMips)
 {
+#if RIO_IS_CAFE
     GX2Texture texture;
-    GX2InitTexture(&texture, width, height, 0, numMips, format, GX2_SURFACE_DIM_2D);
+    GX2InitTexture(&texture, width, height, 0, numMips, (GX2SurfaceFormat)format, GX2_SURFACE_DIM_2D);
     return (
         texture.surface.alignment +
         FFLiRoundUp(texture.surface.imageSize, texture.surface.alignment) +
         FFLiRoundUp(texture.surface.mipSize, texture.surface.alignment)
     );
+#else
+    return 0;
+#endif // RIO_IS_CAFE
 }
 
-void FFLiInitRenderTexture(FFLiRenderTexture* pRenderTexture, u32 width, u32 height, GX2SurfaceFormat format, u32 numMips, FFLiBufferAllocator* pAllocator)
+void FFLiInitRenderTexture(FFLiRenderTexture* pRenderTexture, u32 width, u32 height, rio::TextureFormat format, u32 numMips, FFLiBufferAllocator* pAllocator)
 {
-    std::memset(pRenderTexture, 0, sizeof(FFLiRenderTexture));
+  //std::memset(pRenderTexture, 0, sizeof(FFLiRenderTexture));
+    pRenderTexture->textureData = agl::TextureData();
+    pRenderTexture->renderBuffer.destroy();
 
-    GX2InitTexture(&pRenderTexture->gx2Texture, width, height, 0, numMips, format, GX2_SURFACE_DIM_2D);
+    pRenderTexture->textureData.initialize(
+        agl::detail::TextureDataUtil::convFormatGX2ToAGL((GX2SurfaceFormat)format, true, false),
+        width,
+        height,
+        numMips
+    );
 
-    void* imagePtr = FFLiAllocateBufferAllocator(pAllocator, pRenderTexture->gx2Texture.surface.imageSize, pRenderTexture->gx2Texture.surface.alignment);
+#if RIO_IS_CAFE
 
-    void* mipPtr =
-        pRenderTexture->gx2Texture.surface.mipSize != 0
-            ? FFLiAllocateBufferAllocator(pAllocator, pRenderTexture->gx2Texture.surface.mipSize, pRenderTexture->gx2Texture.surface.alignment)
-            : NULL;
+    pRenderTexture->textureData.setImagePtr(FFLiAllocateBufferAllocator(pAllocator, pRenderTexture->textureData.getImageByteSize(), pRenderTexture->textureData.getAlignment()));
 
-    GX2InitTexturePtrs(&pRenderTexture->gx2Texture, imagePtr, mipPtr);
-}
+    if (pRenderTexture->textureData.getMipLevelNum() > 1)
+        pRenderTexture->textureData.setMipPtr(FFLiAllocateBufferAllocator(pAllocator, pRenderTexture->textureData.getMipByteSize(), pRenderTexture->textureData.getAlignment()));
+    else
+        pRenderTexture->textureData.setMipPtr(nullptr);
 
-void FFLiInitByBufferRenderTexture(FFLiRenderTexture* pRenderTexture, u32 width, u32 height, GX2SurfaceFormat format, u32 numMips, FFLiRenderTextureBuffer* pRenderTextureBuffer)
-{
-    FFLiBufferAllocator allocator;
-    allocator.Init(pRenderTextureBuffer->pBuffer, pRenderTextureBuffer->size);
-    FFLiInitRenderTexture(pRenderTexture, width, height, format, numMips, &allocator);
+#elif RIO_IS_WIN
+
+    const auto& handle = std::make_shared<agl::TextureHandle>();
+    handle->bind();
+
+    RIO_GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0));
+    RIO_GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, pRenderTexture->textureData.getMipLevelNum() - 1));
+
+    RIO_GL_CALL(glPixelStorei(GL_UNPACK_ALIGNMENT, 1));
+
+    const rio::NativeTextureFormat& native_format = pRenderTexture->textureData.getNativeTextureFormat();
+
+    switch (pRenderTexture->textureData.getTextureFormat())
+    {
+    case agl::cTextureFormat_BC1_uNorm:
+    case agl::cTextureFormat_BC2_uNorm:
+    case agl::cTextureFormat_BC3_uNorm:
+    case agl::cTextureFormat_BC4_uNorm:
+    case agl::cTextureFormat_BC4_sNorm:
+    case agl::cTextureFormat_BC5_uNorm:
+    case agl::cTextureFormat_BC5_sNorm:
+        {
+            RIO_GL_CALL(glCompressedTexImage2D(
+                GL_TEXTURE_2D,
+                0,
+                native_format.internalformat,
+                pRenderTexture->textureData.getWidth(),
+                pRenderTexture->textureData.getHeight(),
+                0,
+                pRenderTexture->textureData.getImageByteSize(),
+                nullptr
+            ));
+
+            if (pRenderTexture->textureData.getMipLevelNum() > 1)
+            {
+                for (u32 i = 0; i < pRenderTexture->textureData.getMipLevelNum() - 2; i++)
+                    RIO_GL_CALL(glCompressedTexImage2D(
+                        GL_TEXTURE_2D,
+                        i + 1,
+                        native_format.internalformat,
+                        pRenderTexture->textureData.getWidth(i + 1),
+                        pRenderTexture->textureData.getHeight(i + 1),
+                        0,
+                        pRenderTexture->textureData.getMipLevelByteSize(i + 1),
+                        nullptr
+                    ));
+
+                RIO_GL_CALL(glCompressedTexImage2D(
+                    GL_TEXTURE_2D,
+                    (pRenderTexture->textureData.getMipLevelNum() - 2) + 1,
+                    native_format.internalformat,
+                    pRenderTexture->textureData.getWidth((pRenderTexture->textureData.getMipLevelNum() - 2) + 1),
+                    pRenderTexture->textureData.getHeight((pRenderTexture->textureData.getMipLevelNum() - 2) + 1),
+                    0,
+                    pRenderTexture->textureData.getMipLevelByteSize((pRenderTexture->textureData.getMipLevelNum() - 2) + 1),
+                    nullptr
+                ));
+            }
+        }
+        break;
+    case agl::cTextureFormat_BC1_SRGB:
+    case agl::cTextureFormat_BC2_SRGB:
+    case agl::cTextureFormat_BC3_SRGB:
+        {
+            RIO_GL_CALL(glCompressedTexImage2DARB(
+                GL_TEXTURE_2D,
+                0,
+                native_format.internalformat,
+                pRenderTexture->textureData.getWidth(),
+                pRenderTexture->textureData.getHeight(),
+                0,
+                pRenderTexture->textureData.getImageByteSize(),
+                nullptr
+            ));
+
+            if (pRenderTexture->textureData.getMipLevelNum() > 1)
+            {
+                for (u32 i = 0; i < pRenderTexture->textureData.getMipLevelNum() - 2; i++)
+                    RIO_GL_CALL(glCompressedTexImage2DARB(
+                        GL_TEXTURE_2D,
+                        i + 1,
+                        native_format.internalformat,
+                        pRenderTexture->textureData.getWidth(i + 1),
+                        pRenderTexture->textureData.getHeight(i + 1),
+                        0,
+                        pRenderTexture->textureData.getMipLevelByteSize(i + 1),
+                        nullptr
+                    ));
+
+                RIO_GL_CALL(glCompressedTexImage2DARB(
+                    GL_TEXTURE_2D,
+                    (pRenderTexture->textureData.getMipLevelNum() - 2) + 1,
+                    native_format.internalformat,
+                    pRenderTexture->textureData.getWidth((pRenderTexture->textureData.getMipLevelNum() - 2) + 1),
+                    pRenderTexture->textureData.getHeight((pRenderTexture->textureData.getMipLevelNum() - 2) + 1),
+                    0,
+                    pRenderTexture->textureData.getMipLevelByteSize((pRenderTexture->textureData.getMipLevelNum() - 2) + 1),
+                    nullptr
+                ));
+            }
+        }
+        break;
+    default:
+        {
+            RIO_GL_CALL(glTexStorage2D(
+                GL_TEXTURE_2D,
+                pRenderTexture->textureData.getMipLevelNum(),
+                native_format.internalformat,
+                pRenderTexture->textureData.getWidth(),
+                pRenderTexture->textureData.getHeight()
+            ));
+        }
+        break;
+    }
+
+    pRenderTexture->textureData.setHandle(handle);
+
+#endif
 }
 
 void FFLiInvalidateRenderTexture(FFLiRenderTexture* pRenderTexture)
 {
-    FFLiInvalidateTexture(&pRenderTexture->gx2Texture);
+    pRenderTexture->textureData.invalidateGPUCache();
 }
 
-void FFLiSetupRenderTexture(FFLiRenderTexture* pRenderTexture, const FFLColor* pClearColor, void* pDepthBuffer, u32 mipLevel, GX2SurfaceFormat format, const FFLiShaderCallback* pCallback)
+void FFLiSetupRenderTexture(FFLiRenderTexture* pRenderTexture, const FFLColor* pClearColor, agl::TextureData* pDepthBuffer, u32 mipLevel, const FFLiShaderCallback* pCallback)
 {
-    FFLiSetupRenderTexture(&pRenderTexture->gx2Texture, pClearColor, pDepthBuffer, mipLevel, format, pCallback);
-}
-
-void FFLiSetupRenderTexture(GX2Texture* pGX2Texture, const FFLColor* pClearColor, void* pDepthBuffer, u32 mipLevel, GX2SurfaceFormat format, const FFLiShaderCallback* pCallback)
-{
-    GX2ColorBuffer colorBuffer;
-    std::memset(&colorBuffer, 0, sizeof(GX2ColorBuffer));
-
-    GX2DepthBuffer depthBuffer;
-    std::memset(&depthBuffer, 0, sizeof(GX2DepthBuffer));
-
-    GX2InitColorBuffer(&colorBuffer, pGX2Texture->surface.width, pGX2Texture->surface.height, format, GX2_AA_MODE_1X);
-
-    colorBuffer.surface.numMips = pGX2Texture->surface.numMips;
-    colorBuffer.viewMip = mipLevel;
-    GX2CalcSurfaceSizeAndAlignment(&colorBuffer.surface);
-    GX2InitColorBufferRegs(&colorBuffer);
-
-    colorBuffer.surface.imagePtr = pGX2Texture->surface.imagePtr;
-    colorBuffer.surface.mipPtr = pGX2Texture->surface.mipPtr;
-    GX2SetColorBuffer(&colorBuffer, GX2_RENDER_TARGET_0);
+    pRenderTexture->colorTarget.applyTextureData(pRenderTexture->textureData);
+    pRenderTexture->colorTarget.setMipLevel(mipLevel);
+    pRenderTexture->renderBuffer.setRenderTargetColor(&pRenderTexture->colorTarget);
 
     if (pDepthBuffer != NULL)
     {
-        GX2InitDepthBuffer(&depthBuffer, pGX2Texture->surface.width, pGX2Texture->surface.height, GX2_SURFACE_FORMAT_TCD_R16_UNORM, GX2_AA_MODE_1X);
-
-        depthBuffer.surface.imagePtr = FFLiRoundUpPtr(pDepthBuffer, depthBuffer.surface.alignment);
-        GX2SetDepthBuffer(&depthBuffer);
+        pRenderTexture->depthTarget.applyTextureData(*pDepthBuffer);
+        pRenderTexture->renderBuffer.setRenderTargetDepth(&pRenderTexture->depthTarget);
     }
     else
     {
-        GX2SetDepthOnlyControl(GX2_DISABLE, GX2_DISABLE, GX2_COMPARE_NEVER);
+        pRenderTexture->renderBuffer.setRenderTargetDepth(nullptr);
+
+        rio::RenderState renderState;
+        renderState.setDepthEnable(false, false);
+        renderState.applyDepthAndStencilTest();
     }
 
-    GX2SetViewport(
-        0.0f,
-        0.0f,
-        f32(FFLiGetMipMapLevelSize(colorBuffer.surface.width, mipLevel)),
-        f32(FFLiGetMipMapLevelSize(colorBuffer.surface.height, mipLevel)),
-        0.0f,
-        1.0f
+    pRenderTexture->renderBuffer.setSize(
+        FFLiGetMipMapLevelSize(pRenderTexture->textureData.getWidth(), mipLevel),
+        FFLiGetMipMapLevelSize(pRenderTexture->textureData.getHeight(), mipLevel)
     );
-    GX2SetScissor(
-        0.0f,
-        0.0f,
-        f32(FFLiGetMipMapLevelSize(colorBuffer.surface.width, mipLevel)),
-        f32(FFLiGetMipMapLevelSize(colorBuffer.surface.height, mipLevel))
-    );
+
+    pRenderTexture->renderBuffer.bind();
 
     if (pClearColor != NULL)
     {
-        GX2ClearColor(&colorBuffer, pClearColor->r, pClearColor->g, pClearColor->b, pClearColor->a);
+#if RIO_IS_CAFE
+        GX2ClearColor(&pRenderTexture->colorTarget.getInnerBuffer(), pClearColor->r, pClearColor->g, pClearColor->b, pClearColor->a);
+#elif RIO_IS_WIN
+        RIO_GL_CALL(glClearColor(pClearColor->r, pClearColor->g, pClearColor->b, pClearColor->a));
+        RIO_GL_CALL(glClear(GL_COLOR_BUFFER_BIT));
+#endif
+
         if (pDepthBuffer)
-            GX2ClearDepthStencil(&depthBuffer, GX2_CLEAR_BOTH);
+        {
+#if RIO_IS_CAFE
+            GX2ClearDepthStencil(&pRenderTexture->depthTarget.getInnerBuffer(), GX2_CLEAR_BOTH);
+#elif RIO_IS_WIN
+            RIO_GL_CALL(glDepthMask(GL_TRUE));
+            RIO_GL_CALL(glClearDepth(1.0f));
+            RIO_GL_CALL(glClear(GL_DEPTH_BUFFER_BIT));
+#endif
+        }
     }
 
     pCallback->CallSetContextState();
@@ -114,7 +233,6 @@ void FFLiSetupRenderTexture(GX2Texture* pGX2Texture, const FFLColor* pClearColor
 
 void FFLiFlushRenderTexture(FFLiRenderTexture* pRenderTexture)
 {
-    FFLiInvalidate(GX2_INVALIDATE_COLOR_BUFFER, pRenderTexture->gx2Texture.surface.imagePtr, pRenderTexture->gx2Texture.surface.imageSize);
-    if (pRenderTexture->gx2Texture.surface.mipPtr != NULL)
-        FFLiInvalidate(GX2_INVALIDATE_COLOR_BUFFER, pRenderTexture->gx2Texture.surface.mipPtr, pRenderTexture->gx2Texture.surface.mipSize);
+    RIO_ASSERT(pRenderTexture->renderBuffer.getRenderTargetColor());
+    pRenderTexture->renderBuffer.getRenderTargetColor()->invalidateGPUCache();
 }

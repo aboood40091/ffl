@@ -4,11 +4,11 @@
 #include <nn/ffl/FFLResourceType.h>
 #include <nn/ffl/FFLResult.h>
 
-#include <nn/ffl/FFLiFsFile.h>
 #include <nn/ffl/FFLiShapePartsType.h>
 #include <nn/ffl/FFLiTexturePartsType.h>
 
-class   FFLiFsCommand;
+#include <filedevice/rio_FileDevice.h>
+
 class   FFLiResourceHeader;
 class   FFLiResourceLoaderBuffer;
 class   FFLiResourceManager;
@@ -41,17 +41,16 @@ private:
     bool IsCached() const;
     FFLResult GetPointerFromCache(void** ppPtr, const FFLiResourcePartsInfo& partsInfo);
 
-    FSStatus OpenIfClosed();
-    FSStatus ReadWithPos(void* pDst, u32 pos, u32 size);
-    FSStatus Close();
+    rio::RawErrorCode OpenIfClosed();
+    rio::RawErrorCode ReadWithPos(void* pDst, u32 pos, u32 size);
+    rio::RawErrorCode Close();
 
 private:
     FFLiResourceManager*        m_pResourceManager;
     FFLiResourceLoaderBuffer*   m_pBuffer;
-    FFLiFsCommand*              m_pFsCommand;
-    FFLiFsFile                  m_FsFile;
+    rio::FileHandle             m_FileHandle;
     FFLResourceType             m_ResourceType;
 };
-NN_STATIC_ASSERT(sizeof(FFLiResourceLoader) == 0x18);
+//NN_STATIC_ASSERT(sizeof(FFLiResourceLoader) == 0x18);
 
 #endif // FFLI_RESOURCE_LOADER_H_

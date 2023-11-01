@@ -11,7 +11,6 @@ public:
     virtual ~FFLiBufferAllocatorForZlib();
 
     virtual void* Allocate(u32 size);
-    virtual void* Allocate(u32 size, u32 alignment);
     virtual void Free(void* ptr);
 private:
     FFLiBufferAllocator m_BufferAllocator;

@@ -52,7 +52,7 @@ void FFLiSetExpression(FFLiCharModel* pModel, FFLExpression expression)
     if (1 << expression & pModel->charModelDesc.expressionFlag)
     {
         pModel->expression = expression;
-        FFLiInitModulateShapeMask(&pModel->drawParam[FFLI_SHAPE_TYPE_XLU_MASK].modulateParam, pModel->maskTextures.pRenderTextures[expression]->gx2Texture);
+        FFLiInitModulateShapeMask(&pModel->drawParam[FFLI_SHAPE_TYPE_XLU_MASK].modulateParam, pModel->maskTextures.pRenderTextures[expression]->textureData);
     }
 }
 
@@ -119,9 +119,9 @@ const FFLiShapeTypeInfo& GetShapeTypeInfo(FFLModelType type)
         return SHAPE_TYPE_INFO_0;
     case FFL_MODEL_TYPE_1:
         return SHAPE_TYPE_INFO_1;
+    default:
+        return SHAPE_TYPE_INFO_0;
     }
-
-    return SHAPE_TYPE_INFO_0;
 }
 
 }

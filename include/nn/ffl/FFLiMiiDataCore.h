@@ -685,7 +685,7 @@ private:
     {
         FFLCreateID m_CreatorID;
 
-        u8  _C[0xA];
+        u8  _c[0xA];
     };
     u8  _padding1[2];
 

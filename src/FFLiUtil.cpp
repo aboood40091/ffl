@@ -2,7 +2,7 @@
 
 u32 FFLiRoundUp(u32 value, u32 alignment)
 {
-    return value + alignment - 1 & ~(alignment - 1);
+    return (value + alignment - 1) & ~(alignment - 1);
 }
 
 void* FFLiRoundUpPtr(void* ptr, u32 alignment)
@@ -12,7 +12,7 @@ void* FFLiRoundUpPtr(void* ptr, u32 alignment)
 
 bool FFLiCheckAlign(u32 value, u32 alignment)
 {
-    return (value & alignment - 1) == 0;
+    return (value & (alignment - 1)) == 0;
 }
 
 bool FFLiCheckAlignPtr(const void* ptr, u32 alignment)
@@ -34,7 +34,7 @@ s32 FFLiCompareString16(const u16* s1, const u16* s2, s32 n)
         s32 cmp = s1[i] - s2[i];
         if (cmp != 0)
             return cmp;
-        
+
         if (s1[i] == L'\0')
             break;
     }
