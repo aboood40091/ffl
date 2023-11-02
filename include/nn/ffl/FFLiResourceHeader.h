@@ -62,6 +62,8 @@ public:
         return m_ShapeHeader.partsMaxSize[partsType];
     }
 
+    void SwapEndian();  // Deleted in NSMBU
+
 private:
     u32                         m_Magic;
     u32                         m_Version;                  // I think? Always 0x00070000

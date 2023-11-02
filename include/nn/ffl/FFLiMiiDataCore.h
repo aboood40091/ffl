@@ -685,7 +685,7 @@ private:
     {
         FFLCreateID m_CreatorID;
 
-        u8  _C[0xA];
+        u8  _c[0xA];
     };
     u8  _padding1[2];
 
@@ -904,6 +904,9 @@ NN_STATIC_ASSERT(sizeof(FFLiStoreDataCFL) == FFL_STOREDATA_SIZE);
 
 class FFLiMiiDataHidden : public FFLiMiiDataCore
 {
+public:
+    void SwapEndian();  // Deleted in NSMBU
+
 private:
     u32 _48[12 / sizeof(u32)];  // Actual type unknown
 };

@@ -23,5 +23,6 @@ private:
     void*   m_pBuffer;
     void*   m_pTempBuffer;
 };
+NN_STATIC_ASSERT(sizeof(FFLiResourceUncompressBuffer) == 8);
 
 #endif // FFLI_RESOURCE_UNCOMPRESS_BUFFER_H_

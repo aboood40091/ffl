@@ -36,3 +36,14 @@ void FFLiStoreData::SwapEndian()
     m_Crc = FFLiSwapEndianImpl<u16>(m_Crc);
     SetCRC();
 }
+
+void FFLiMiiDataHidden::SwapEndian()
+{
+    // This function is deleted in NSMBU.
+    // Therefore, its implementation is only theoretical.
+
+    FFLiMiiDataCore::SwapEndian();
+
+    // Dunno what to do with this
+    // _48
+}

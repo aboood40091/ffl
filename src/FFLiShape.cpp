@@ -89,24 +89,24 @@ FFLResult FFLiLoadShape(FFLDrawParam* pDrawParam, FFLBoundingBox* pBoundingBox, 
 
         if (partsType == FFLI_SHAPE_PARTS_TYPE_HAIR_1)
         {
-            const FFLVec3* pTransform = static_cast<const FFLVec3*>(FFLiGetResourceShapeElement(&size, pData, partsType, FFLI_RESOURCE_SHAPE_ELEMENT_TYPE_TRANSFORM_HAIR_1));
+            const FFLiResourceShapeHairTransform* pTransform = static_cast<const FFLiResourceShapeHairTransform*>(FFLiGetResourceShapeElement(&size, pData, partsType, FFLI_RESOURCE_SHAPE_ELEMENT_TYPE_TRANSFORM_HAIR_1));
 
-            pModel->partsTransform._18 = pTransform[0];
-            pModel->partsTransform._c  = pTransform[1];
-            pModel->partsTransform._30 = pTransform[2];
-            pModel->partsTransform._24 = pTransform[3];
-            pModel->partsTransform._48 = pTransform[4];
-            pModel->partsTransform._3c = pTransform[5];
+            pModel->partsTransform._18 = pTransform->Get(0);
+            pModel->partsTransform._c  = pTransform->Get(1);
+            pModel->partsTransform._30 = pTransform->Get(2);
+            pModel->partsTransform._24 = pTransform->Get(3);
+            pModel->partsTransform._48 = pTransform->Get(4);
+            pModel->partsTransform._3c = pTransform->Get(5);
         }
         else if (partsType == FFLI_SHAPE_PARTS_TYPE_FACELINE)
         {
-            const FFLVec3* pTransform = static_cast<const FFLVec3*>(FFLiGetResourceShapeElement(&size, pData, partsType, FFLI_RESOURCE_SHAPE_ELEMENT_TYPE_TRANSFORM_FACELINE));
+            const FFLiResourceShapeFacelineTransform* pTransform = static_cast<const FFLiResourceShapeFacelineTransform*>(FFLiGetResourceShapeElement(&size, pData, partsType, FFLI_RESOURCE_SHAPE_ELEMENT_TYPE_TRANSFORM_FACELINE));
 
-            pModel->beardPos        = pTransform[2];
-            pModel->hairPos         = pTransform[0];
-            pModel->faceCenterPos   = pTransform[1];
+            pModel->beardPos        = pTransform->GetBeardPosition();
+            pModel->hairPos         = pTransform->GetHairPosition();
+            pModel->faceCenterPos   = pTransform->GetFaceCenterPosition();
 
-            pModel->partsTransform._0 = pTransform[0];
+            pModel->partsTransform._0 = pTransform->GetHairPosition();
         }
 
         std::memcpy(pBoundingBox, FFLiGetResourceShapeElement(&size, pData, partsType, FFLI_RESOURCE_SHAPE_ELEMENT_TYPE_BOUNDING_BOX), sizeof(FFLBoundingBox));

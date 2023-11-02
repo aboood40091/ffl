@@ -1,6 +1,7 @@
 #include <nn/ffl/FFLiCreateID.h>
 #include <nn/ffl/FFLiDatabaseFileOfficial.h>
 #include <nn/ffl/FFLiMiiData.h>
+#include <nn/ffl/FFLiSwapEndian.h>
 
 #include <nn/ffl/detail/FFLiCharInfo.h>
 #include <nn/ffl/detail/FFLiCrc.h>
@@ -178,4 +179,23 @@ bool FFLiDatabaseFileOfficial::AdjustRegularList(AdjustRegularBuffer* pBuffer)
     }
 
     return ret;
+}
+
+void FFLiDatabaseFileOfficial::SwapEndian()
+{
+    // This function is deleted in NSMBU.
+    // Therefore, its implementation is only theoretical.
+
+    m_Magic = FFLiSwapEndianImpl<u32>(m_Magic);
+    _4 = FFLiSwapEndianImpl<u32>(_4);
+
+    for (u32 i = 0; i < 3000; i++)
+        m_MiiDataOfficial[i].SwapEndian();
+
+    // Dunno what to do with this
+    // _4381c
+
+    m_Crc = FFLiSwapEndianImpl<u16>(m_Crc);
+
+    UpdateCrc();
 }
