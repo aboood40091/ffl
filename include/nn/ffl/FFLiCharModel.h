@@ -21,15 +21,13 @@ struct FFLiCharModel
 {
     FFLiCharInfo            charInfo;
     FFLCharModelDesc        charModelDesc;
-    void*                   pBuffer;
-    u32                     bufferSize;
     FFLExpression           expression;
     FFLiTextureTempObject*  pTextureTempObject;
     FFLDrawParam            drawParam[FFLI_SHAPE_TYPE_MAX];
     FFLiRenderTexture       facelineRenderTexture;
-    GX2Texture*             pCapTexture;
-    GX2Texture*             pGlassTexture;
-    GX2Texture*             pNoselineTexture;
+    agl::TextureData*       pCapTexture;
+    agl::TextureData*       pGlassTexture;
+    agl::TextureData*       pNoselineTexture;
     FFLiMaskTextures        maskTextures;
     FFLVec3                 beardPos;
     FFLVec3                 hairPos;
@@ -38,17 +36,16 @@ struct FFLiCharModel
     FFLModelType            modelType;
     FFLBoundingBox          boundingBox[3];
 };
-NN_STATIC_ASSERT(sizeof(FFLiCharModel) == 0x7DC);
+#if RIO_IS_CAFE
+NN_STATIC_ASSERT(sizeof(FFLiCharModel) == 0xA68);
+#else
+NN_STATIC_ASSERT(sizeof(FFLiCharModel) == 0x948);
+#endif // RIO_IS_CAFE
 
 struct FFLCharModelSource;
-struct FFLCharModelBuffer;
 struct FFLShaderCallback;
 
-u32 FFLiGetBufferSizeCharModel(const FFLCharModelDesc* pDesc);
-
-FFLResult FFLiInitCharModelCPUStep(FFLiCharModel* pModel, const FFLCharModelSource* pSource, const FFLCharModelDesc* pDesc, FFLCharModelBuffer* pBuffer);
-
-u32 FFLiGetTempBufferSizeCharModel(const FFLCharModelDesc* pDesc);
+FFLResult FFLiInitCharModelCPUStep(FFLiCharModel* pModel, const FFLCharModelSource* pSource, const FFLCharModelDesc* pDesc);
 
 void FFLiInitCharModelGPUStep(FFLiCharModel* pModel, const FFLShaderCallback* pCallback);
 

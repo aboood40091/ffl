@@ -4,7 +4,6 @@
 #include <nn/ffl/FFLiMiddleDB.h>
 #include <nn/ffl/FFLiSwapEndian.h>
 
-#include <nn/ffl/detail/FFLiAllocator.h>
 #include <nn/ffl/detail/FFLiCrc.h>
 
 #include <algorithm>
@@ -76,7 +75,7 @@ void ShuffleIndices(u16* pIndices, u16 num)
         u32 random = holdrand >> 16 & 0xffff;
         u16 iRandom = i + (random - (random / range) * range);
         holdrand = holdrand * 83409763L + 1444837343L;
-        
+
         if (iRandom != i)
             std::swap(pIndices[iRandom], pIndices[i]);
     }
@@ -84,16 +83,16 @@ void ShuffleIndices(u16* pIndices, u16 num)
 
 }
 
-FFLResult FFLiDatabaseFileHidden::UpdateMiddleDBRandom(FFLiMiddleDB* pMiddleDB, FFLiAllocator* pAllocator) const
+FFLResult FFLiDatabaseFileHidden::UpdateMiddleDBRandom(FFLiMiddleDB* pMiddleDB) const
 {
-    u16* pIndices = static_cast<u16*>(pAllocator->Allocate(sizeof(u16) * GetMiiDataNum()));
+    u16* pIndices = new u16[GetMiiDataNum()];
     if (pIndices == NULL)
         return FFL_RESULT_OUT_OF_MEMORY;
 
     u16 num = NumOfGenderWithIndex(pIndices, pMiddleDB->HiddenParam().Gender());
     if (num == 0)
     {
-        pAllocator->Free(pIndices);
+        delete[] pIndices;
         return FFL_RESULT_HDB_EMPTY;
     }
 
@@ -103,7 +102,7 @@ FFLResult FFLiDatabaseFileHidden::UpdateMiddleDBRandom(FFLiMiddleDB* pMiddleDB, 
         for (u16 i = 0; i < num; i++)
             pMiddleDB->Add(GetImpl(pIndices[i]));
 
-    pAllocator->Free(pIndices);
+    delete[] pIndices;
     return FFL_RESULT_OK;
 }
 
@@ -143,10 +142,10 @@ static void ParamFindNext(FFLiMiddleDBTimeUpdateParam& param)
     while (true)
     {
         ParamAdvance(param);
-        
+
         if (param.index == 0xffff)
             break;
-        
+
         if (param.gender == FFL_GENDER_MAX)
             break;
 
@@ -174,7 +173,7 @@ FFLResult FFLiDatabaseFileHidden::UpdateMiddleDBTime(FFLiMiddleDB* pMiddleDB, bo
         pMiddleDB->Add(GetImpl(param.index));
         ParamFindNext(param);
     }
-    
+
     return
         pMiddleDB->StoredSize() != 0
             ? FFL_RESULT_OK
@@ -183,7 +182,7 @@ FFLResult FFLiDatabaseFileHidden::UpdateMiddleDBTime(FFLiMiddleDB* pMiddleDB, bo
 
 void FFLiDatabaseFileHidden::Init()
 {
-    m_Magic = 'FFHA';
+    m_Magic = 0x46464841;   // FFHA
 
     m_StartIndex = 0xffff;
     m_EndIndex = 0xffff;
@@ -209,7 +208,7 @@ bool FFLiDatabaseFileHidden::IsValidCrc() const
 
 bool FFLiDatabaseFileHidden::IsValidIdentifier() const
 {
-    return m_Magic == 'FFHA';
+    return m_Magic == 0x46464841;   // FFHA
 }
 
 bool FFLiDatabaseFileHidden::IsValid() const
@@ -217,7 +216,7 @@ bool FFLiDatabaseFileHidden::IsValid() const
     return IsValidIdentifier() && IsValidCrc();
 }
 
-FFLResult FFLiDatabaseFileHidden::UpdateMiddleDB(FFLiMiddleDB* pMiddleDB, FFLiAllocator* pAllocator) const
+FFLResult FFLiDatabaseFileHidden::UpdateMiddleDB(FFLiMiddleDB* pMiddleDB) const
 {
     FFLResult result;
 
@@ -227,7 +226,7 @@ FFLResult FFLiDatabaseFileHidden::UpdateMiddleDB(FFLiMiddleDB* pMiddleDB, FFLiAl
         result = FFL_RESULT_ERROR;
         break;
     case FFL_MIDDLE_DB_TYPE_HIDDEN_PARAM_RANDOM_UPDATE:
-        result = UpdateMiddleDBRandom(pMiddleDB, pAllocator);
+        result = UpdateMiddleDBRandom(pMiddleDB);
         break;
     case FFL_MIDDLE_DB_TYPE_HIDDEN_PARAM_TIME_UPDATE_REVERSE:
         result = UpdateMiddleDBTime(pMiddleDB, true);

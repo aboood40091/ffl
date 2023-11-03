@@ -85,7 +85,7 @@ u32 FFLiMiddleDB::GetBufferSize(u16 num)
 
 void FFLiMiddleDB::Init(FFLMiddleDBType type, void* pData, u16 num)
 {
-    m_Magic = 'FFMA';
+    m_Magic = 0x46464D41;   // FFMA
     m_Type = type;
     m_pMiiDataOfficial = static_cast<FFLiMiiDataOfficial*>(pData);
     m_Size = num;

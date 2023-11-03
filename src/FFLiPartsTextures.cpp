@@ -33,7 +33,7 @@ static const FFLiEyeMouthTypeElement EYE_MOUTH_TYPE_ELEMENT[FFL_EXPRESSION_MAX] 
 void ExpressionToEyeUseFlag(bool* pUseFlag, u32 expressionFlag);
 void ExpressionToMouthUseFlag(bool* pUseFlag, u32 expressionFlag);
 
-void InvalidateTextures(GX2Texture** ppTextures, u32 count);
+void InvalidateTextures(agl::TextureData** ppTextures, u32 count);
 
 }
 
@@ -52,8 +52,9 @@ s32 FFLiCharInfoAndTypeToEyeIndex(const FFLiCharInfo* pCharInfo, FFLiEyeTextureT
         return 26;
     case FFLI_EYE_TEXTURE_TYPE_5:
         return 47;
+    default:
+        return 0;
     }
-    return 0;
 }
 
 s32 FFLiCharInfoAndTypeToMouthIndex(const FFLiCharInfo* pCharInfo, FFLiMouthTextureType type)
@@ -70,14 +71,15 @@ s32 FFLiCharInfoAndTypeToMouthIndex(const FFLiCharInfo* pCharInfo, FFLiMouthText
         return 36;
     case FFLI_MOUTH_TEXTURE_TYPE_4:
         return 19;
+    default:
+        return 0;
     }
-    return 0;
 }
 
-FFLResult FFLiLoadPartsTextures(FFLiPartsTextures* pPartsTextures, const FFLiCharInfo* pCharInfo, u32 expressionFlag, FFLiResourceLoader* pResLoader, FFLiBufferAllocator* pAllocator)
+FFLResult FFLiLoadPartsTextures(FFLiPartsTextures* pPartsTextures, const FFLiCharInfo* pCharInfo, u32 expressionFlag, FFLiResourceLoader* pResLoader)
 {
     std::memset(pPartsTextures, 0, sizeof(FFLiPartsTextures));
-    
+
     bool useFlag[FFLI_EYE_TEXTURE_TYPE_MAX];    // max(FFLI_EYE_TEXTURE_TYPE_MAX, FFLI_MOUTH_TEXTURE_TYPE_MAX)
 
     {
@@ -87,7 +89,7 @@ FFLResult FFLiLoadPartsTextures(FFLiPartsTextures* pPartsTextures, const FFLiCha
         {
             if (useFlag[i])
             {
-                FFLResult result = FFLiLoadTextureWithAllocate(&(pPartsTextures->pTexturesEye[i]), FFLI_TEXTURE_PARTS_TYPE_EYE, FFLiCharInfoAndTypeToEyeIndex(pCharInfo, FFLiEyeTextureType(i)), pResLoader, pAllocator);
+                FFLResult result = FFLiLoadTextureWithAllocate(&(pPartsTextures->pTexturesEye[i]), FFLI_TEXTURE_PARTS_TYPE_EYE, FFLiCharInfoAndTypeToEyeIndex(pCharInfo, FFLiEyeTextureType(i)), pResLoader);
                 if (result != FFL_RESULT_OK)
                     return result;
             }
@@ -101,22 +103,22 @@ FFLResult FFLiLoadPartsTextures(FFLiPartsTextures* pPartsTextures, const FFLiCha
         {
             if (useFlag[i])
             {
-                FFLResult result = FFLiLoadTextureWithAllocate(&(pPartsTextures->pTexturesMouth[i]), FFLI_TEXTURE_PARTS_TYPE_MOUTH, FFLiCharInfoAndTypeToMouthIndex(pCharInfo, FFLiMouthTextureType(i)), pResLoader, pAllocator);
+                FFLResult result = FFLiLoadTextureWithAllocate(&(pPartsTextures->pTexturesMouth[i]), FFLI_TEXTURE_PARTS_TYPE_MOUTH, FFLiCharInfoAndTypeToMouthIndex(pCharInfo, FFLiMouthTextureType(i)), pResLoader);
                 if (result != FFL_RESULT_OK)
                     return result;
             }
         }
     }
 
-    FFLResult result = FFLiLoadTextureWithAllocate(&pPartsTextures->pTextureEyebrow, FFLI_TEXTURE_PARTS_TYPE_EYEBROW, pCharInfo->parts.eyebrowType, pResLoader, pAllocator);
+    FFLResult result = FFLiLoadTextureWithAllocate(&pPartsTextures->pTextureEyebrow, FFLI_TEXTURE_PARTS_TYPE_EYEBROW, pCharInfo->parts.eyebrowType, pResLoader);
     if (result != FFL_RESULT_OK)
         return result;
 
-    result = FFLiLoadTextureWithAllocate(&pPartsTextures->pTextureMustache, FFLI_TEXTURE_PARTS_TYPE_MUSTACHE, pCharInfo->parts.mustacheType, pResLoader, pAllocator);
+    result = FFLiLoadTextureWithAllocate(&pPartsTextures->pTextureMustache, FFLI_TEXTURE_PARTS_TYPE_MUSTACHE, pCharInfo->parts.mustacheType, pResLoader);
     if (result != FFL_RESULT_OK)
         return result;
 
-    result = FFLiLoadTextureWithAllocate(&pPartsTextures->pTextureMole, FFLI_TEXTURE_PARTS_TYPE_MOLE, pCharInfo->parts.moleType, pResLoader, pAllocator);
+    result = FFLiLoadTextureWithAllocate(&pPartsTextures->pTextureMole, FFLI_TEXTURE_PARTS_TYPE_MOLE, pCharInfo->parts.moleType, pResLoader);
     if (result != FFL_RESULT_OK)
         return result;
 
@@ -129,13 +131,13 @@ void FFLiInvalidatePartsTextures(FFLiPartsTextures* pPartsTextures)
     InvalidateTextures(pPartsTextures->pTexturesMouth, FFLI_MOUTH_TEXTURE_TYPE_MAX);
 
     if (pPartsTextures->pTextureEyebrow != NULL)
-        FFLiInvalidateTexture(pPartsTextures->pTextureEyebrow);
+        pPartsTextures->pTextureEyebrow->invalidateGPUCache();
 
     if (pPartsTextures->pTextureMustache != NULL)
-        FFLiInvalidateTexture(pPartsTextures->pTextureMustache);
+        pPartsTextures->pTextureMustache->invalidateGPUCache();
 
     if (pPartsTextures->pTextureMole != NULL)
-        FFLiInvalidateTexture(pPartsTextures->pTextureMole);
+        pPartsTextures->pTextureMole->invalidateGPUCache();
 }
 
 const FFLiEyeMouthTypeElement& FFLiGetEyeMouthTypeElement(FFLExpression expression)
@@ -179,11 +181,11 @@ void ExpressionToMouthUseFlag(bool* pUseFlag, u32 expressionFlag)
 
 }
 
-void InvalidateTextures(GX2Texture** ppTextures, u32 count)
+void InvalidateTextures(agl::TextureData** ppTextures, u32 count)
 {
     for (u32 i = 0; i < count; i++)
         if (ppTextures[i] != NULL)
-            FFLiInvalidateTexture(ppTextures[i]);
+            ppTextures[i]->invalidateGPUCache();
 }
 
 }

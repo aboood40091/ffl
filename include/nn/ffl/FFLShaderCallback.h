@@ -3,8 +3,11 @@
 
 #include <nn/ffl/types.h>
 
-#include <cafe/gx2.h>
-#include <cafe/mat.h>
+#include <math/rio_MathTypes.h>
+
+#if RIO_IS_CAFE
+#include <gx2/context.h>
+#endif // RIO_IS_CAFE
 
 #ifdef __cplusplus
 extern "C" {
@@ -14,11 +17,15 @@ typedef struct FFLDrawParam FFLDrawParam;
 
 typedef struct FFLShaderCallback
 {
-    void*                   pObj;
-    const GX2ContextState*  pContextState;
+    void*               pObj;
+#if RIO_IS_CAFE
+    GX2ContextState*    pContextState;
+#else
+    void*               _4;
+#endif // RIO_IS_CAFE
 
     void (*pDrawFunc)(void* pObj, const FFLDrawParam& drawParam);
-    void (*pSetMatrixFunc)(void* pObj, const Mat44& matrix);
+    void (*pSetMatrixFunc)(void* pObj, const rio::BaseMtx44f& matrix);
 }
 FFLShaderCallback;
 NN_STATIC_ASSERT(sizeof(FFLShaderCallback) == 0x10);

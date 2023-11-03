@@ -2,13 +2,12 @@
 
 #include <nn/ffl/FFLiDatabaseFile.h>
 #include <nn/ffl/FFLiDatabaseFileAccessor.h>
-#include <nn/ffl/FFLiFsClient.h>
-#include <nn/ffl/FFLiFsFile.h>
 #include <nn/ffl/FFLiPath.h>
 #include <nn/ffl/FFLiUtil.h>
 
-#include <nn/ffl/detail/FFLiAllocator.h>
 #include <nn/ffl/detail/FFLiFileWriteBuffer.h>
+
+#include <filedevice/rio_FileDeviceMgr.h>
 
 #include <cstring>
 
@@ -24,7 +23,7 @@ enum FFLiFsFileResult
 struct FFLiFsResult
 {
     FFLiFsFileResult    fileResult;
-    FSStatus            fsStatus;
+    rio::RawErrorCode   fsStatus;
 };
 NN_STATIC_ASSERT(sizeof(FFLiFsResult) == 8);
 
@@ -47,22 +46,19 @@ const char* HDB_FILE_NAME[1] = {
 
 FFLResult GetDatabasePath(char* pDst, u32 size, u64 titleID, const char* filename);
 
-FFLiFsResult LoadDatabaseHidden(FFLiDatabaseFileHidden* pHidden, FFLiFsCommand* pCommand, const char* pPath);
-FFLiFsResult SaveDatabaseHidden(const FFLiDatabaseFileHidden& hidden, FFLiFsCommand* pCommand, FFLiFileWriteBuffer* pWriteBuffer, const char* pPath);
+FFLiFsResult LoadDatabaseHidden(FFLiDatabaseFileHidden* pHidden, const char* pPath);
+FFLiFsResult SaveDatabaseHidden(const FFLiDatabaseFileHidden& hidden, FFLiFileWriteBuffer* pWriteBuffer, const char* pPath);
 
-FFLiFsResult LoadDatabaseOfficial(FFLiDatabaseFileOfficial* pOfficial, FFLiFsCommand* pCommand, const char* pPath);
-FFLiFsResult SaveDatabaseOfficial(const FFLiDatabaseFileOfficial& official, FFLiFsCommand* pCommand, FFLiFileWriteBuffer* pWriteBuffer, const char* pPath);
+FFLiFsResult LoadDatabaseOfficial(FFLiDatabaseFileOfficial* pOfficial, const char* pPath);
+FFLiFsResult SaveDatabaseOfficial(const FFLiDatabaseFileOfficial& official, FFLiFileWriteBuffer* pWriteBuffer, const char* pPath);
 
-FFLiFsResult CopyDatabaseOfficial(const char* pPathTo, const char* pPathFrom, FFLiFsCommand* pCommand, FFLiFileWriteBuffer* pWriteBuffer, FFLiAllocator* pAllocator);
+FFLiFsResult CopyDatabaseOfficial(const char* pPathTo, const char* pPathFrom, FFLiFileWriteBuffer* pWriteBuffer);
 
 }
 
-FFLiDatabaseFileAccessor::FFLiDatabaseFileAccessor(FFLiFsClient* pClient, FFLiDatabaseFile* pFile, FFLiFileWriteBuffer* pWriteBuffer, FFLiAllocator* pAllocator)
-    : m_pFsClient(pClient)
-    , m_FsCommand(pClient)
-    , m_pDatabaseFile(pFile)
+FFLiDatabaseFileAccessor::FFLiDatabaseFileAccessor(FFLiDatabaseFile* pFile, FFLiFileWriteBuffer* pWriteBuffer)
+    : m_pDatabaseFile(pFile)
     , m_pFileWriteBuffer(pWriteBuffer)
-    , m_pAllocator(pAllocator)
     , _a94(0)
     , m_IsPathSet(false)
     , m_IsBackupOfficialNeed(false)
@@ -106,7 +102,7 @@ FFLResult FFLiDatabaseFileAccessor::AfterConstruct(u64 titleID)
 
 FFLResult FFLiDatabaseFileAccessor::BootLoad()
 {
-    FFLResult result = BootLoadImpl(&m_FsCommand);
+    FFLResult result = BootLoadImpl();
     if (result != FFL_RESULT_OK)
         return result;
 
@@ -117,13 +113,11 @@ FFLResult FFLiDatabaseFileAccessor::BootLoad()
     return FFL_RESULT_OK;
 }
 
-FFLResult FFLiDatabaseFileAccessor::BootLoadImpl(FFLiFsCommand* pCommand)
+FFLResult FFLiDatabaseFileAccessor::BootLoadImpl()
 {
-    FFLiFsResult result = { FFLI_FS_FILE_RESULT_OK, FS_STATUS_OK };
-
     bool needInitHidden = true;
 
-    result = LoadDatabaseHidden(&m_pDatabaseFile->hidden, pCommand, GetPathHidden());
+    FFLiFsResult result = LoadDatabaseHidden(&m_pDatabaseFile->hidden, GetPathHidden());
     if (CheckFFLiFsResult(result))
     {
         if (m_pDatabaseFile->hidden.IsValid())
@@ -139,12 +133,12 @@ FFLResult FFLiDatabaseFileAccessor::BootLoadImpl(FFLiFsCommand* pCommand)
         m_pDatabaseFile->hidden.Init();
         m_IsFlushQuotaNeeded = true;
 
-        result = SaveDatabaseHidden(m_pDatabaseFile->hidden, pCommand, m_pFileWriteBuffer, GetPathHidden());
+        result = SaveDatabaseHidden(m_pDatabaseFile->hidden, m_pFileWriteBuffer, GetPathHidden());
         if (!CheckFFLiFsResult(result))
             return ConvertFFLiFsResultToFFLResult(result, FFL_RESULT_FILE_LOAD_ERROR);
     }
 
-    result = LoadDatabaseOfficial(&m_pDatabaseFile->official, pCommand, GetPathOfficial());
+    result = LoadDatabaseOfficial(&m_pDatabaseFile->official, GetPathOfficial());
     if (CheckFFLiFsResult(result))
     {
         if (m_pDatabaseFile->official.IsValid())
@@ -153,7 +147,7 @@ FFLResult FFLiDatabaseFileAccessor::BootLoadImpl(FFLiFsCommand* pCommand)
             {
                 m_IsFlushQuotaNeeded = true;
 
-                result = SaveDatabaseOfficial(m_pDatabaseFile->official, pCommand, m_pFileWriteBuffer, GetPathBackup());
+                result = SaveDatabaseOfficial(m_pDatabaseFile->official, m_pFileWriteBuffer, GetPathBackup());
                 if (!CheckFFLiFsResult(result))
                     return ConvertFFLiFsResultToFFLResult(result, FFL_RESULT_FILE_LOAD_ERROR);
             }
@@ -166,14 +160,14 @@ FFLResult FFLiDatabaseFileAccessor::BootLoadImpl(FFLiFsCommand* pCommand)
         return ConvertFFLiFsResultToFFLResult(result, FFL_RESULT_FILE_LOAD_ERROR);
     }
 
-    result = LoadDatabaseOfficial(&m_pDatabaseFile->official, pCommand, GetPathBackup());
+    result = LoadDatabaseOfficial(&m_pDatabaseFile->official, GetPathBackup());
     if (CheckFFLiFsResult(result))
     {
         if (m_pDatabaseFile->official.IsValid())
         {
             m_IsFlushQuotaNeeded = true;
 
-            result = SaveDatabaseOfficial(m_pDatabaseFile->official, pCommand, m_pFileWriteBuffer, GetPathOfficial());
+            result = SaveDatabaseOfficial(m_pDatabaseFile->official, m_pFileWriteBuffer, GetPathOfficial());
             if (!CheckFFLiFsResult(result))
                 return ConvertFFLiFsResultToFFLResult(result, FFL_RESULT_FILE_LOAD_ERROR);
 
@@ -189,11 +183,11 @@ FFLResult FFLiDatabaseFileAccessor::BootLoadImpl(FFLiFsCommand* pCommand)
 
     m_IsFlushQuotaNeeded = true;
 
-    result = SaveDatabaseOfficial(m_pDatabaseFile->official, pCommand, m_pFileWriteBuffer, GetPathBackup());
+    result = SaveDatabaseOfficial(m_pDatabaseFile->official, m_pFileWriteBuffer, GetPathBackup());
     if (!CheckFFLiFsResult(result))
         return ConvertFFLiFsResultToFFLResult(result, FFL_RESULT_FILE_LOAD_ERROR);
 
-    result = SaveDatabaseOfficial(m_pDatabaseFile->official, pCommand, m_pFileWriteBuffer, GetPathOfficial());
+    result = SaveDatabaseOfficial(m_pDatabaseFile->official, m_pFileWriteBuffer, GetPathOfficial());
     if (!CheckFFLiFsResult(result))
         return ConvertFFLiFsResultToFFLResult(result, FFL_RESULT_FILE_LOAD_ERROR);
 
@@ -202,13 +196,13 @@ FFLResult FFLiDatabaseFileAccessor::BootLoadImpl(FFLiFsCommand* pCommand)
 
 FFLResult FFLiDatabaseFileAccessor::AdjustRegularListOfficial()
 {
-    FFLiDatabaseFileOfficial::AdjustRegularBuffer* pBuffer = static_cast<FFLiDatabaseFileOfficial::AdjustRegularBuffer*>(m_pAllocator->Allocate(sizeof(FFLiDatabaseFileOfficial::AdjustRegularBuffer)));
+    FFLiDatabaseFileOfficial::AdjustRegularBuffer* pBuffer = new FFLiDatabaseFileOfficial::AdjustRegularBuffer;
     if (pBuffer == NULL)
         return FFL_RESULT_OUT_OF_MEMORY;
 
     m_pDatabaseFile->official.AdjustRegularList(pBuffer);
 
-    m_pAllocator->Free(pBuffer);
+    delete pBuffer;
     return FFL_RESULT_OK;
 }
 
@@ -241,12 +235,9 @@ FFLResult FFLiDatabaseFileAccessor::BeforeFlushQuota()
 
 FFLResult FFLiDatabaseFileAccessor::SaveHidden()
 {
-    if (!m_pFsClient->IsValid())
-        return FFL_RESULT_FS_ERROR;
-
     m_pDatabaseFile->hidden.UpdateCrc();
 
-    FFLiFsResult result = SaveDatabaseHidden(m_pDatabaseFile->hidden, &m_FsCommand, m_pFileWriteBuffer, GetPathHidden());
+    FFLiFsResult result = SaveDatabaseHidden(m_pDatabaseFile->hidden, m_pFileWriteBuffer, GetPathHidden());
     if (!CheckFFLiFsResult(result))
         return ConvertFFLiFsResultToFFLResult(result, FFL_RESULT_FILE_SAVE_ERROR);
 
@@ -258,18 +249,19 @@ FFLResult FFLiDatabaseFileAccessor::SaveHidden()
 
 FFLResult FFLiDatabaseFileAccessor::BackupOfficial()
 {
-    if (!m_pFsClient->IsValid())
-        return FFL_RESULT_FS_ERROR;
-
     const char* pPathFrom   = GetPathOfficial();
     const char* pPathTo     = GetPathBackup();
 
-    FFLiFsResult result = CopyDatabaseOfficial(pPathTo, pPathFrom, &m_FsCommand, m_pFileWriteBuffer, m_pAllocator);
+    FFLiFsResult result = CopyDatabaseOfficial(pPathTo, pPathFrom, m_pFileWriteBuffer);
     if (!CheckFFLiFsResult(result))
         return ConvertFFLiFsResultToFFLResult(result, FFL_RESULT_FILE_SAVE_ERROR);
 
     return FFL_RESULT_OK;
 }
+
+#if RIO_IS_CAFE
+extern "C" FSStatus FSFlushQuota(FSClient *client, FSCmdBlock* block, const char* path, FSErrorFlag errorMask);
+#endif // RIO_IS_CAFE
 
 FFLResult FFLiDatabaseFileAccessor::FlushQuota(bool force)
 {
@@ -277,8 +269,14 @@ FFLResult FFLiDatabaseFileAccessor::FlushQuota(bool force)
 
     if (force | flush)
     {
-        if (FFLiFsFile::FlushQuota(&m_FsCommand, m_PathOfficial) != FS_STATUS_OK)
+#if RIO_IS_CAFE
+        FSCmdBlock block;
+        FSInitCmdBlock(&block);
+
+        FSClient* client = rio::FileDeviceMgr::instance()->getFSClient();
+        if (FSFlushQuota(client, &block, m_PathOfficial, FS_ERROR_FLAG_NONE) != FS_STATUS_OK)
             return FFL_RESULT_FS_ERROR;
+#endif // RIO_IS_CAFE
 
         m_IsBackupOfficialNeed = false;
         m_IsHiddenSaved = false;
@@ -305,18 +303,8 @@ const char* FFLiDatabaseFileAccessor::GetPathHidden() const
 
 bool FFLiDatabaseFileAccessor::IsExistFile(const char* pPath)
 {
-    FFLiFsFile file(&m_FsCommand);
-
-    FSStatus status = file.Open(pPath, "r", FS_RET_NOT_FOUND);
-    if (status != FS_STATUS_OK)
-        return false;
-
-    status = file.Close();
-    FFLiFsResult result = { FFLI_FS_FILE_RESULT_OK, status };
-    if (!CheckFFLiFsResult(result))
-        return false;
-
-    return true;
+    bool isExist = false;
+    return rio::FileDeviceMgr::instance()->getNativeFileDevice()->tryIsExistFile(&isExist, pPath) && isExist;
 }
 
 static bool CheckFFLiFsResult(const FFLiFsResult& result)
@@ -324,7 +312,7 @@ static bool CheckFFLiFsResult(const FFLiFsResult& result)
     if (result.fileResult != FFLI_FS_FILE_RESULT_OK)
         return false;
 
-    if (result.fsStatus != FS_STATUS_OK)
+    if (result.fsStatus != rio::RAW_ERROR_OK)
         return false;
 
     return true;
@@ -341,12 +329,12 @@ static FFLResult ConvertFFLiFsResultToFFLResult(const FFLiFsResult& fsResult, FF
     return result;
 }
 
-static bool CheckFileNotFound(FSStatus status)
+static bool CheckFileNotFound(rio::RawErrorCode status)
 {
-    if (status == FS_STATUS_NOT_FOUND)
+    if (status == rio::RAW_ERROR_NOT_FOUND)
         return true;
 
-    if (status == FS_STATUS_PERMISSION_ERROR)
+    if (status == rio::RAW_ERROR_PERMISSION_ERROR)
         return true;
 
     return false;
@@ -357,49 +345,54 @@ namespace {
 
 FFLResult GetDatabasePath(char* pDst, u32 size, u64 titleID, const char* filename)
 {
-    FSStatus status = FFLiGetDatabasePath(pDst, size, titleID, filename);
+    rio::RawErrorCode status = FFLiGetDatabasePath(pDst, size, titleID, filename);
     return FFLiConvertFSStatusToFFLResult(status);
 }
 
-FFLiFsResult ReadFile(void* pDst, u32 size, FFLiFsCommand* pCommand, const char* pPath)
+FFLiFsResult ReadFile(void* pDst, u32 size, const char* pPath)
 {
-    FFLiFsFile file(pCommand);
-    
-    FSStatus status = file.Open(pPath, "r", FS_RET_NOT_FOUND);
-    if (status != FS_STATUS_OK)
+    rio::NativeFileDevice* device = rio::FileDeviceMgr::instance()->getNativeFileDevice();
+
+    rio::FileHandle fileHandle;
+    if (!device->tryOpen(&fileHandle, pPath, rio::FileDevice::FILE_OPEN_FLAG_READ))
     {
-        FFLiFsResult result = { FFLI_FS_FILE_RESULT_OK, status };
-        return result;
+        rio::RawErrorCode status = device->getLastRawError();
+        RIO_ASSERT(status != rio::RAW_ERROR_OK);
+        return FFLiFsResult { FFLI_FS_FILE_RESULT_OK, status };
     }
 
-    status = file.Read(pDst, size, 1);
-    if (status == 0)
+    u32 readSize = 0;
+    if (!fileHandle.tryRead(&readSize, static_cast<u8*>(pDst), size))
     {
-        file.Close();
-        FFLiFsResult result = { FFLI_FS_FILE_RESULT_READ_BUFFER_EMPTY };
-        return result;
+        fileHandle.tryClose();
+
+        rio::RawErrorCode status = device->getLastRawError();
+        RIO_ASSERT(status != rio::RAW_ERROR_OK);
+        return FFLiFsResult { FFLI_FS_FILE_RESULT_OK, status };
     }
-    else if (status < 0)
+
+    if (readSize == 0)
     {
-        file.Close();
-        FFLiFsResult result = { FFLI_FS_FILE_RESULT_OK, status };
-        return result;
+        fileHandle.tryClose();
+
+        return FFLiFsResult { FFLI_FS_FILE_RESULT_READ_BUFFER_EMPTY };
     }
     else
     {
-        status = file.Close();
-        FFLiFsResult result = { FFLI_FS_FILE_RESULT_OK, status };
-        if (!CheckFFLiFsResult(result))
-            return result;
+        if (!fileHandle.tryClose())
+        {
+            rio::RawErrorCode status = device->getLastRawError();
+            RIO_ASSERT(status != rio::RAW_ERROR_OK);
+            return FFLiFsResult { FFLI_FS_FILE_RESULT_OK, status };
+        }
     }
-        
-    FFLiFsResult result = { FFLI_FS_FILE_RESULT_OK, FS_STATUS_OK };
-    return result;
+
+    return FFLiFsResult { FFLI_FS_FILE_RESULT_OK, rio::RAW_ERROR_OK };
 }
 
-FSStatus WriteFileImpl(FFLiFsFile& file, const void* pSrc, u32 size, FFLiFileWriteBuffer* pWriteBuffer)
+rio::RawErrorCode WriteFileImpl(rio::FileHandle& fileHandle, const void* pSrc, u32 size, FFLiFileWriteBuffer* pWriteBuffer)
 {
-    FSStatus ret = 0;
+    rio::RawErrorCode ret = rio::RawErrorCode(0);
 
     const u32 count = (size + (FFLI_FILE_WRITE_BUFFER_SIZE - 1)) / FFLI_FILE_WRITE_BUFFER_SIZE;
 
@@ -407,106 +400,101 @@ FSStatus WriteFileImpl(FFLiFsFile& file, const void* pSrc, u32 size, FFLiFileWri
     {
         u32 writeSize = FFLiMin(size - i * FFLI_FILE_WRITE_BUFFER_SIZE, FFLI_FILE_WRITE_BUFFER_SIZE);
         std::memcpy(pWriteBuffer, ((const u8*)pSrc) + i * FFLI_FILE_WRITE_BUFFER_SIZE, writeSize);
-        ret = file.Write(pWriteBuffer, writeSize, 1);
-        if (ret != 1)
+
+        u32 writtenSize = 0;
+        if (fileHandle.tryWrite(&writtenSize, pWriteBuffer->data, writeSize) && writtenSize > 0)
+            ret = rio::RawErrorCode(1);
+
+        else
+        {
+            ret = fileHandle.getDevice()->getLastRawError();
             break;
+        }
     }
 
     return ret;
 }
 
-FFLiFsResult WriteFile(const void* pSrc, u32 size, FFLiFsCommand* pCommand, FFLiFileWriteBuffer* pWriteBuffer, const char* pPath)
+FFLiFsResult WriteFile(const void* pSrc, u32 size, FFLiFileWriteBuffer* pWriteBuffer, const char* pPath)
 {
-    FFLiFsFile file(pCommand);
+    rio::NativeFileDevice* device = rio::FileDeviceMgr::instance()->getNativeFileDevice();
 
-    FSStatus status = file.Open(pPath, "w", FS_RET_NOT_FOUND | FS_RET_PERMISSION_ERROR);
-    if (status != FS_STATUS_OK)
+    rio::FileHandle fileHandle;
+    if (!device->tryOpen(&fileHandle, pPath, rio::FileDevice::FILE_OPEN_FLAG_WRITE))
     {
+        rio::RawErrorCode status = device->getLastRawError();
+        RIO_ASSERT(status != rio::RAW_ERROR_OK);
         if (CheckFileNotFound(status))
-        {
-            FFLiFsResult result = { FFLI_FS_FILE_RESULT_NOT_FOUND };
-            return result;
-        }
+            return FFLiFsResult { FFLI_FS_FILE_RESULT_NOT_FOUND };
         else
-        {
-            FFLiFsResult result = { FFLI_FS_FILE_RESULT_OK, status };
-            return result;
-        }
+            return FFLiFsResult { FFLI_FS_FILE_RESULT_OK, status };
     }
 
-    status = WriteFileImpl(file, pSrc, size, pWriteBuffer);
+    rio::RawErrorCode status = WriteFileImpl(fileHandle, pSrc, size, pWriteBuffer);
     if (status == 0)
     {
-        file.Close();
-        FFLiFsResult result = { FFLI_FS_FILE_RESULT_WRITE_BUFFER_EMPTY };
-        return result;
+        fileHandle.tryClose();
+
+        return FFLiFsResult { FFLI_FS_FILE_RESULT_WRITE_BUFFER_EMPTY };
     }
     else if (status < 0)
     {
-        file.Close();
-        FFLiFsResult result = { FFLI_FS_FILE_RESULT_OK, status };
-        return result;
+        fileHandle.tryClose();
+
+        return FFLiFsResult { FFLI_FS_FILE_RESULT_OK, status };
     }
     else
     {
-        status = file.Close();
-        FFLiFsResult result = { FFLI_FS_FILE_RESULT_OK, status };
-        if (!CheckFFLiFsResult(result))
-            return result;
+        if (!fileHandle.tryClose())
+        {
+            rio::RawErrorCode status = device->getLastRawError();
+            RIO_ASSERT(status != rio::RAW_ERROR_OK);
+            return FFLiFsResult { FFLI_FS_FILE_RESULT_OK, status };
+        }
     }
-        
-    FFLiFsResult result = { FFLI_FS_FILE_RESULT_OK, FS_STATUS_OK };
-    return result;
+
+    return FFLiFsResult { FFLI_FS_FILE_RESULT_OK, rio::RAW_ERROR_OK };
 }
 
-FFLiFsResult LoadDatabaseHidden(FFLiDatabaseFileHidden* pHidden, FFLiFsCommand* pCommand, const char* pPath)
+FFLiFsResult LoadDatabaseHidden(FFLiDatabaseFileHidden* pHidden, const char* pPath)
 {
-    {
-        FFLiFsResult result = ReadFile(pHidden, sizeof(FFLiDatabaseFileHidden), pCommand, pPath);
-        if (!CheckFFLiFsResult(result))
-            return result;
-    }
-    FFLiFsResult result = { FFLI_FS_FILE_RESULT_OK, FS_STATUS_OK };
-    return result;
-}
-
-FFLiFsResult SaveDatabaseHidden(const FFLiDatabaseFileHidden& hidden, FFLiFsCommand* pCommand, FFLiFileWriteBuffer* pWriteBuffer, const char* pPath)
-{
-    return WriteFile(&hidden, sizeof(FFLiDatabaseFileHidden), pCommand, pWriteBuffer, pPath);
-}
-
-FFLiFsResult LoadDatabaseOfficial(FFLiDatabaseFileOfficial* pOfficial, FFLiFsCommand* pCommand, const char* pPath)
-{
-    {
-        FFLiFsResult result = ReadFile(pOfficial, sizeof(FFLiDatabaseFileOfficial), pCommand, pPath);
-        if (!CheckFFLiFsResult(result))
-            return result;
-    }
-    FFLiFsResult result = { FFLI_FS_FILE_RESULT_OK, FS_STATUS_OK };
-    return result;
-}
-
-FFLiFsResult SaveDatabaseOfficial(const FFLiDatabaseFileOfficial& official, FFLiFsCommand* pCommand, FFLiFileWriteBuffer* pWriteBuffer, const char* pPath)
-{
-    return WriteFile(&official, sizeof(FFLiDatabaseFileOfficial), pCommand, pWriteBuffer, pPath);
-}
-
-FFLiFsResult CopyDatabaseOfficial(const char* pPathTo, const char* pPathFrom, FFLiFsCommand* pCommand, FFLiFileWriteBuffer* pWriteBuffer, FFLiAllocator* pAllocator)
-{
-    FFLiDatabaseFileOfficial* pOfficial = static_cast<FFLiDatabaseFileOfficial*>(pAllocator->Allocate(sizeof(FFLiDatabaseFileOfficial), FS_IO_BUFFER_ALIGN));
-    if (pOfficial == NULL)
-    {
-        FFLiFsResult result = { FFLI_FS_FILE_RESULT_OUT_OF_MEMORY };
+    FFLiFsResult result = ReadFile(pHidden, sizeof(FFLiDatabaseFileHidden), pPath);
+    if (!CheckFFLiFsResult(result))
         return result;
-    }
 
-    FFLiFsResult result = { FFLI_FS_FILE_RESULT_OK, FS_STATUS_OK };
+    return FFLiFsResult { FFLI_FS_FILE_RESULT_OK, rio::RAW_ERROR_OK };
+}
 
-    result = LoadDatabaseOfficial(pOfficial, pCommand, pPathFrom);
+FFLiFsResult SaveDatabaseHidden(const FFLiDatabaseFileHidden& hidden, FFLiFileWriteBuffer* pWriteBuffer, const char* pPath)
+{
+    return WriteFile(&hidden, sizeof(FFLiDatabaseFileHidden), pWriteBuffer, pPath);
+}
+
+FFLiFsResult LoadDatabaseOfficial(FFLiDatabaseFileOfficial* pOfficial, const char* pPath)
+{
+    FFLiFsResult result = ReadFile(pOfficial, sizeof(FFLiDatabaseFileOfficial), pPath);
+    if (!CheckFFLiFsResult(result))
+        return result;
+
+    return FFLiFsResult { FFLI_FS_FILE_RESULT_OK, rio::RAW_ERROR_OK };
+}
+
+FFLiFsResult SaveDatabaseOfficial(const FFLiDatabaseFileOfficial& official, FFLiFileWriteBuffer* pWriteBuffer, const char* pPath)
+{
+    return WriteFile(&official, sizeof(FFLiDatabaseFileOfficial), pWriteBuffer, pPath);
+}
+
+FFLiFsResult CopyDatabaseOfficial(const char* pPathTo, const char* pPathFrom, FFLiFileWriteBuffer* pWriteBuffer)
+{
+    FFLiDatabaseFileOfficial* pOfficial = static_cast<FFLiDatabaseFileOfficial*>(rio::MemUtil::alloc(sizeof(FFLiDatabaseFileOfficial), rio::FileDevice::cBufferMinAlignment));
+    if (pOfficial == NULL)
+        return FFLiFsResult { FFLI_FS_FILE_RESULT_OUT_OF_MEMORY };
+
+    FFLiFsResult result = LoadDatabaseOfficial(pOfficial, pPathFrom);
     if (CheckFFLiFsResult(result))
-        result = SaveDatabaseOfficial(*pOfficial, pCommand, pWriteBuffer, pPathTo);
+        result = SaveDatabaseOfficial(*pOfficial, pWriteBuffer, pPathTo);
 
-    pAllocator->Free(pOfficial);
+    rio::MemUtil::free(pOfficial);
     return result;
 }
 

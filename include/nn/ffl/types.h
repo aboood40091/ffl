@@ -1,8 +1,19 @@
 #ifndef FFL_TYPES_H_
 #define FFL_TYPES_H_
 
-#include <nn/types.h>
-#include <nn/util/util_StaticAssert.h>
+#include <types.h>
+
+#ifdef __cplusplus
+    #include <type_traits>
+
+    #define NN_STATIC_ASSERT static_assert
+    #define NN_STATIC_ASSERT_IS_POD(T)  static_assert(std::is_trivial<T>::value)
+#else // __cplusplus
+    #include <assert.h>
+
+    #define NN_STATIC_ASSERT _Static_assert
+    #define NN_STATIC_ASSERT_IS_POD(T)  ((void)0)
+#endif
 
 #ifdef __cplusplus
 extern "C" {

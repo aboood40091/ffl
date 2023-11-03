@@ -324,8 +324,10 @@ FFLResult FFLiStoreDataCFLToCharInfo(FFLiCharInfo* pCharInfo, const FFLiStoreDat
         return FFL_RESULT_FILE_INVALID;
 
     FFLiStoreData storeData;
-    std::memcpy(&storeData, &storeDataCFL, FFL_STOREDATA_SIZE);
+    std::memcpy((char*)&storeData, (char*)&storeDataCFL, FFL_STOREDATA_SIZE);
+#if __BYTE_ORDER__ != __ORDER_LITTLE_ENDIAN__
     storeData.SwapEndian();
+#endif // __BYTE_ORDER__
     FFLiMiiDataOfficial2CharInfo(pCharInfo, storeData);
     return FFL_RESULT_OK;
 }
@@ -344,7 +346,9 @@ void FFLiMiiDataOfficialToStoreDataCFL(FFLiStoreDataCFL& storeDataCFL, const FFL
     std::memset(&storeData, 0, FFL_STOREDATA_SIZE);
     static_cast<FFLiMiiDataOfficial&>(storeData) = miiDataOfficial;
     storeData.SetCRC();
+#if __BYTE_ORDER__ != __ORDER_LITTLE_ENDIAN__
     storeData.SwapEndian();
+#endif // __BYTE_ORDER__
     std::memcpy(&storeDataCFL, &storeData, FFL_STOREDATA_SIZE);
 }
 

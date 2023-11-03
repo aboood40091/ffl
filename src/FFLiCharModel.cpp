@@ -3,15 +3,7 @@
 #include <nn/ffl/FFLiManager.h>
 #include <nn/ffl/FFLiModulate.h>
 
-u32 FFLiGetBufferSizeCharModel(const FFLCharModelDesc* pDesc)
-{
-    if (FFLiManager::IsConstruct())
-        return FFLiManager::GetInstance()->GetCharModelCreateParam().GetBufferSize(pDesc);
-
-    return 0;
-}
-
-FFLResult FFLiInitCharModelCPUStep(FFLiCharModel* pModel, const FFLCharModelSource* pSource, const FFLCharModelDesc* pDesc, FFLCharModelBuffer* pBuffer)
+FFLResult FFLiInitCharModelCPUStep(FFLiCharModel* pModel, const FFLCharModelSource* pSource, const FFLCharModelDesc* pDesc)
 {
     if (!FFLiManager::IsConstruct())
         return FFL_RESULT_MANAGER_NOT_CONSTRUCT;
@@ -21,15 +13,7 @@ FFLResult FFLiInitCharModelCPUStep(FFLiCharModel* pModel, const FFLCharModelSour
         return FFL_RESULT_ERROR;
 
     FFLiCharModelCreator creator(&pManager->GetCharModelCreateParam(), pManager);
-    return creator.ExecuteCPUStep(pModel, pSource, pDesc, pBuffer);
-}
-
-u32 FFLiGetTempBufferSizeCharModel(const FFLCharModelDesc* pDesc)
-{
-    if (FFLiManager::IsConstruct())
-        return FFLiManager::GetInstance()->GetCharModelCreateParam().GetTempBufferSize(pDesc);
-
-    return 0;
+    return creator.ExecuteCPUStep(pModel, pSource, pDesc);
 }
 
 void FFLiInitCharModelGPUStep(FFLiCharModel* pModel, const FFLShaderCallback* pCallback)
@@ -52,7 +36,7 @@ void FFLiSetExpression(FFLiCharModel* pModel, FFLExpression expression)
     if (1 << expression & pModel->charModelDesc.expressionFlag)
     {
         pModel->expression = expression;
-        FFLiInitModulateShapeMask(&pModel->drawParam[FFLI_SHAPE_TYPE_XLU_MASK].modulateParam, pModel->maskTextures.pRenderTextures[expression]->gx2Texture);
+        FFLiInitModulateShapeMask(&pModel->drawParam[FFLI_SHAPE_TYPE_XLU_MASK].modulateParam, pModel->maskTextures.pRenderTextures[expression]->textureData);
     }
 }
 
@@ -119,9 +103,9 @@ const FFLiShapeTypeInfo& GetShapeTypeInfo(FFLModelType type)
         return SHAPE_TYPE_INFO_0;
     case FFL_MODEL_TYPE_1:
         return SHAPE_TYPE_INFO_1;
+    default:
+        return SHAPE_TYPE_INFO_0;
     }
-
-    return SHAPE_TYPE_INFO_0;
 }
 
 }

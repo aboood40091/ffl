@@ -3,6 +3,8 @@
 
 #include <nn/ffl/FFLiRawMaskParts.h>
 
+#include <common/aglTextureData.h>
+
 struct FFLiRawMaskDrawParam
 {
     FFLiRawMaskPartsDrawParam   drawParamRawMaskPartsEye[2];
@@ -16,21 +18,18 @@ NN_STATIC_ASSERT(sizeof(FFLiRawMaskDrawParam) == 0x3A8);
 
 struct FFLiRawMaskTextureDesc
 {
-    GX2Texture* pTexturesEye[2];
-    GX2Texture* pTexturesEyebrow[2];
-    GX2Texture* pTextureMouth;
-    GX2Texture* pTexturesMustache[2];
-    GX2Texture* pTextureMole;
+    agl::TextureData*   pTexturesEye[2];
+    agl::TextureData*   pTexturesEyebrow[2];
+    agl::TextureData*   pTextureMouth;
+    agl::TextureData*   pTexturesMustache[2];
+    agl::TextureData*   pTextureMole;
 };
 NN_STATIC_ASSERT(sizeof(FFLiRawMaskTextureDesc) == 0x20);
 
-u32 FFLiGetBufferRawMask();
-
-class   FFLiBufferAllocator;
 struct  FFLiCharInfo;
 class   FFLiShaderCallback;
 
-void FFLiInitDrawParamRawMask(FFLiRawMaskDrawParam* pDrawParam, const FFLiCharInfo* pCharInfo, s32 resolution, s32 leftEyeIndex, s32 rightEyeIndex, const FFLiRawMaskTextureDesc* pDesc, FFLiBufferAllocator* pAllocator);
+void FFLiInitDrawParamRawMask(FFLiRawMaskDrawParam* pDrawParam, const FFLiCharInfo* pCharInfo, s32 resolution, s32 leftEyeIndex, s32 rightEyeIndex, const FFLiRawMaskTextureDesc* pDesc);
 void FFLiInvalidateRawMask(FFLiRawMaskDrawParam* pDrawParam);
 void FFLiDrawRawMask(const FFLiRawMaskDrawParam* pDrawParam, const FFLiShaderCallback* pCallback);
 

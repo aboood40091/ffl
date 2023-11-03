@@ -3,7 +3,7 @@
 
 #include <nn/ffl/types.h>
 
-#include <cafe/gx2.h>
+#include <common/aglTextureData.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -11,7 +11,7 @@ extern "C" {
 
 typedef enum FFLModulateMode
 {
-    FFL_MODULATE_MODE_0 = 0,    // No Texture 
+    FFL_MODULATE_MODE_0 = 0,    // No Texture
                                 // Has Color (R)
                                 // FragmentRGB = ColorR
                                 // FragmentA = 1.0f
@@ -78,12 +78,12 @@ typedef struct FFLColor FFLColor;
 
 typedef struct FFLModulateParam
 {
-    FFLModulateMode     mode;
-    FFLModulateType     type;
-    const FFLColor*     pColorR;
-    const FFLColor*     pColorG;
-    const FFLColor*     pColorB;
-    const GX2Texture*   pGX2Texture;
+    FFLModulateMode         mode;
+    FFLModulateType         type;
+    const FFLColor*         pColorR;
+    const FFLColor*         pColorG;
+    const FFLColor*         pColorB;
+    const agl::TextureData* pTextureData;
 }
 FFLModulateParam;
 NN_STATIC_ASSERT(sizeof(FFLModulateParam) == 0x18);

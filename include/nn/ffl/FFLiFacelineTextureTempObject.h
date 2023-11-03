@@ -3,21 +3,20 @@
 
 #include <nn/ffl/FFLDrawParam.h>
 
-#include <cafe/gx2.h>
+#include <common/aglTextureData.h>
 
-class   FFLiCompressorParam;
 struct  FFLiRenderTexture;
 
 struct FFLiFacelineTextureTempObject
 {
-    GX2Texture*             pTextureFaceLine;
-    FFLDrawParam            drawParamFaceLine;
-    GX2Texture*             pTextureFaceMake;
-    FFLDrawParam            drawParamFaceMake;
-    GX2Texture*             pTextureFaceBeard;
-    FFLDrawParam            drawParamFaceBeard;
-    FFLiRenderTexture*      pRenderTexture;
-    FFLiCompressorParam*    pCompressorParam;
+    agl::TextureData*   pTextureFaceLine;
+    FFLDrawParam        drawParamFaceLine;
+    agl::TextureData*   pTextureFaceMake;
+    FFLDrawParam        drawParamFaceMake;
+    agl::TextureData*   pTextureFaceBeard;
+    FFLDrawParam        drawParamFaceBeard;
+    void*               _144;   // Removed
+    void*               _148;   // Removed
 };
 NN_STATIC_ASSERT(sizeof(FFLiFacelineTextureTempObject) == 0x14C);
 

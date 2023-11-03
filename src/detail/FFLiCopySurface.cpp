@@ -1,43 +1,33 @@
-#include <nn/ffl/FFLiInvalidate.h>
 #include <nn/ffl/FFLiMipMapUtil.h>
-#include <nn/ffl/FFLiTemp.h>
 
-#include <nn/ffl/detail/FFLiBufferAllocator.h>
 #include <nn/ffl/detail/FFLiCopySurface.h>
 
-FFLiCopySurface::FFLiCopySurface(FFLiBufferAllocator* pAllocator)
+#if RIO_IS_CAFE
+#include <gx2/registers.h>
+#endif // RIO_IS_CAFE
+
+FFLiCopySurface::FFLiCopySurface()
 {
-    u32 size = GetBufferSize();
-    void* pBuffer = pAllocator->Allocate(size);
-
-    FFLiBufferAllocator allocator;
-    allocator.Init(pBuffer, size);
-
-    m_Shader.SetupCPU(&allocator);
-    m_Drawer.SetupCPU(&allocator);
+    m_Shader.SetupCPU();
+    m_Drawer.SetupCPU();
 }
 
 FFLiCopySurface::~FFLiCopySurface()
 {
 }
 
-u32 FFLiCopySurface::GetBufferSize()
-{
-    u32 ret  = FFLiCopySurfaceShader::GetBufferSize();
-    ret     += FFLiCopySurfaceDrawer::GetBufferSize();
-
-    return ret;
-}
-
 void FFLiCopySurface::SetupGPU()
 {
     m_Shader.SetupGPU();
-    m_Drawer.SetupGPU();
+    m_Drawer.SetupGPU(0, 1);
 }
 
 void FFLiCopySurface::Begin()
 {
-    FFLiTempSetContextState(NULL);
+#if RIO_IS_CAFE
+    GX2SetContextState(nullptr);
+    GX2Invalidate(GX2_INVALIDATE_SHADER, NULL, 0xFFFFFFFF);
+
     GX2SetDefaultState();
     GX2SetDepthOnlyControl(GX2_DISABLE, GX2_DISABLE, GX2_COMPARE_NEVER);
     GX2SetTargetChannelMasks(
@@ -50,60 +40,35 @@ void FFLiCopySurface::Begin()
         GX2_CHANNEL_MASK_NONE,
         GX2_CHANNEL_MASK_NONE
     );
+#endif // RIO_IS_CAFE
 
     m_Shader.Bind();
-    m_Drawer.SetAttributeBuffer(0, 1);
+    m_Drawer.SetAttributeBuffer();
 }
 
-void FFLiCopySurface::Execute(GX2Surface* pDstSurface, u32 dstMipLevel, const GX2Surface* pSrcSurface, u32 srcMipLevel)
+void FFLiCopySurface::Execute(agl::TextureData* pTextureData, u32 dstMipLevel, u32 srcMipLevel)
 {
-    SetupSrcSurface(pSrcSurface, srcMipLevel);
-    SetupDstSurface(pDstSurface, dstMipLevel);
+    RIO_ASSERT(pTextureData);
 
-    FFLiInvalidateSurface(pDstSurface, GX2_INVALIDATE_TEXTURE);
+    m_Shader.SetTexture(*pTextureData, srcMipLevel);
+
+    m_ColorTarget.applyTextureData(*pTextureData);
+    m_ColorTarget.setMipLevel(dstMipLevel);
+
+    m_RenderBuffer.setRenderTargetColor(&m_ColorTarget);
+    m_RenderBuffer.setRenderTargetDepthNull();
+    m_RenderBuffer.setSize(
+        FFLiGetMipMapLevelSize(pTextureData->getWidth(), dstMipLevel),
+        FFLiGetMipMapLevelSize(pTextureData->getHeight(), dstMipLevel)
+    );
+    m_RenderBuffer.bind();
+
+    pTextureData->invalidateGPUCache();
     m_Drawer.Draw();
-    FFLiInvalidateSurface(pDstSurface, GX2_INVALIDATE_COLOR_BUFFER);
+    m_ColorTarget.invalidateGPUCache();
 }
 
-bool FFLiCopySurface::CanInitCharModel(bool isSetupGPU, bool compressTexture) const
+bool FFLiCopySurface::CanInitCharModel(bool isSetupGPU) const
 {
     return isSetupGPU;
-}
-
-void FFLiCopySurface::SetupSrcSurface(const GX2Surface* pSurface, u32 mipLevel)
-{
-    GX2Texture texture;
-    GX2InitTexture(&texture, pSurface->width, pSurface->height, pSurface->depth, pSurface->numMips, pSurface->format, pSurface->dim);
-    GX2InitTexturePtrs(&texture, pSurface->imagePtr, pSurface->mipPtr);
-    m_Shader.SetTexture(&texture, mipLevel);
-}
-
-void FFLiCopySurface::SetupDstSurface(GX2Surface* pSurface, u32 mipLevel)
-{
-    GX2ColorBuffer colorBuffer;
-    GX2InitColorBuffer(&colorBuffer, pSurface->width, pSurface->height, pSurface->format, GX2_AA_MODE_1X);
-
-    colorBuffer.surface.numMips = pSurface->numMips;
-    colorBuffer.viewMip = mipLevel;
-    GX2CalcSurfaceSizeAndAlignment(&colorBuffer.surface);
-    GX2InitColorBufferRegs(&colorBuffer);
-
-    colorBuffer.surface.imagePtr = pSurface->imagePtr;
-    colorBuffer.surface.mipPtr = pSurface->mipPtr;
-    GX2SetColorBuffer(&colorBuffer, GX2_RENDER_TARGET_0);
-
-    GX2SetViewport(
-        0.0f,
-        0.0f,
-        f32(FFLiGetMipMapLevelSize(colorBuffer.surface.width, mipLevel)),
-        f32(FFLiGetMipMapLevelSize(colorBuffer.surface.height, mipLevel)),
-        0.0f,
-        1.0f
-    );
-    GX2SetScissor(
-        0.0f,
-        0.0f,
-        f32(FFLiGetMipMapLevelSize(colorBuffer.surface.width, mipLevel)),
-        f32(FFLiGetMipMapLevelSize(colorBuffer.surface.height, mipLevel))
-    );
 }

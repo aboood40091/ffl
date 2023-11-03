@@ -4,31 +4,28 @@
 #include <nn/ffl/detail/FFLiCopySurfaceDrawer.h>
 #include <nn/ffl/detail/FFLiCopySurfaceShader.h>
 
-class FFLiBufferAllocator;
+#include <common/aglRenderBuffer.h>
+#include <common/aglRenderTarget.h>
 
 class FFLiCopySurface
 {
 public:
-    FFLiCopySurface(FFLiBufferAllocator* pAllocator);
+    FFLiCopySurface();
     ~FFLiCopySurface();
-
-    static u32 GetBufferSize();
 
     void SetupGPU();
 
     void Begin();
-    void Execute(GX2Surface* pDstSurface, u32 dstMipLevel, const GX2Surface* pSrcSurface, u32 srcMipLevel);
+    void Execute(agl::TextureData* pTextureData, u32 dstMipLevel, u32 srcMipLevel);
 
-    bool CanInitCharModel(bool isSetupGPU, bool compressTexture) const;
-
-private:
-    void SetupSrcSurface(const GX2Surface* pSurface, u32 mipLevel);
-    void SetupDstSurface(GX2Surface* pSurface, u32 mipLevel);
+    bool CanInitCharModel(bool isSetupGPU) const;
 
 private:
     FFLiCopySurfaceShader   m_Shader;
     FFLiCopySurfaceDrawer   m_Drawer;
+    agl::RenderBuffer       m_RenderBuffer;
+    agl::RenderTargetColor  m_ColorTarget;
 };
-NN_STATIC_ASSERT(sizeof(FFLiCopySurface) == 0x44);
+//NN_STATIC_ASSERT(sizeof(FFLiCopySurface) == 0x44);
 
 #endif // FFLI_COPY_SURFACE_H_

@@ -1,23 +1,46 @@
 #include <nn/ffl/FFLiDateTime.h>
 
-#include <cafe/os.h>
+#if RIO_IS_CAFE
+#include <coreinit/time.h>
+#else
+#if RIO_IS_WIN
+#include <misc/win/rio_Windows.h>
+#endif // RIO_IS_WIN
+#include <ctime>
+#endif
 
 s64 FFLiGetTick()
 {
+#if RIO_IS_CAFE
     return OSGetTime();
+#elif RIO_IS_WIN
+    LARGE_INTEGER ticks;
+    [[maybe_unused]] WINBOOL success = QueryPerformanceFrequency(&ticks);
+    RIO_ASSERT(success);
+    return ticks.QuadPart;
+#else
+    return 0;
+#endif
 }
 
 void FFLiGetDateTimeNow(FFLiDateTime* pDateTime)
 {
+#if RIO_IS_CAFE
     OSCalendarTime calendarTime;
     OSTicksToCalendarTime(FFLiGetTick(), &calendarTime);
 
-    pDateTime->year = calendarTime.year;
-    pDateTime->month = calendarTime.mon + 1;
-    pDateTime->day = calendarTime.mday;
-    pDateTime->hour = calendarTime.hour;
-    pDateTime->minute = calendarTime.min;
-    pDateTime->second = calendarTime.sec;
+    pDateTime->year = calendarTime.tm_year;
+#else
+    std::time_t t = std::time(nullptr);
+    const std::tm& calendarTime = *std::localtime(&t);
+
+    pDateTime->year = calendarTime.tm_year + 1900;
+#endif // RIO_IS_CAFE
+    pDateTime->month = calendarTime.tm_mon + 1;
+    pDateTime->day = calendarTime.tm_mday;
+    pDateTime->hour = calendarTime.tm_hour;
+    pDateTime->minute = calendarTime.tm_min;
+    pDateTime->second = calendarTime.tm_sec;
 }
 
 void FFLiGetNowDateTime(s32* pYear, s32* pMonth, s32* pDay, s32* pHour, s32* pMinute, s32* pSecond)

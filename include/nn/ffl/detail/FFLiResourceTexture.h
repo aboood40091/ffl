@@ -5,7 +5,7 @@
 
 #include <nn/ffl/detail/FFLiResourcePartsInfo.h>
 
-#include <cafe/gx2.h>
+#include <common/aglTextureData.h>
 
 enum FFLiTextureFormat
 {

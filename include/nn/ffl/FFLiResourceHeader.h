@@ -39,7 +39,7 @@ public:
 
     bool IsExpand() const
     {
-        return m_IsExpand == TRUE;
+        return m_IsExpand == 1;
     }
 
     FFLiResourceTextureHeader* GetTextureHeader()

@@ -30,8 +30,9 @@ u32 FFLiGetTextureResourceNum(FFLiTexturePartsType partsType)
         return SIZE_OF_MEMBER(FFLiResourceTextureHeader, partsInfoMustache) / sizeof(FFLiResourcePartsInfo);
     case FFLI_TEXTURE_PARTS_TYPE_NOSELINE:
         return SIZE_OF_MEMBER(FFLiResourceTextureHeader, partsInfoNoseline) / sizeof(FFLiResourcePartsInfo);
+    default:
+        return 0;
     }
-    return 0;
 }
 
 u32 FFLiGetShapeResourceNum(FFLiShapePartsType partsType)
@@ -62,8 +63,9 @@ u32 FFLiGetShapeResourceNum(FFLiShapePartsType partsType)
         return SIZE_OF_MEMBER(FFLiResourceShapeHeader, partsInfoForehead1) / sizeof(FFLiResourcePartsInfo);
     case FFLI_SHAPE_PARTS_TYPE_FOREHEAD_2:
         return SIZE_OF_MEMBER(FFLiResourceShapeHeader, partsInfoForehead2) / sizeof(FFLiResourcePartsInfo);
+    default:
+        return 0;
     }
-    return 0;
 }
 
 FFLiResourcePartsInfo* FFLiGetTextureResoucePartsInfos(u32* pNum, FFLiResourceTextureHeader* pHeader, FFLiTexturePartsType partsType)
@@ -93,8 +95,9 @@ FFLiResourcePartsInfo* FFLiGetTextureResoucePartsInfos(u32* pNum, FFLiResourceTe
         return pHeader->partsInfoMustache;
     case FFLI_TEXTURE_PARTS_TYPE_NOSELINE:
         return pHeader->partsInfoNoseline;
+    default:
+        return NULL;
     }
-    return NULL;
 }
 
 FFLiResourcePartsInfo* FFLiGetShapeResoucePartsInfos(u32* pNum, FFLiResourceShapeHeader* pHeader, FFLiShapePartsType partsType)
@@ -126,8 +129,9 @@ FFLiResourcePartsInfo* FFLiGetShapeResoucePartsInfos(u32* pNum, FFLiResourceShap
         return pHeader->partsInfoForehead1;
     case FFLI_SHAPE_PARTS_TYPE_FOREHEAD_2:
         return pHeader->partsInfoForehead2;
+    default:
+        return NULL;
     }
-    return NULL;
 }
 
 s32 FFLiResourceWindowBitsToZlibWindowBits(FFLiResourceWindowBits windowBits)
@@ -168,8 +172,9 @@ s32 FFLiResourceWindowBitsToZlibWindowBits(FFLiResourceWindowBits windowBits)
         return 16 + 15;
     case FFLI_RESOURCE_WINDOW_BITS_ZLIB_OR_GZIP_15:
         return 32 + 15;
+    default:
+        return 15;
     }
-    return 15;
 }
 
 FFLResult FFLiResourceHeader::GetResult() const
@@ -177,7 +182,7 @@ FFLResult FFLiResourceHeader::GetResult() const
     if (!FFLiCheckAlignPtr(this, 4))
         return FFL_RESULT_ERROR;
 
-    if (m_Magic != 'FFRA')
+    if (m_Magic != 0x46465241)  // FFRA
         return FFL_RESULT_FILE_INVALID;
 
     if (m_Version != FFLI_RESOURCE_HEADER_VERSION)

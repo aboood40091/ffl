@@ -2,14 +2,10 @@
 
 #include <cstring>
 
-FFLiZlibInflator::FFLiZlibInflator(FFLiAllocatorInterface& allocatorInterface, s32 windowBits)
-    : m_ZlibAllocator(allocatorInterface)
-    , m_IsStreamEnd(false)
+FFLiZlibInflator::FFLiZlibInflator(s32 windowBits)
+    : m_IsStreamEnd(false)
 {
     std::memset(&m_Stream, 0, sizeof(z_stream));
-    m_Stream.opaque = &m_ZlibAllocator;
-    m_Stream.zalloc = FFLiZlibAllocator::Allocate;
-    m_Stream.zfree = FFLiZlibAllocator::Free;
     inflateInit2(&m_Stream, windowBits);
 }
 

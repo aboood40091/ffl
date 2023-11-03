@@ -1,33 +1,24 @@
-#include <nn/ffl/FFLiInvalidate.h>
 #include <nn/ffl/FFLiResourceHeader.h>
 #include <nn/ffl/FFLiResourceLoader.h>
 #include <nn/ffl/FFLiResourceManager.h>
 #include <nn/ffl/FFLiTexture.h>
 
-#include <nn/ffl/detail/FFLiBufferAllocator.h>
+#if RIO_IS_CAFE
+#define GX2_SURFACE_DIM_2D GX2_SURFACE_DIM_TEXTURE_2D
+#define GX2_AA_MODE_1X GX2_AA_MODE1X
+#endif // RIO_IS_CAFE
 
 #define TEXTURE_DATA_MAX_ALIGNMENT   (0x800)
 
-u32 FFLiGetTextureMaxSizeWithAlign(const FFLiResourceManager* pResourceManager, FFLResourceType resourceType, FFLiTexturePartsType partsType)
-{
-    u32 ret  = TEXTURE_DATA_MAX_ALIGNMENT;
-    ret     += sizeof(GX2Texture);
-
-    if (!pResourceManager->IsExpand(resourceType))
-        ret += pResourceManager->GetTextureAlignedMaxSize(resourceType, partsType);
-
-    return ret;
-}
-
-FFLResult FFLiLoadTextureWithAllocate(GX2Texture** ppGX2Texture, FFLiTexturePartsType partsType, u32 index, FFLiResourceLoader* pResLoader, FFLiBufferAllocator* pAllocator)
+FFLResult FFLiLoadTextureWithAllocate(agl::TextureData** ppTextureData, FFLiTexturePartsType partsType, u32 index, FFLiResourceLoader* pResLoader)
 {
     u32 size = pResLoader->GetTextureAlignedMaxSize(partsType);
 
     void* pData = NULL;
     if (!pResLoader->IsExpand())
-        pData = pAllocator->Allocate(size, TEXTURE_DATA_MAX_ALIGNMENT);
+        pData = rio::MemUtil::alloc(size, TEXTURE_DATA_MAX_ALIGNMENT);
 
-    *ppGX2Texture = static_cast<GX2Texture*>(pAllocator->Allocate(sizeof(GX2Texture), 4));
+    *ppTextureData = new agl::TextureData;
 
     if (!pResLoader->IsExpand())
     {
@@ -44,28 +35,29 @@ FFLResult FFLiLoadTextureWithAllocate(GX2Texture** ppGX2Texture, FFLiTexturePart
 
     const FFLiResourceTextureFooter& footer = FFLiResourceTextureFooter::GetFooterImpl(pData, size);
 
-    GX2InitTexture(
-        *ppGX2Texture,
-        footer.Width(),
-        footer.Height(),
-        1,
-        footer.NumMips(),
-        footer.SurfaceFormat(),
-        GX2_SURFACE_DIM_2D
-    );
-    GX2InitTexturePtrs(*ppGX2Texture, footer.GetImagePtrImpl(size), footer.GetMipPtrImpl(size));
+    GX2Surface surface;
+    surface.dim = GX2_SURFACE_DIM_2D;
+    surface.width = footer.Width();
+    surface.height = footer.Height();
+    surface.depth = 1;
+    surface.numMips = footer.NumMips();
+    surface.format = footer.SurfaceFormat();
+    surface.aa = GX2_AA_MODE_1X;
+    surface.use = GX2_SURFACE_USE_TEXTURE;
+    surface.tileMode = GX2_TILE_MODE_DEFAULT;
+    surface.swizzle = 0;
+
+    GX2CalcSurfaceSizeAndAlignment(&surface);
+
+    void* imagePtr = footer.GetImagePtrImpl(size);
+    void* mipPtr = footer.GetMipPtrImpl(size);
+    if (mipPtr == nullptr && surface.numMips > 1)
+        mipPtr = (void*)((uintptr_t)imagePtr + surface.mipOffset[0]);
+
+    surface.imagePtr = imagePtr;
+    surface.mipPtr = mipPtr;
+
+    (*ppTextureData)->initializeFromSurface(surface);
 
     return FFL_RESULT_OK;
-}
-
-void FFLiInvalidateTexture(GX2Texture* pGX2Texture)
-{
-    if (pGX2Texture != NULL)
-    {
-        if (pGX2Texture->surface.imageSize != 0)
-            FFLiInvalidate(GX2_INVALIDATE_CPU_TEXTURE, pGX2Texture->surface.imagePtr, pGX2Texture->surface.imageSize);
-
-        if (pGX2Texture->surface.mipSize != 0)
-            FFLiInvalidate(GX2_INVALIDATE_CPU_TEXTURE, pGX2Texture->surface.mipPtr, pGX2Texture->surface.mipSize);
-    }
 }

@@ -3,6 +3,8 @@
 
 #include <nn/ffl/FFLModulateParam.h>
 
+#include <gpu/rio_Drawer.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -36,10 +38,10 @@ NN_STATIC_ASSERT(sizeof(FFLAttributeBufferParam) == 0x3C);
 
 typedef struct FFLPrimitiveParam
 {
-    GX2PrimitiveType    primitiveType;
-    u32                 indexCount;
-    GX2IndexFormat      indexFormat;
-    void*               pIndexBuffer;
+    rio::Drawer::PrimitiveMode  primitiveType;
+    u32                         indexCount;
+    u32                         _8; // Deleted
+    void*                       pIndexBuffer;
 }
 FFLPrimitiveParam;
 NN_STATIC_ASSERT(sizeof(FFLPrimitiveParam) == 0x10);

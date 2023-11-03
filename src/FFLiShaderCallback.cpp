@@ -1,7 +1,10 @@
 #include <nn/ffl/FFLShaderCallback.h>
 
 #include <nn/ffl/FFLiShaderCallback.h>
-#include <nn/ffl/FFLiTemp.h>
+
+#if RIO_IS_CAFE
+#include <gx2/mem.h>
+#endif
 
 FFLiShaderCallback::FFLiShaderCallback()
     : m_pShaderCallback(NULL)
@@ -22,7 +25,7 @@ void FFLiShaderCallback::Set(const FFLShaderCallback* pCallback)
     m_pShaderCallback = pCallback;
 }
 
-void FFLiShaderCallback::CallSetMatrix(const Mat44& mat) const
+void FFLiShaderCallback::CallSetMatrix(const rio::BaseMtx44f& mat) const
 {
     if (IsExist())
         (*m_pShaderCallback->pSetMatrixFunc)(m_pShaderCallback->pObj, mat);
@@ -36,6 +39,11 @@ void FFLiShaderCallback::CallDraw(const FFLDrawParam& drawParam) const
 
 void FFLiShaderCallback::CallSetContextState() const
 {
+#if RIO_IS_CAFE
     if (IsExist())
-        FFLiTempSetContextState(m_pShaderCallback->pContextState);
+    {
+        GX2SetContextState(m_pShaderCallback->pContextState);
+        GX2Invalidate(GX2_INVALIDATE_MODE_SHADER, NULL, 0xFFFFFFFF);
+    }
+#endif // RIO_IS_CAFE
 }

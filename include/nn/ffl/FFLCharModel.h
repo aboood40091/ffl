@@ -9,7 +9,11 @@
 extern "C" {
 #endif
 
-#define FFL_CHAR_MODEL_SIZE (0x7DC)
+#if RIO_IS_CAFE
+#define FFL_CHAR_MODEL_SIZE (0xA68)
+#else
+#define FFL_CHAR_MODEL_SIZE (0x948)
+#endif // RIO_IS_CAFE
 
 typedef struct FFLCharModel
 {
@@ -24,15 +28,11 @@ NN_STATIC_ASSERT(sizeof(FFLCharModel) == FFL_CHAR_MODEL_SIZE);
 
 typedef struct FFLCharModelDesc FFLCharModelDesc;
 typedef struct FFLCharModelSource FFLCharModelSource;
-typedef struct FFLCharModelBuffer FFLCharModelBuffer;
 typedef struct FFLDrawParam FFLDrawParam;
 typedef struct FFLPartsTransform FFLPartsTransform;
 typedef struct FFLShaderCallback FFLShaderCallback;
 
-u32 FFLGetBufferSizeCharModel(const FFLCharModelDesc* pDesc);
-u32 FFLGetTempBufferSizeCharModel(const FFLCharModelDesc* pDesc);
-
-FFLResult FFLInitCharModelCPUStep(FFLCharModel* pModel, const FFLCharModelSource* pSource, const FFLCharModelDesc* pDesc, FFLCharModelBuffer* pBuffer);
+FFLResult FFLInitCharModelCPUStep(FFLCharModel* pModel, const FFLCharModelSource* pSource, const FFLCharModelDesc* pDesc);
 
 void FFLInitCharModelGPUStep(FFLCharModel* pModel);
 void FFLInitCharModelGPUStepWithCallback(FFLCharModel* pModel, const FFLShaderCallback* pCallback);

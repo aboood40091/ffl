@@ -36,7 +36,6 @@ private:
 NN_STATIC_ASSERT_IS_POD(FFLiOrderData);
 NN_STATIC_ASSERT(sizeof(FFLiOrderData) == 4);
 
-class FFLiAllocator;
 class FFLiMiddleDB;
 
 class FFLiDatabaseFileHidden
@@ -46,7 +45,7 @@ private:
 
     u16 NumOfGenderWithIndex(u16* pIndices, FFLGender gender) const;
 
-    FFLResult UpdateMiddleDBRandom(FFLiMiddleDB* pMiddleDB, FFLiAllocator* pAllocator) const;
+    FFLResult UpdateMiddleDBRandom(FFLiMiddleDB* pMiddleDB) const;
     FFLResult UpdateMiddleDBTime(FFLiMiddleDB* pMiddleDB, bool reverse) const;
 
 public:
@@ -57,7 +56,7 @@ public:
     bool IsValidIdentifier() const;
     bool IsValid() const;
 
-    FFLResult UpdateMiddleDB(FFLiMiddleDB* pMiddleDB, FFLiAllocator* pAllocator) const;
+    FFLResult UpdateMiddleDB(FFLiMiddleDB* pMiddleDB) const;
 
     void SwapEndian();  // Deleted in NSMBU
 
