@@ -2,6 +2,10 @@
 
 #include <nn/ffl/FFLiShaderCallback.h>
 
+#if RIO_IS_CAFE
+#include <gx2/mem.h>
+#endif
+
 FFLiShaderCallback::FFLiShaderCallback()
     : m_pShaderCallback(NULL)
 {
@@ -39,7 +43,7 @@ void FFLiShaderCallback::CallSetContextState() const
     if (IsExist())
     {
         GX2SetContextState(m_pShaderCallback->pContextState);
-        GX2Invalidate(GX2_INVALIDATE_SHADER, NULL, 0xFFFFFFFF);
+        GX2Invalidate(GX2_INVALIDATE_MODE_SHADER, NULL, 0xFFFFFFFF);
     }
 #endif // RIO_IS_CAFE
 }

@@ -8,7 +8,7 @@
 #include <misc/rio_MemUtil.h>
 
 #if RIO_IS_CAFE
-#include <cafe/gx2.h>
+#include <gx2/mem.h>
 #endif // RIO_IS_CAFE
 
 #include <cstring>
@@ -182,7 +182,7 @@ void InvalidatePrimitive(FFLPrimitiveParam* pPrimitive)
 {
 #if RIO_IS_CAFE
     GX2Invalidate(
-        GX2_INVALIDATE_CPU_ATTRIB_BUFFER,
+        GX2_INVALIDATE_MODE_CPU_ATTRIBUTE_BUFFER,
         pPrimitive->pIndexBuffer,
         sizeof(u16) * pPrimitive->indexCount    // Apparently Nintendo forgot the index count is 4
     );
@@ -197,7 +197,7 @@ void InvalidateAttributes(FFLAttributeBufferParam* pAttributes)
         void* ptr = pAttributes->attributeBuffers[i].ptr;
         if (ptr != NULL)
             GX2Invalidate(
-                GX2_INVALIDATE_CPU_ATTRIB_BUFFER,
+                GX2_INVALIDATE_MODE_CPU_ATTRIBUTE_BUFFER,
                 ptr,
                 pAttributes->attributeBuffers[i].size
             );

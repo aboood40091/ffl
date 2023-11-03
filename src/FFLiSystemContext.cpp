@@ -5,23 +5,7 @@
 #include <cstring>
 
 #if RIO_IS_CAFE
-
 #include <nn/act.h>
-
-namespace nn { namespace act {
-
-// Thanks for deprecating this, Nintendo... :/
-
-Result
-GetTransferableIdEx(u64* pTransferableId, u32 uniqueId, u8 slotNo)
-#ifdef __WUT__
-   asm("GetTransferableIdEx__Q2_2nn3actFPULUiUc");
-#else
-;
-#endif // __WUT__
-
-} } // namespace nn::act
-
 #endif // RIO_IS_CAFE
 
 FFLiSystemContext::FFLiSystemContext()

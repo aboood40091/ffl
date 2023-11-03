@@ -7,8 +7,6 @@
 
 #include <common/aglTextureData.h>
 
-#include <cafe/gx2/gx2Enum.h>
-
 enum FFLiTextureFormat
 {
     FFLI_TEXTURE_FORMAT_R8      = 0,

@@ -3,7 +3,7 @@
 #include <nn/ffl/detail/FFLiCopySurface.h>
 
 #if RIO_IS_CAFE
-#include <cafe/gx2.h>
+#include <gx2/registers.h>
 #endif // RIO_IS_CAFE
 
 FFLiCopySurface::FFLiCopySurface()

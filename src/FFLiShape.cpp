@@ -11,7 +11,7 @@
 #include <gpu/rio_VertexStream.h>
 
 #if RIO_IS_CAFE
-#include <cafe/gx2.h>
+#include <gx2/mem.h>
 #endif // RIO_IS_CAFE
 
 union F32BitCast
@@ -183,13 +183,13 @@ void FFLiInvalidateShape(FFLDrawParam* pDrawParam)
     {
         FFLAttributeBuffer& attribute = pDrawParam->attributeBufferParam.attributeBuffers[i];
         if (attribute.ptr != NULL)
-            GX2Invalidate(GX2_INVALIDATE_CPU_ATTRIB_BUFFER, attribute.ptr, attribute.size);
+            GX2Invalidate(GX2_INVALIDATE_MODE_CPU_ATTRIBUTE_BUFFER, attribute.ptr, attribute.size);
     }
 
     FFLPrimitiveParam& primitive = pDrawParam->primitiveParam;
     if (primitive.pIndexBuffer != NULL)
         GX2Invalidate(
-            GX2_INVALIDATE_CPU_ATTRIB_BUFFER,
+            GX2_INVALIDATE_MODE_CPU_ATTRIBUTE_BUFFER,
             primitive.pIndexBuffer,
             sizeof(u16) * primitive.indexCount  // Apparently Nintendo forgot the index count is 4
         );

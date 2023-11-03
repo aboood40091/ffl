@@ -3,6 +3,11 @@
 #include <nn/ffl/FFLiResourceManager.h>
 #include <nn/ffl/FFLiTexture.h>
 
+#if RIO_IS_CAFE
+#define GX2_SURFACE_DIM_2D GX2_SURFACE_DIM_TEXTURE_2D
+#define GX2_AA_MODE_1X GX2_AA_MODE1X
+#endif // RIO_IS_CAFE
+
 #define TEXTURE_DATA_MAX_ALIGNMENT   (0x800)
 
 FFLResult FFLiLoadTextureWithAllocate(agl::TextureData** ppTextureData, FFLiTexturePartsType partsType, u32 index, FFLiResourceLoader* pResLoader)

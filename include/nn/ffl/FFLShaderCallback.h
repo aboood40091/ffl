@@ -6,7 +6,7 @@
 #include <math/rio_MathTypes.h>
 
 #if RIO_IS_CAFE
-#include <cafe/gx2.h>
+#include <gx2/context.h>
 #endif // RIO_IS_CAFE
 
 #ifdef __cplusplus

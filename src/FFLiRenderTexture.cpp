@@ -12,7 +12,11 @@
 
 #if RIO_IS_CAFE
 #include <misc/rio_MemUtil.h>
-#include <cafe/gx2.h>
+
+#include <gx2/clear.h>
+
+#define GX2_SURFACE_DIM_2D GX2_SURFACE_DIM_TEXTURE_2D
+#define GX2_AA_MODE_1X GX2_AA_MODE1X
 #endif // RIO_IS_CAFE
 
 #include <cstring>
@@ -20,12 +24,24 @@
 u32 FFLiGetBufferRenderTexture(u32 width, u32 height, rio::TextureFormat format, u32 numMips)
 {
 #if RIO_IS_CAFE
-    GX2Texture texture;
-    GX2InitTexture(&texture, width, height, 0, numMips, (GX2SurfaceFormat)format, GX2_SURFACE_DIM_2D);
+    GX2Surface surface;
+    surface.dim = GX2_SURFACE_DIM_2D;
+    surface.width = width;
+    surface.height = height;
+    surface.depth = 1;
+    surface.numMips = numMips;
+    surface.format = (GX2SurfaceFormat)format;
+    surface.aa = GX2_AA_MODE_1X;
+    surface.use = GX2_SURFACE_USE_TEXTURE;
+    surface.tileMode = GX2_TILE_MODE_DEFAULT;
+    surface.swizzle = 0;
+
+    GX2CalcSurfaceSizeAndAlignment(&surface);
+
     return (
-        texture.surface.alignment +
-        FFLiRoundUp(texture.surface.imageSize, texture.surface.alignment) +
-        FFLiRoundUp(texture.surface.mipSize, texture.surface.alignment)
+        surface.alignment +
+        FFLiRoundUp(surface.imageSize, surface.alignment) +
+        FFLiRoundUp(surface.mipSize, surface.alignment)
     );
 #else
     return 0;
@@ -218,7 +234,8 @@ void FFLiSetupRenderTexture(FFLiRenderTexture* pRenderTexture, const FFLColor* p
         if (pDepthBuffer)
         {
 #if RIO_IS_CAFE
-            GX2ClearDepthStencil(&pRenderTexture->depthTarget.getInnerBuffer(), GX2_CLEAR_BOTH);
+            GX2DepthBuffer* pGX2DepthBuffer = &pRenderTexture->depthTarget.getInnerBuffer();
+            GX2ClearDepthStencilEx(pGX2DepthBuffer, pGX2DepthBuffer->depthClear, pGX2DepthBuffer->stencilClear, GX2_CLEAR_FLAGS_BOTH);
 #elif RIO_IS_WIN
             RIO_GL_CALL(glDepthMask(GL_TRUE));
             RIO_GL_CALL(glClearDepth(1.0f));

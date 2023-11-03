@@ -1,37 +1,16 @@
 #include <nn/ffl/FFLiPath.h>
 
 #if RIO_IS_CAFE
-
-#include <cafe/sysapp.h>
-
-#include <nn/save/save_Types.h>
-
-extern "C" {
-
-// Thanks for deprecating these, Nintendo... :/
-
-typedef enum SysSystemApplicationID
-{
-    SYS_ID_MII_MAKER    = 4
-} SysSystemApplicationID;
-
-u64 _SYSGetSystemApplicationTitleId(SysSystemApplicationID id);
-
-SAVEStatus SAVEGetSharedDataTitlePath(u64 titleId, const char* path, char* dst, u32 size);
-SAVEStatus SAVEGetSharedSaveDataPath(u64 titleId, const char* path, char* dst, u32 size);
-
-}
-
+#include <sysapp/title.h>
+#include <nn/save/save.h>
 #else
-
 #include <cstdio>
-
 #endif // RIO_IS_CAFE
 
 u64 FFLiGetMiiStudioTitleID()
 {
 #if RIO_IS_CAFE
-    return _SYSGetSystemApplicationTitleId(SYS_ID_MII_MAKER);
+    return _SYSGetSystemApplicationTitleId(SYSTEM_APP_ID_MII_MAKER);
 #else
     return 0;
 #endif // RIO_IS_CAFE
