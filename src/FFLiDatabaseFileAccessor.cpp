@@ -115,11 +115,9 @@ FFLResult FFLiDatabaseFileAccessor::BootLoad()
 
 FFLResult FFLiDatabaseFileAccessor::BootLoadImpl()
 {
-    FFLiFsResult result = { FFLI_FS_FILE_RESULT_OK, rio::RAW_ERROR_OK };
-
     bool needInitHidden = true;
 
-    result = LoadDatabaseHidden(&m_pDatabaseFile->hidden, GetPathHidden());
+    FFLiFsResult result = LoadDatabaseHidden(&m_pDatabaseFile->hidden, GetPathHidden());
     if (CheckFFLiFsResult(result))
     {
         if (m_pDatabaseFile->hidden.IsValid())
@@ -460,13 +458,11 @@ FFLiFsResult WriteFile(const void* pSrc, u32 size, FFLiFileWriteBuffer* pWriteBu
 
 FFLiFsResult LoadDatabaseHidden(FFLiDatabaseFileHidden* pHidden, const char* pPath)
 {
-    {
-        FFLiFsResult result = ReadFile(pHidden, sizeof(FFLiDatabaseFileHidden), pPath);
-        if (!CheckFFLiFsResult(result))
-            return result;
-    }
-    FFLiFsResult result = { FFLI_FS_FILE_RESULT_OK, rio::RAW_ERROR_OK };
-    return result;
+    FFLiFsResult result = ReadFile(pHidden, sizeof(FFLiDatabaseFileHidden), pPath);
+    if (!CheckFFLiFsResult(result))
+        return result;
+
+    return FFLiFsResult { FFLI_FS_FILE_RESULT_OK, rio::RAW_ERROR_OK };
 }
 
 FFLiFsResult SaveDatabaseHidden(const FFLiDatabaseFileHidden& hidden, FFLiFileWriteBuffer* pWriteBuffer, const char* pPath)
@@ -476,13 +472,11 @@ FFLiFsResult SaveDatabaseHidden(const FFLiDatabaseFileHidden& hidden, FFLiFileWr
 
 FFLiFsResult LoadDatabaseOfficial(FFLiDatabaseFileOfficial* pOfficial, const char* pPath)
 {
-    {
-        FFLiFsResult result = ReadFile(pOfficial, sizeof(FFLiDatabaseFileOfficial), pPath);
-        if (!CheckFFLiFsResult(result))
-            return result;
-    }
-    FFLiFsResult result = { FFLI_FS_FILE_RESULT_OK, rio::RAW_ERROR_OK };
-    return result;
+    FFLiFsResult result = ReadFile(pOfficial, sizeof(FFLiDatabaseFileOfficial), pPath);
+    if (!CheckFFLiFsResult(result))
+        return result;
+
+    return FFLiFsResult { FFLI_FS_FILE_RESULT_OK, rio::RAW_ERROR_OK };
 }
 
 FFLiFsResult SaveDatabaseOfficial(const FFLiDatabaseFileOfficial& official, FFLiFileWriteBuffer* pWriteBuffer, const char* pPath)
@@ -494,14 +488,9 @@ FFLiFsResult CopyDatabaseOfficial(const char* pPathTo, const char* pPathFrom, FF
 {
     FFLiDatabaseFileOfficial* pOfficial = static_cast<FFLiDatabaseFileOfficial*>(rio::MemUtil::alloc(sizeof(FFLiDatabaseFileOfficial), rio::FileDevice::cBufferMinAlignment));
     if (pOfficial == NULL)
-    {
-        FFLiFsResult result = { FFLI_FS_FILE_RESULT_OUT_OF_MEMORY };
-        return result;
-    }
+        return FFLiFsResult { FFLI_FS_FILE_RESULT_OUT_OF_MEMORY };
 
-    FFLiFsResult result = { FFLI_FS_FILE_RESULT_OK, rio::RAW_ERROR_OK };
-
-    result = LoadDatabaseOfficial(pOfficial, pPathFrom);
+    FFLiFsResult result = LoadDatabaseOfficial(pOfficial, pPathFrom);
     if (CheckFFLiFsResult(result))
         result = SaveDatabaseOfficial(*pOfficial, pWriteBuffer, pPathTo);
 
