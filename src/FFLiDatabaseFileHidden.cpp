@@ -2,6 +2,7 @@
 #include <nn/ffl/FFLiDatabaseFileHidden.h>
 #include <nn/ffl/FFLiDateTime.h>
 #include <nn/ffl/FFLiMiddleDB.h>
+#include <nn/ffl/FFLiSwapEndian.h>
 
 #include <nn/ffl/detail/FFLiCrc.h>
 
@@ -22,6 +23,15 @@ u16 FFLiOrderData::NextIndex() const
 u16 FFLiOrderData::PrevIndex() const
 {
     return m_PrevIndex;
+}
+
+void FFLiOrderData::SwapEndian()
+{
+    // This function is deleted in NSMBU.
+    // Therefore, its implementation is only theoretical.
+
+    m_NextIndex = FFLiSwapEndianImpl<u16>(m_NextIndex);
+    m_PrevIndex = FFLiSwapEndianImpl<u16>(m_PrevIndex);
 }
 
 static u32 GetMiiDataNum();
@@ -227,6 +237,29 @@ FFLResult FFLiDatabaseFileHidden::UpdateMiddleDB(FFLiMiddleDB* pMiddleDB) const
     }
 
     return result;
+}
+
+void FFLiDatabaseFileHidden::SwapEndian()
+{
+    // This function is deleted in NSMBU.
+    // Therefore, its implementation is only theoretical.
+
+    m_Magic = FFLiSwapEndianImpl<u32>(m_Magic);
+    m_StartIndex = FFLiSwapEndianImpl<u16>(m_StartIndex);
+    m_EndIndex = FFLiSwapEndianImpl<u16>(m_EndIndex);
+
+    for (u32 i = 0; i < 500; i++)
+    {
+        m_OrderData[i].SwapEndian();
+        m_MiiDataHidden[i].SwapEndian();
+    }
+
+    // Dunno what to do with this
+    // _abe8
+
+    m_Crc = FFLiSwapEndianImpl<u16>(m_Crc);
+
+    UpdateCrc();
 }
 
 static u32 GetMiiDataNum()

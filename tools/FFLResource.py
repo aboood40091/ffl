@@ -997,7 +997,7 @@ FFLI_RESOURCE_SHAPE_ELEMENT_TYPE_INDEX      = 5
 FFLI_RESOURCE_SHAPE_ELEMENT_TYPE_BUFFER_MAX = 6
 
 
-class FFLiResourceShape:
+class FFLiResourceShapeDataHeader:
     _dataPosSizeFormat = '>%dI' % FFLI_RESOURCE_SHAPE_ELEMENT_TYPE_BUFFER_MAX
     _dataPosSizeFormatSize = struct.calcsize(_dataPosSizeFormat)
     _vec3Format = '>3f'
@@ -1029,7 +1029,7 @@ class FFLiResourceShape:
         if not partsData:
             return None
 
-        shape = FFLiResourceShape()
+        shape = FFLiResourceShapeDataHeader()
 
         localPos = 0
 
@@ -1507,9 +1507,9 @@ class FFLiResourceShape:
     @staticmethod
     def compare(shapeA, shapeB, label):
         if label:
-            label += ".FFLiResourceShape"
+            label += ".FFLiResourceShapeDataHeader"
         else:
-            label = "FFLiResourceShape"
+            label = "FFLiResourceShapeDataHeader"
 
         if shapeA.boundingBox != shapeB.boundingBox:
             print(label + ".BoundingBox")
@@ -1631,84 +1631,84 @@ class FFLiResourceShapeHeader:
         for i in range(4):
             partsInfo = FFLiResourcePartsInfo()
             partsData = partsInfo.load(partsInfoBeardData[i * FFLiResourcePartsInfo.size:(i + 1) * FFLiResourcePartsInfo.size], data, pos, isExpand, expandAlignment)
-            shape = FFLiResourceShape.load(partsData, isExpand)
+            shape = FFLiResourceShapeDataHeader.load(partsData, isExpand)
             self.partsInfoBeard.append([partsInfo, shape])
 
         self.partsInfoCap1 = []
         for i in range(132):
             partsInfo = FFLiResourcePartsInfo()
             partsData = partsInfo.load(partsInfoCap1Data[i * FFLiResourcePartsInfo.size:(i + 1) * FFLiResourcePartsInfo.size], data, pos, isExpand, expandAlignment)
-            shape = FFLiResourceShape.load(partsData, isExpand)
+            shape = FFLiResourceShapeDataHeader.load(partsData, isExpand)
             self.partsInfoCap1.append([partsInfo, shape])
 
         self.partsInfoCap2 = []
         for i in range(132):
             partsInfo = FFLiResourcePartsInfo()
             partsData = partsInfo.load(partsInfoCap2Data[i * FFLiResourcePartsInfo.size:(i + 1) * FFLiResourcePartsInfo.size], data, pos, isExpand, expandAlignment)
-            shape = FFLiResourceShape.load(partsData, isExpand)
+            shape = FFLiResourceShapeDataHeader.load(partsData, isExpand)
             self.partsInfoCap2.append([partsInfo, shape])
 
         self.partsInfoFaceline = []
         for i in range(12):
             partsInfo = FFLiResourcePartsInfo()
             partsData = partsInfo.load(partsInfoFacelineData[i * FFLiResourcePartsInfo.size:(i + 1) * FFLiResourcePartsInfo.size], data, pos, isExpand, expandAlignment)
-            shape = FFLiResourceShape.load(partsData, isExpand)
+            shape = FFLiResourceShapeDataHeader.load(partsData, isExpand)
             self.partsInfoFaceline.append([partsInfo, shape])
 
         self.partsInfoGlass = []
         for i in range(1):
             partsInfo = FFLiResourcePartsInfo()
             partsData = partsInfo.load(partsInfoGlassData[i * FFLiResourcePartsInfo.size:(i + 1) * FFLiResourcePartsInfo.size], data, pos, isExpand, expandAlignment)
-            shape = FFLiResourceShape.load(partsData, isExpand)
+            shape = FFLiResourceShapeDataHeader.load(partsData, isExpand)
             self.partsInfoGlass.append([partsInfo, shape])
 
         self.partsInfoMask = []
         for i in range(12):
             partsInfo = FFLiResourcePartsInfo()
             partsData = partsInfo.load(partsInfoMaskData[i * FFLiResourcePartsInfo.size:(i + 1) * FFLiResourcePartsInfo.size], data, pos, isExpand, expandAlignment)
-            shape = FFLiResourceShape.load(partsData, isExpand)
+            shape = FFLiResourceShapeDataHeader.load(partsData, isExpand)
             self.partsInfoMask.append([partsInfo, shape])
 
         self.partsInfoNoseline = []
         for i in range(18):
             partsInfo = FFLiResourcePartsInfo()
             partsData = partsInfo.load(partsInfoNoselineData[i * FFLiResourcePartsInfo.size:(i + 1) * FFLiResourcePartsInfo.size], data, pos, isExpand, expandAlignment)
-            shape = FFLiResourceShape.load(partsData, isExpand)
+            shape = FFLiResourceShapeDataHeader.load(partsData, isExpand)
             self.partsInfoNoseline.append([partsInfo, shape])
 
         self.partsInfoNose = []
         for i in range(18):
             partsInfo = FFLiResourcePartsInfo()
             partsData = partsInfo.load(partsInfoNoseData[i * FFLiResourcePartsInfo.size:(i + 1) * FFLiResourcePartsInfo.size], data, pos, isExpand, expandAlignment)
-            shape = FFLiResourceShape.load(partsData, isExpand)
+            shape = FFLiResourceShapeDataHeader.load(partsData, isExpand)
             self.partsInfoNose.append([partsInfo, shape])
 
         self.partsInfoHair1 = []
         for i in range(132):
             partsInfo = FFLiResourcePartsInfo()
             partsData = partsInfo.load(partsInfoHair1Data[i * FFLiResourcePartsInfo.size:(i + 1) * FFLiResourcePartsInfo.size], data, pos, isExpand, expandAlignment)
-            shape = FFLiResourceShape.load(partsData, isExpand)
+            shape = FFLiResourceShapeDataHeader.load(partsData, isExpand)
             self.partsInfoHair1.append([partsInfo, shape])
 
         self.partsInfoHair2 = []
         for i in range(132):
             partsInfo = FFLiResourcePartsInfo()
             partsData = partsInfo.load(partsInfoHair2Data[i * FFLiResourcePartsInfo.size:(i + 1) * FFLiResourcePartsInfo.size], data, pos, isExpand, expandAlignment)
-            shape = FFLiResourceShape.load(partsData, isExpand)
+            shape = FFLiResourceShapeDataHeader.load(partsData, isExpand)
             self.partsInfoHair2.append([partsInfo, shape])
 
         self.partsInfoForehead1 = []
         for i in range(132):
             partsInfo = FFLiResourcePartsInfo()
             partsData = partsInfo.load(partsInfoForehead1Data[i * FFLiResourcePartsInfo.size:(i + 1) * FFLiResourcePartsInfo.size], data, pos, isExpand, expandAlignment)
-            shape = FFLiResourceShape.load(partsData, isExpand)
+            shape = FFLiResourceShapeDataHeader.load(partsData, isExpand)
             self.partsInfoForehead1.append([partsInfo, shape])
 
         self.partsInfoForehead2 = []
         for i in range(132):
             partsInfo = FFLiResourcePartsInfo()
             partsData = partsInfo.load(partsInfoForehead2Data[i * FFLiResourcePartsInfo.size:(i + 1) * FFLiResourcePartsInfo.size], data, pos, isExpand, expandAlignment)
-            shape = FFLiResourceShape.load(partsData, isExpand)
+            shape = FFLiResourceShapeDataHeader.load(partsData, isExpand)
             self.partsInfoForehead2.append([partsInfo, shape])
 
     def save(self, currentFileSize, isExpand):
@@ -1719,7 +1719,7 @@ class FFLiResourceShapeHeader:
         partsMaxSizeBeard = 0
         partsInfoBeardData = bytearray()
         for partsInfo, shape in self.partsInfoBeard:
-            partsData = FFLiResourceShape.save(shape, isExpand)
+            partsData = FFLiResourceShapeDataHeader.save(shape, isExpand)
             partsMaxSizeBeard = max(len(partsData), partsMaxSizeBeard)
             partsInfoData, partsData = partsInfo.save(partsData, currentFileSize, isExpand, expandAlignment); currentFileSize += len(partsData)
             partsInfoBeardData += partsInfoData
@@ -1728,7 +1728,7 @@ class FFLiResourceShapeHeader:
         partsMaxSizeCap1 = 0
         partsInfoCap1Data = bytearray()
         for partsInfo, shape in self.partsInfoCap1:
-            partsData = FFLiResourceShape.save(shape, isExpand)
+            partsData = FFLiResourceShapeDataHeader.save(shape, isExpand)
             partsMaxSizeCap1 = max(len(partsData), partsMaxSizeCap1)
             partsInfoData, partsData = partsInfo.save(partsData, currentFileSize, isExpand, expandAlignment); currentFileSize += len(partsData)
             partsInfoCap1Data += partsInfoData
@@ -1737,7 +1737,7 @@ class FFLiResourceShapeHeader:
         partsMaxSizeCap2 = 0
         partsInfoCap2Data = bytearray()
         for partsInfo, shape in self.partsInfoCap2:
-            partsData = FFLiResourceShape.save(shape, isExpand)
+            partsData = FFLiResourceShapeDataHeader.save(shape, isExpand)
             partsMaxSizeCap2 = max(len(partsData), partsMaxSizeCap2)
             partsInfoData, partsData = partsInfo.save(partsData, currentFileSize, isExpand, expandAlignment); currentFileSize += len(partsData)
             partsInfoCap2Data += partsInfoData
@@ -1746,7 +1746,7 @@ class FFLiResourceShapeHeader:
         partsMaxSizeFaceline = 0
         partsInfoFacelineData = bytearray()
         for partsInfo, shape in self.partsInfoFaceline:
-            partsData = FFLiResourceShape.save(shape, isExpand)
+            partsData = FFLiResourceShapeDataHeader.save(shape, isExpand)
             partsMaxSizeFaceline = max(len(partsData), partsMaxSizeFaceline)
             partsInfoData, partsData = partsInfo.save(partsData, currentFileSize, isExpand, expandAlignment); currentFileSize += len(partsData)
             partsInfoFacelineData += partsInfoData
@@ -1755,7 +1755,7 @@ class FFLiResourceShapeHeader:
         partsMaxSizeGlass = 0
         partsInfoGlassData = bytearray()
         for partsInfo, shape in self.partsInfoGlass:
-            partsData = FFLiResourceShape.save(shape, isExpand)
+            partsData = FFLiResourceShapeDataHeader.save(shape, isExpand)
             partsMaxSizeGlass = max(len(partsData), partsMaxSizeGlass)
             partsInfoData, partsData = partsInfo.save(partsData, currentFileSize, isExpand, expandAlignment); currentFileSize += len(partsData)
             partsInfoGlassData += partsInfoData
@@ -1764,7 +1764,7 @@ class FFLiResourceShapeHeader:
         partsMaxSizeMask = 0
         partsInfoMaskData = bytearray()
         for partsInfo, shape in self.partsInfoMask:
-            partsData = FFLiResourceShape.save(shape, isExpand)
+            partsData = FFLiResourceShapeDataHeader.save(shape, isExpand)
             partsMaxSizeMask = max(len(partsData), partsMaxSizeMask)
             partsInfoData, partsData = partsInfo.save(partsData, currentFileSize, isExpand, expandAlignment); currentFileSize += len(partsData)
             partsInfoMaskData += partsInfoData
@@ -1773,7 +1773,7 @@ class FFLiResourceShapeHeader:
         partsMaxSizeNoseline = 0
         partsInfoNoselineData = bytearray()
         for partsInfo, shape in self.partsInfoNoseline:
-            partsData = FFLiResourceShape.save(shape, isExpand)
+            partsData = FFLiResourceShapeDataHeader.save(shape, isExpand)
             partsMaxSizeNoseline = max(len(partsData), partsMaxSizeNoseline)
             partsInfoData, partsData = partsInfo.save(partsData, currentFileSize, isExpand, expandAlignment); currentFileSize += len(partsData)
             partsInfoNoselineData += partsInfoData
@@ -1782,7 +1782,7 @@ class FFLiResourceShapeHeader:
         partsMaxSizeNose = 0
         partsInfoNoseData = bytearray()
         for partsInfo, shape in self.partsInfoNose:
-            partsData = FFLiResourceShape.save(shape, isExpand)
+            partsData = FFLiResourceShapeDataHeader.save(shape, isExpand)
             partsMaxSizeNose = max(len(partsData), partsMaxSizeNose)
             partsInfoData, partsData = partsInfo.save(partsData, currentFileSize, isExpand, expandAlignment); currentFileSize += len(partsData)
             partsInfoNoseData += partsInfoData
@@ -1791,7 +1791,7 @@ class FFLiResourceShapeHeader:
         partsMaxSizeHair1 = 0
         partsInfoHair1Data = bytearray()
         for partsInfo, shape in self.partsInfoHair1:
-            partsData = FFLiResourceShape.save(shape, isExpand)
+            partsData = FFLiResourceShapeDataHeader.save(shape, isExpand)
             partsMaxSizeHair1 = max(len(partsData), partsMaxSizeHair1)
             partsInfoData, partsData = partsInfo.save(partsData, currentFileSize, isExpand, expandAlignment); currentFileSize += len(partsData)
             partsInfoHair1Data += partsInfoData
@@ -1800,7 +1800,7 @@ class FFLiResourceShapeHeader:
         partsMaxSizeHair2 = 0
         partsInfoHair2Data = bytearray()
         for partsInfo, shape in self.partsInfoHair2:
-            partsData = FFLiResourceShape.save(shape, isExpand)
+            partsData = FFLiResourceShapeDataHeader.save(shape, isExpand)
             partsMaxSizeHair2 = max(len(partsData), partsMaxSizeHair2)
             partsInfoData, partsData = partsInfo.save(partsData, currentFileSize, isExpand, expandAlignment); currentFileSize += len(partsData)
             partsInfoHair2Data += partsInfoData
@@ -1809,7 +1809,7 @@ class FFLiResourceShapeHeader:
         partsMaxSizeForehead1 = 0
         partsInfoForehead1Data = bytearray()
         for partsInfo, shape in self.partsInfoForehead1:
-            partsData = FFLiResourceShape.save(shape, isExpand)
+            partsData = FFLiResourceShapeDataHeader.save(shape, isExpand)
             partsMaxSizeForehead1 = max(len(partsData), partsMaxSizeForehead1)
             partsInfoData, partsData = partsInfo.save(partsData, currentFileSize, isExpand, expandAlignment); currentFileSize += len(partsData)
             partsInfoForehead1Data += partsInfoData
@@ -1818,7 +1818,7 @@ class FFLiResourceShapeHeader:
         partsMaxSizeForehead2 = 0
         partsInfoForehead2Data = bytearray()
         for partsInfo, shape in self.partsInfoForehead2:
-            partsData = FFLiResourceShape.save(shape, isExpand)
+            partsData = FFLiResourceShapeDataHeader.save(shape, isExpand)
             partsMaxSizeForehead2 = max(len(partsData), partsMaxSizeForehead2)
             partsInfoData, partsData = partsInfo.save(partsData, currentFileSize, isExpand, expandAlignment); currentFileSize += len(partsData)
             partsInfoForehead2Data += partsInfoData
@@ -1893,7 +1893,7 @@ class FFLiResourceShapeHeader:
                     }
                 }
 
-                glb = FFLiResourceShape.export(shape)
+                glb = FFLiResourceShapeDataHeader.export(shape)
                 if glb is not None:
                     glb_filename = filename + '.glb'
                     json_dict["shape"]["filename"] = glb_filename
@@ -1946,12 +1946,12 @@ class FFLiResourceShapeHeader:
                 partsInfo.memoryLevel = json_dict["partsInfo"]["memoryLevel"]
                 partsInfo.strategy = json_dict["partsInfo"]["strategy"]
 
-                shape = FFLiResourceShape()
+                shape = FFLiResourceShapeDataHeader()
 
                 if "filename" in json_dict["shape"]:
                     glb_filename = json_dict["shape"]["filename"]
                     glb = pygltflib.GLTF2().load(glb_filename)
-                    FFLiResourceShape.importFromGLB(shape, glb)
+                    FFLiResourceShapeDataHeader.importFromGLB(shape, glb)
                 else:
                     shape.boundingBox = [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]
                     shape.transform = None
@@ -1998,7 +1998,7 @@ class FFLiResourceShapeHeader:
                     continue
 
                 partsInfoA.compare(partsInfoB, label)
-                FFLiResourceShape.compare(shapeA, shapeB, label)
+                FFLiResourceShapeDataHeader.compare(shapeA, shapeB, label)
 
 
 class FFLiResourceHeader:

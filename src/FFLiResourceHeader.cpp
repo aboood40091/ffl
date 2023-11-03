@@ -1,4 +1,5 @@
 #include <nn/ffl/FFLiResourceHeader.h>
+#include <nn/ffl/FFLiSwapEndian.h>
 #include <nn/ffl/FFLiUtil.h>
 
 #define SIZE_OF_MEMBER(cls, member) sizeof( ((cls*)0)->member )
@@ -188,4 +189,53 @@ FFLResult FFLiResourceHeader::GetResult() const
         return FFL_RESULT_FILE_INVALID;
 
     return FFL_RESULT_OK;
+}
+
+namespace {
+
+void SwapEndianResourcePartsInfo(FFLiResourcePartsInfo* pPartsInfo, u32 num)
+{
+    // This function is deleted in NSMBU.
+    // Therefore, its implementation is only theoretical.
+
+    for (u32 i = 0; i < num; i++)
+    {
+        pPartsInfo[i].dataPos = FFLiSwapEndianImpl<u32>(pPartsInfo[i].dataPos);
+        pPartsInfo[i].dataSize = FFLiSwapEndianImpl<u32>(pPartsInfo[i].dataSize);
+        pPartsInfo[i].compressedSize = FFLiSwapEndianImpl<u32>(pPartsInfo[i].compressedSize);
+    }
+}
+
+}
+
+void FFLiResourceHeader::SwapEndian()
+{
+    // This function is deleted in NSMBU.
+    // Therefore, its implementation is only theoretical.
+
+    m_Magic = FFLiSwapEndianImpl<u32>(m_Magic);
+    m_Version = FFLiSwapEndianImpl<u32>(m_Version);
+    m_UncompressBufferSize = FFLiSwapEndianImpl<u32>(m_UncompressBufferSize);
+
+    // Dunno what to do with this
+    // _c
+
+    m_IsExpand = FFLiSwapEndianImpl<u32>(m_IsExpand);
+
+    for (u32 i = 0; i < FFLI_TEXTURE_PARTS_TYPE_MAX; i++)
+    {
+        u32 num;
+        FFLiResourcePartsInfo* pPartsInfo = FFLiGetTextureResoucePartsInfos(&num, GetTextureHeader(), FFLiTexturePartsType(i));
+        SwapEndianResourcePartsInfo(pPartsInfo, num);
+    }
+
+    for (u32 i = 0; i < FFLI_SHAPE_PARTS_TYPE_MAX; i++)
+    {
+        u32 num;
+        FFLiResourcePartsInfo* pPartsInfo = FFLiGetShapeResoucePartsInfos(&num, GetShapeHeader(), FFLiShapePartsType(i));
+        SwapEndianResourcePartsInfo(pPartsInfo, num);
+    }
+
+    // Dunno what to do with this
+    // _49d0
 }

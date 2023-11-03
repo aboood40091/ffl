@@ -37,6 +37,8 @@ public:
 
     bool AdjustRegularList(AdjustRegularBuffer* pBuffer);
 
+    void SwapEndian();  // Deleted in NSMBU
+
 private:
     u32                 m_Magic;
     u32                 _4;

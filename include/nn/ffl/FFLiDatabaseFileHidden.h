@@ -27,6 +27,8 @@ public:
    u16 NextIndex() const;
    u16 PrevIndex() const;
 
+   void SwapEndian();   // Deleted in NSMBU
+
 private:
     u16 m_NextIndex;
     u16 m_PrevIndex;
@@ -55,6 +57,8 @@ public:
     bool IsValid() const;
 
     FFLResult UpdateMiddleDB(FFLiMiddleDB* pMiddleDB) const;
+
+    void SwapEndian();  // Deleted in NSMBU
 
 private:
     u32                 m_Magic;

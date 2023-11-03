@@ -60,6 +60,8 @@ public:
     void* GetImagePtrImpl(u32 size) const;
     void* GetMipPtrImpl(u32 size) const;
 
+    void SwapEndian();  // Deleted in NSMBU
+
 private:
     u32 m_MipOffset;
     u16 m_Width;
