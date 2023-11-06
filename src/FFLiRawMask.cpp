@@ -1,6 +1,7 @@
 #include <nn/ffl/FFLiModulate.h>
 #include <nn/ffl/FFLiRawMask.h>
 #include <nn/ffl/FFLiRawMaskParts.h>
+#include <nn/ffl/FFLiShaderCallback.h>
 
 #include <nn/ffl/detail/FFLiCharInfo.h>
 
@@ -96,7 +97,6 @@ void FFLiInvalidateRawMask(FFLiRawMaskDrawParam* pDrawParam)
 void FFLiDrawRawMask(const FFLiRawMaskDrawParam* pDrawParam, const FFLiShaderCallback* pCallback)
 {
     rio::RenderState renderState;
-  //renderState.setAlphaTestEnable(true);   // TODO: Does disabling this cause problems?
     renderState.setBlendEnable(true);
     renderState.setDepthEnable(false, false);
     renderState.setCullingMode(rio::Graphics::CULLING_MODE_NONE);
@@ -110,9 +110,7 @@ void FFLiDrawRawMask(const FFLiRawMaskDrawParam* pDrawParam, const FFLiShaderCal
     );
     renderState.apply();
 
-#if RIO_IS_CAFE
-    GX2SetAlphaTest(GX2_ENABLE, GX2_COMPARE_FUNC_GREATER, 0.0f);
-#endif // RIO_IS_CAFE
+    pCallback->CallApplyAlphaTestEnable();
 
     FFLiDrawRawMaskParts(&(pDrawParam->drawParamRawMaskPartsMustache[0]), pCallback);
     FFLiDrawRawMaskParts(&(pDrawParam->drawParamRawMaskPartsMustache[1]), pCallback);
@@ -128,23 +126,13 @@ void FFLiDrawRawMask(const FFLiRawMaskDrawParam* pDrawParam, const FFLiShaderCal
     renderState.setBlendFactor(rio::Graphics::BLEND_MODE_ZERO, rio::Graphics::BLEND_MODE_ZERO);
     renderState.setBlendEquation(rio::Graphics::BLEND_FUNC_ADD);
     renderState.applyBlendAndFastZ();
-#if RIO_IS_CAFE
-    GX2SetAlphaTest(GX2_DISABLE, GX2_COMPARE_FUNC_ALWAYS, 0.0f);
-#else
-  //renderState.setAlphaTestEnable(false);
-  //renderState.applyAlphaTest();
-#endif // RIO_IS_CAFE
+    pCallback->CallApplyAlphaTestDisable();
 
     FFLiDrawRawMaskParts(&pDrawParam->drawParamRawMaskPartsFill, pCallback);
 
     renderState.setBlendFactor(rio::Graphics::BLEND_MODE_SRC_ALPHA, rio::Graphics::BLEND_MODE_ONE);
     renderState.applyBlendAndFastZ();
-#if RIO_IS_CAFE
-    GX2SetAlphaTest(GX2_ENABLE, GX2_COMPARE_FUNC_GREATER, 0.0f);
-#else
-  //renderState.setAlphaTestEnable(true);   // TODO: Does disabling this cause problems?
-  //renderState.applyAlphaTest();
-#endif // RIO_IS_CAFE
+    pCallback->CallApplyAlphaTestEnable();
 
     FFLiDrawRawMaskParts(&(pDrawParam->drawParamRawMaskPartsMustache[0]), pCallback);
     FFLiDrawRawMaskParts(&(pDrawParam->drawParamRawMaskPartsMustache[1]), pCallback);
@@ -157,12 +145,7 @@ void FFLiDrawRawMask(const FFLiRawMaskDrawParam* pDrawParam, const FFLiShaderCal
 
     renderState.setColorMask(true, true, true, true);
     renderState.applyColorMask();
-#if RIO_IS_CAFE
-    GX2SetAlphaTest(GX2_DISABLE, GX2_COMPARE_FUNC_ALWAYS, 0.0f);
-#else
-  //renderState.setAlphaTestEnable(false);
-  //renderState.applyAlphaTest();
-#endif // RIO_IS_CAFE
+    pCallback->CallApplyAlphaTestDisable();
 }
 
 namespace {

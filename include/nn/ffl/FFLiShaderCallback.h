@@ -3,6 +3,7 @@
 
 #include <nn/ffl/types.h>
 
+#include <gfx/rio_Graphics.h>
 #include <math/rio_MathTypes.h>
 
 struct FFLDrawParam;
@@ -23,6 +24,17 @@ public:
 
     void Set(const FFLShaderCallback* pCallback);
 
+    void CallApplyAlphaTestEnable() const
+    {
+        CallApplyAlphaTest(true, rio::Graphics::COMPARE_FUNC_GREATER, 0.0f);
+    }
+
+    void CallApplyAlphaTestDisable() const
+    {
+        CallApplyAlphaTest(false, rio::Graphics::COMPARE_FUNC_ALWAYS, 0.0f);
+    }
+
+    void CallApplyAlphaTest(bool enable, rio::Graphics::CompareFunc func, f32 ref) const;
     void CallSetMatrix(const rio::BaseMtx44f& mat) const;
     void CallDraw(const FFLDrawParam& drawParam) const;
 

@@ -25,6 +25,12 @@ void FFLiShaderCallback::Set(const FFLShaderCallback* pCallback)
     m_pShaderCallback = pCallback;
 }
 
+void FFLiShaderCallback::CallApplyAlphaTest(bool enable, rio::Graphics::CompareFunc func, f32 ref) const
+{
+    if (IsExist())
+        (*m_pShaderCallback->pApplyAlphaTestFunc)(m_pShaderCallback->pObj, enable, func, ref);
+}
+
 void FFLiShaderCallback::CallSetMatrix(const rio::BaseMtx44f& mat) const
 {
     if (IsExist())

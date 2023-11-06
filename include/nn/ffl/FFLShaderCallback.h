@@ -3,6 +3,7 @@
 
 #include <nn/ffl/types.h>
 
+#include <gfx/rio_Graphics.h>
 #include <math/rio_MathTypes.h>
 
 #ifdef __cplusplus
@@ -14,8 +15,8 @@ typedef struct FFLDrawParam FFLDrawParam;
 typedef struct FFLShaderCallback
 {
     void*               pObj;
-    void*               _4;     // Deleted
 
+    void (*pApplyAlphaTestFunc)(void* pObj, bool enable, rio::Graphics::CompareFunc func, f32 ref);
     void (*pDrawFunc)(void* pObj, const FFLDrawParam& drawParam);
     void (*pSetMatrixFunc)(void* pObj, const rio::BaseMtx44f& matrix);
 }
