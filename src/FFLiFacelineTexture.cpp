@@ -4,9 +4,11 @@
 #include <nn/ffl/FFLiColor.h>
 #include <nn/ffl/FFLiFacelineTexture.h>
 #include <nn/ffl/FFLiFacelineTextureTempObject.h>
+#include <nn/ffl/FFLiManager.h>
 #include <nn/ffl/FFLiMipMapUtil.h>
 #include <nn/ffl/FFLiModulate.h>
 #include <nn/ffl/FFLiRenderTexture.h>
+#include <nn/ffl/FFLiResourceLoader.h>
 #include <nn/ffl/FFLiShaderCallback.h>
 #include <nn/ffl/FFLiTexture.h>
 #include <nn/ffl/FFLiUtil.h>
@@ -28,13 +30,22 @@ u32 GetNumMips(u32 width, u32 height, bool enableMipMap);
 
 rio::TextureFormat GetTextureFormat(bool useOffScreenSrgbFetch);
 
+void DeleteTexture_FaceLine(FFLiFacelineTextureTempObject* pObject, bool isExpand);
+void DeleteTexture_FaceMake(FFLiFacelineTextureTempObject* pObject, bool isExpand);
+void DeleteTexture_FaceBeard(FFLiFacelineTextureTempObject* pObject, const FFLiCharInfo* pCharInfo, bool isExpand);
+
 void* Allocate(u32 size, u32 alignment);
+void Free(void* ptr);
 
 void EndianSwap(void* ptr, u32 size);
 
 void InitPrimitive(FFLPrimitiveParam* pPrimitive);
 void InitAttributes(FFLAttributeBufferParam* pAttributes, u32 resolution);
 void InitDrawParamWithoutModulate(FFLDrawParam* pDrawParam, u32 resolution);
+
+void DeletePrimitive(FFLPrimitiveParam* pPrimitive);
+void DeleteAttributes(FFLAttributeBufferParam* pAttributes);
+void DeleteDrawParam(FFLDrawParam* pDrawParam);
 
 void InvalidatePrimitive(FFLPrimitiveParam* pPrimitive);
 void InvalidateAttributes(FFLAttributeBufferParam* pAttributes);
@@ -51,6 +62,11 @@ void FFLiInitFacelineTexture(FFLiRenderTexture* pRenderTexture, u32 resolution, 
     FFLiInitRenderTexture(pRenderTexture, width, height, format, numMips);
 }
 
+void FFLiDeleteFacelineTexture(FFLiRenderTexture* pRenderTexture)
+{
+    FFLiDeleteRenderTexture(pRenderTexture);
+}
+
 FFLResult FFLiInitTempObjectFacelineTexture(FFLiFacelineTextureTempObject* pObject, FFLiRenderTexture* pRenderTexture, const FFLiCharInfo* pCharInfo, u32 resolution, bool enableMipMap, FFLiResourceLoader* pResLoader, FFLiRenderTextureBuffer* pRenderTextureBuffer)
 {
     std::memset(pObject, 0, sizeof(FFLiFacelineTextureTempObject));
@@ -61,7 +77,10 @@ FFLResult FFLiInitTempObjectFacelineTexture(FFLiFacelineTextureTempObject* pObje
 
     result = FFLiLoadTextureWithAllocate(&pObject->pTextureFaceMake, FFLI_TEXTURE_PARTS_TYPE_FACE_MAKEUP, pCharInfo->parts.faceMakeup, pResLoader);
     if (result != FFL_RESULT_OK)
+    {
+        DeleteTexture_FaceLine(pObject, pResLoader->IsExpand());
         return result;
+    }
 
     s32 beardType = pCharInfo->parts.beardType;
     bool enableBeardTexture = beardType >= 4;
@@ -70,7 +89,11 @@ FFLResult FFLiInitTempObjectFacelineTexture(FFLiFacelineTextureTempObject* pObje
     {
         result = FFLiLoadTextureWithAllocate(&pObject->pTextureFaceBeard, FFLI_TEXTURE_PARTS_TYPE_BEARD, beardType - 3, pResLoader);
         if (result != FFL_RESULT_OK)
+        {
+            DeleteTexture_FaceMake(pObject, pResLoader->IsExpand());
+            DeleteTexture_FaceLine(pObject, pResLoader->IsExpand());
             return result;
+        }
     }
 
     InitDrawParamWithoutModulate(&pObject->drawParamFaceLine, resolution);
@@ -83,6 +106,20 @@ FFLResult FFLiInitTempObjectFacelineTexture(FFLiFacelineTextureTempObject* pObje
         FFLiInitModulateFaceBeard(&pObject->drawParamFaceBeard.modulateParam, pCharInfo->parts.beardColor, *pObject->pTextureFaceBeard);
 
     return FFL_RESULT_OK;
+}
+
+void FFLiDeleteTempObjectFacelineTexture(FFLiFacelineTextureTempObject* pObject, const FFLiCharInfo* pCharInfo, FFLResourceType resourceType)
+{
+    DeleteDrawParam(&pObject->drawParamFaceBeard);
+    DeleteDrawParam(&pObject->drawParamFaceMake);
+    DeleteDrawParam(&pObject->drawParamFaceLine);
+
+    RIO_ASSERT(FFLiManager::IsConstruct());
+    bool isExpand = FFLiManager::GetInstance()->GetResourceManager().IsExpand(resourceType);
+
+    DeleteTexture_FaceBeard(pObject, pCharInfo, isExpand);
+    DeleteTexture_FaceMake(pObject, isExpand);
+    DeleteTexture_FaceLine(pObject, isExpand);
 }
 
 void FFLiRenderFacelineTexture(FFLiRenderTexture* pRenderTexture, const FFLiCharInfo* pCharInfo, u32 resolution, FFLiFacelineTextureTempObject* pObject, const FFLiShaderCallback* pCallback, FFLiCopySurface* pCopySurface)
@@ -117,7 +154,7 @@ void FFLiRenderFacelineTexture(FFLiRenderTexture* pRenderTexture, const FFLiChar
     FFLiRenderTexture& renderTexture = *pRenderTexture;
 
     FFLiInvalidateRenderTexture(&renderTexture);
-    RIO_ASSERT(renderTexture.textureData.getTextureFormat() == agl::cTextureFormat_R8_G8_B8_A8_uNorm);
+    RIO_ASSERT(renderTexture.pTextureData->getTextureFormat() == agl::cTextureFormat_R8_G8_B8_A8_uNorm);
     FFLiSetupRenderTexture(&renderTexture, &facelineColor, NULL, 0, pCallback);
 
     pCallback->CallDraw(pObject->drawParamFaceMake);
@@ -125,14 +162,20 @@ void FFLiRenderFacelineTexture(FFLiRenderTexture* pRenderTexture, const FFLiChar
     if (pObject->pTextureFaceBeard != NULL)
         pCallback->CallDraw(pObject->drawParamFaceBeard);
 
-    if (renderTexture.textureData.getMipLevelNum() > 1)
+    if (renderTexture.pTextureData->getMipLevelNum() > 1)
     {
+#if RIO_IS_WIN
+        renderTexture.pTextureData->getHandle()->bind();
+        RIO_GL_CALL(glGenerateMipmap(GL_TEXTURE_2D));
+#elif RIO_IS_CAFE
         pCopySurface->Begin();
-        for (u32 i = 1; i < renderTexture.textureData.getMipLevelNum(); i++)
-            pCopySurface->Execute(&renderTexture.textureData, i, i - 1);
-    }
 
-    pCallback->CallSetContextState();
+        for (u32 i = 1; i < renderTexture.pTextureData->getMipLevelNum(); i++)
+            pCopySurface->Execute(renderTexture.pTextureData, i, i - 1);
+
+        pCopySurface->End();
+#endif
+    }
 
     FFLiFlushRenderTexture(&renderTexture);
 }
@@ -171,9 +214,33 @@ rio::TextureFormat GetTextureFormat(bool useOffScreenSrgbFetch)
         return rio::TEXTURE_FORMAT_R8_G8_B8_A8_UNORM;
 }
 
+void DeleteTexture_FaceLine(FFLiFacelineTextureTempObject* pObject, bool isExpand)
+{
+    FFLiDeleteTexture(&pObject->pTextureFaceLine, isExpand);
+}
+
+void DeleteTexture_FaceMake(FFLiFacelineTextureTempObject* pObject, bool isExpand)
+{
+    FFLiDeleteTexture(&pObject->pTextureFaceMake, isExpand);
+}
+
+void DeleteTexture_FaceBeard(FFLiFacelineTextureTempObject* pObject, const FFLiCharInfo* pCharInfo, bool isExpand)
+{
+    s32 beardType = pCharInfo->parts.beardType;
+    bool enableBeardTexture = beardType >= 4;
+
+    if (enableBeardTexture)
+        FFLiDeleteTexture(&pObject->pTextureFaceBeard, isExpand);
+}
+
 void* Allocate(u32 size, u32 alignment)
 {
     return rio::MemUtil::alloc(size, alignment);
+}
+
+void Free(void* ptr)
+{
+    rio::MemUtil::free(ptr);
 }
 
 void EndianSwap(void* ptr, u32 size)
@@ -249,6 +316,23 @@ void InitDrawParamWithoutModulate(FFLDrawParam* pDrawParam, u32 resolution)
     pDrawParam->cullMode = FFL_CULL_MODE_MAX;
     InitPrimitive(&pDrawParam->primitiveParam);
     InitAttributes(&pDrawParam->attributeBufferParam, resolution);
+}
+
+void DeletePrimitive(FFLPrimitiveParam* pPrimitive)
+{
+    Free(FFLiBugVgtFixedIndexOriginalPtr(pPrimitive->pIndexBuffer));
+}
+
+void DeleteAttributes(FFLAttributeBufferParam* pAttributes)
+{
+    Free(pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_POSITION].ptr);
+    Free(pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_TEXCOORD].ptr);
+}
+
+void DeleteDrawParam(FFLDrawParam* pDrawParam)
+{
+    DeletePrimitive(&pDrawParam->primitiveParam);
+    DeleteAttributes(&pDrawParam->attributeBufferParam);
 }
 
 void InvalidatePrimitive(FFLPrimitiveParam* pPrimitive)

@@ -7,6 +7,10 @@
 #include <gfx/rio_Projection.h>
 #include <gpu/rio_RenderState.h>
 
+#if RIO_IS_CAFE
+#include <gx2/registers.h>
+#endif // RIO_IS_CAFE
+
 namespace {
 
 enum
@@ -63,6 +67,19 @@ void FFLiInitDrawParamRawMask(FFLiRawMaskDrawParam* pDrawParam, const FFLiCharIn
     FFLiInitDrawParamRawMaskPartsFill(&pDrawParam->drawParamRawMaskPartsFill);
 }
 
+void FFLiDeleteDrawParamRawMask(FFLiRawMaskDrawParam* pDrawParam)
+{
+    FFLiDeleteDrawParamRawMaskPartsFill(&pDrawParam->drawParamRawMaskPartsFill);
+    FFLiDeleteDrawParamRawMaskParts(&pDrawParam->drawParamRawMaskPartsMole);
+    FFLiDeleteDrawParamRawMaskParts(&(pDrawParam->drawParamRawMaskPartsEye[1]));
+    FFLiDeleteDrawParamRawMaskParts(&(pDrawParam->drawParamRawMaskPartsEye[0]));
+    FFLiDeleteDrawParamRawMaskParts(&(pDrawParam->drawParamRawMaskPartsEyebrow[1]));
+    FFLiDeleteDrawParamRawMaskParts(&(pDrawParam->drawParamRawMaskPartsEyebrow[0]));
+    FFLiDeleteDrawParamRawMaskParts(&pDrawParam->drawParamRawMaskPartsMouth);
+    FFLiDeleteDrawParamRawMaskParts(&(pDrawParam->drawParamRawMaskPartsMustache[1]));
+    FFLiDeleteDrawParamRawMaskParts(&(pDrawParam->drawParamRawMaskPartsMustache[0]));
+}
+
 void FFLiInvalidateRawMask(FFLiRawMaskDrawParam* pDrawParam)
 {
     FFLiInvalidateDrawParamRawMaskParts(&(pDrawParam->drawParamRawMaskPartsMustache[0]));
@@ -93,6 +110,10 @@ void FFLiDrawRawMask(const FFLiRawMaskDrawParam* pDrawParam, const FFLiShaderCal
     );
     renderState.apply();
 
+#if RIO_IS_CAFE
+    GX2SetAlphaTest(GX2_ENABLE, GX2_COMPARE_FUNC_GREATER, 0.0f);
+#endif // RIO_IS_CAFE
+
     FFLiDrawRawMaskParts(&(pDrawParam->drawParamRawMaskPartsMustache[0]), pCallback);
     FFLiDrawRawMaskParts(&(pDrawParam->drawParamRawMaskPartsMustache[1]), pCallback);
     FFLiDrawRawMaskParts(&pDrawParam->drawParamRawMaskPartsMouth, pCallback);
@@ -107,15 +128,23 @@ void FFLiDrawRawMask(const FFLiRawMaskDrawParam* pDrawParam, const FFLiShaderCal
     renderState.setBlendFactor(rio::Graphics::BLEND_MODE_ZERO, rio::Graphics::BLEND_MODE_ZERO);
     renderState.setBlendEquation(rio::Graphics::BLEND_FUNC_ADD);
     renderState.applyBlendAndFastZ();
+#if RIO_IS_CAFE
+    GX2SetAlphaTest(GX2_DISABLE, GX2_COMPARE_FUNC_ALWAYS, 0.0f);
+#else
   //renderState.setAlphaTestEnable(false);
   //renderState.applyAlphaTest();
+#endif // RIO_IS_CAFE
 
     FFLiDrawRawMaskParts(&pDrawParam->drawParamRawMaskPartsFill, pCallback);
 
     renderState.setBlendFactor(rio::Graphics::BLEND_MODE_SRC_ALPHA, rio::Graphics::BLEND_MODE_ONE);
     renderState.applyBlendAndFastZ();
+#if RIO_IS_CAFE
+    GX2SetAlphaTest(GX2_ENABLE, GX2_COMPARE_FUNC_GREATER, 0.0f);
+#else
   //renderState.setAlphaTestEnable(true);   // TODO: Does disabling this cause problems?
   //renderState.applyAlphaTest();
+#endif // RIO_IS_CAFE
 
     FFLiDrawRawMaskParts(&(pDrawParam->drawParamRawMaskPartsMustache[0]), pCallback);
     FFLiDrawRawMaskParts(&(pDrawParam->drawParamRawMaskPartsMustache[1]), pCallback);
@@ -128,8 +157,12 @@ void FFLiDrawRawMask(const FFLiRawMaskDrawParam* pDrawParam, const FFLiShaderCal
 
     renderState.setColorMask(true, true, true, true);
     renderState.applyColorMask();
+#if RIO_IS_CAFE
+    GX2SetAlphaTest(GX2_DISABLE, GX2_COMPARE_FUNC_ALWAYS, 0.0f);
+#else
   //renderState.setAlphaTestEnable(false);
   //renderState.applyAlphaTest();
+#endif // RIO_IS_CAFE
 }
 
 namespace {

@@ -54,7 +54,22 @@ FFLResult FFLiResourceLoader::LoadTexture(void* pData, u32* pSize, FFLiTexturePa
     if (pPartsInfo == NULL || index >= num)
         return FFL_RESULT_ERROR;
 
-    return Load(pData, pSize, pPartsInfo[index]);
+    const FFLiResourcePartsInfo& partsInfo = pPartsInfo[index];
+
+    FFLResult result = Load(pData, pSize, partsInfo);
+    if (result != FFL_RESULT_OK)
+        return result;
+
+#if __BYTE_ORDER__ != __ORDER_BIG_ENDIAN__
+    u32 size = *pSize;
+    if (((IsCached() && partsInfo.strategy != FFLI_RESOURCE_STRATEGY_UNCOMPRESSED) || !IsCached()) && size)
+    {
+        FFLiResourceTextureFooter& footer = FFLiResourceTextureFooter::GetFooterImpl(pData, size);
+        footer.SwapEndian();
+    }
+#endif // __BYTE_ORDER__
+
+    return FFL_RESULT_OK;
 }
 
 FFLResult FFLiResourceLoader::LoadShape(void* pData, u32* pSize, FFLiShapePartsType partsType, u32 index)
@@ -64,7 +79,21 @@ FFLResult FFLiResourceLoader::LoadShape(void* pData, u32* pSize, FFLiShapePartsT
     if (pPartsInfo == NULL || index >= num)
         return FFL_RESULT_ERROR;
 
-    return Load(pData, pSize, pPartsInfo[index]);
+    const FFLiResourcePartsInfo& partsInfo = pPartsInfo[index];
+
+    FFLResult result = Load(pData, pSize, partsInfo);
+    if (result != FFL_RESULT_OK)
+        return result;
+
+#if __BYTE_ORDER__ != __ORDER_BIG_ENDIAN__
+    u32 size = *pSize;
+    if (((IsCached() && partsInfo.strategy != FFLI_RESOURCE_STRATEGY_UNCOMPRESSED) || !IsCached()) && size)
+    {
+        FFLiSwapEndianResourceShapeElement(pData, partsType, false);
+    }
+#endif // __BYTE_ORDER__
+
+    return FFL_RESULT_OK;
 }
 
 FFLResult FFLiResourceLoader::GetPointerTextureByExpandCache(void** ppPtr, u32* pSize, FFLiTexturePartsType partsType, u32 index)

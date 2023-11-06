@@ -19,7 +19,12 @@
 #include <nn/ffl/FFLiTextureTempObject.h>
 #include <nn/ffl/FFLiUtil.h>
 
+#include <gfx/rio_Window.h>
 #include <math/rio_Matrix.h>
+
+#if RIO_IS_CAFE
+#include <gx2/event.h>
+#endif // RIO_IS_CAFE
 
 #include <cstring>
 
@@ -29,9 +34,15 @@ union F32BitCast
     u32 u;
     struct
     {
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
         u32 sign        : 1;    // (MSB)
         u32 exponent    : 8;
         u32 mantissa    : 23;   // (LSB)
+#else
+        u32 mantissa    : 23;   // (LSB)
+        u32 exponent    : 8;
+        u32 sign        : 1;    // (MSB)
+#endif // __BYTE_ORDER__
     };
 };
 NN_STATIC_ASSERT(sizeof(F32BitCast) == 4);
@@ -58,7 +69,9 @@ namespace {
 
 FFLModelType ModelFlagToModelType(u32 flag);
 FFLResult InitShapes(FFLiCharModel* pModel, FFLiResourceLoader * pResLoader, const FFLiCoordinate* pCoordinate);
+void DeleteShapes(FFLiCharModel* pModel);
 FFLResult InitTextures(FFLiCharModel* pModel, FFLiResourceLoader* pResLoader);
+void DeleteTextures(FFLiCharModel* pModel);
 void AdjustPartsTransform(FFLiCharModel* pModel, const FFLiCoordinate* pCoordinate);
 void SetupDrawParam(FFLiCharModel* pModel);
 
@@ -98,21 +111,50 @@ FFLResult FFLiCharModelCreator::ExecuteCPUStep(FFLiCharModel* pModel, const FFLC
 
     result = FFLiInitTempObjectMaskTextures(&pModel->pTextureTempObject->maskTextures, &pModel->maskTextures, &pModel->charInfo, pDesc->expressionFlag, resolution, isEnabledMipMap, &resLoader, &renderTextureBuffer);
     if (result != FFL_RESULT_OK)
+    {
+        FFLiDeleteMaskTextures(&pModel->maskTextures);
+        delete pModel->pTextureTempObject;
+        pModel->pTextureTempObject = NULL;
         return result;
+    }
 
     FFLiInitFacelineTexture(&pModel->facelineRenderTexture, resolution, isEnabledMipMap);
 
     result = FFLiInitTempObjectFacelineTexture(&pModel->pTextureTempObject->facelineTexture, &pModel->facelineRenderTexture, &pModel->charInfo, resolution, isEnabledMipMap, &resLoader, &renderTextureBuffer);
     if (result != FFL_RESULT_OK)
+    {
+        FFLiDeleteFacelineTexture(&pModel->facelineRenderTexture);
+        FFLiDeleteTempObjectMaskTextures(&pModel->pTextureTempObject->maskTextures, pDesc->expressionFlag, pDesc->resourceType);
+        FFLiDeleteMaskTextures(&pModel->maskTextures);
+        delete pModel->pTextureTempObject;
+        pModel->pTextureTempObject = NULL;
         return result;
+    }
 
     result = InitShapes(pModel, &resLoader, &m_pCharModelCreateParam->GetCoordinate());
     if (result != FFL_RESULT_OK)
+    {
+        FFLiDeleteTempObjectFacelineTexture(&pModel->pTextureTempObject->facelineTexture, &pModel->charInfo, pModel->charModelDesc.resourceType);
+        FFLiDeleteFacelineTexture(&pModel->facelineRenderTexture);
+        FFLiDeleteTempObjectMaskTextures(&pModel->pTextureTempObject->maskTextures, pDesc->expressionFlag, pDesc->resourceType);
+        FFLiDeleteMaskTextures(&pModel->maskTextures);
+        delete pModel->pTextureTempObject;
+        pModel->pTextureTempObject = NULL;
         return result;
+    }
 
     result = InitTextures(pModel, &resLoader);
     if (result != FFL_RESULT_OK)
+    {
+        DeleteShapes(pModel);
+        FFLiDeleteTempObjectFacelineTexture(&pModel->pTextureTempObject->facelineTexture, &pModel->charInfo, pModel->charModelDesc.resourceType);
+        FFLiDeleteFacelineTexture(&pModel->facelineRenderTexture);
+        FFLiDeleteTempObjectMaskTextures(&pModel->pTextureTempObject->maskTextures, pDesc->expressionFlag, pDesc->resourceType);
+        FFLiDeleteMaskTextures(&pModel->maskTextures);
+        delete pModel->pTextureTempObject;
+        pModel->pTextureTempObject = NULL;
         return result;
+    }
 
     AdjustPartsTransform(pModel, &m_pCharModelCreateParam->GetCoordinate());
     SetupDrawParam(pModel);
@@ -127,8 +169,6 @@ void FFLiCharModelCreator::ExecuteGPUStep(FFLiCharModel* pModel, const FFLShader
     FFLiShaderCallback shaderCallback;
     shaderCallback.Set(pCallback);
 
-    shaderCallback.CallSetContextState();
-
     shaderCallback.CallSetMatrix(rio::Matrix44f::ident);
 
     FFLiRenderMaskTextures(&pModel->maskTextures, &pModel->pTextureTempObject->maskTextures, &shaderCallback, &m_pManager->GetCopySurface());
@@ -136,7 +176,35 @@ void FFLiCharModelCreator::ExecuteGPUStep(FFLiCharModel* pModel, const FFLShader
 
     AfterExecuteGPUStep(pModel);
 
+    FFLiDeleteTempObjectFacelineTexture(&pModel->pTextureTempObject->facelineTexture, &pModel->charInfo, pModel->charModelDesc.resourceType);
+    FFLiDeleteTempObjectMaskTextures(&pModel->pTextureTempObject->maskTextures, pModel->charModelDesc.expressionFlag, pModel->charModelDesc.resourceType);
+
+    delete pModel->pTextureTempObject;
     pModel->pTextureTempObject = NULL;
+}
+
+void FFLiCharModelCreator::Delete(FFLiCharModel* pModel)
+{
+#if RIO_IS_CAFE
+    GX2DrawDone();
+#elif RIO_IS_WIN
+    RIO_GL_CALL(glFinish());
+#endif
+
+    DeleteTextures(pModel);
+    DeleteShapes(pModel);
+    FFLiDeleteFacelineTexture(&pModel->facelineRenderTexture);
+
+    if (pModel->pTextureTempObject != NULL)
+    {
+        FFLiDeleteTempObjectFacelineTexture(&pModel->pTextureTempObject->facelineTexture, &pModel->charInfo, pModel->charModelDesc.resourceType);
+        FFLiDeleteTempObjectMaskTextures(&pModel->pTextureTempObject->maskTextures, pModel->charModelDesc.expressionFlag, pModel->charModelDesc.resourceType);
+
+        delete pModel->pTextureTempObject;
+        pModel->pTextureTempObject = NULL;
+    }
+
+    FFLiDeleteMaskTextures(&pModel->maskTextures);
 }
 
 namespace {
@@ -240,6 +308,92 @@ FFLResult InitShape(FFLiCharModel* pModel, FFLiShapePartsType partsType, u32 ind
     return FFL_RESULT_OK;
 }
 
+void DeleteShape(FFLiCharModel* pModel, FFLiShapePartsType partsType)
+{
+    FFLiShapeType type = ConvertShapePartsTypeToShapeType(partsType);
+    FFLDrawParam* pDrawParam = &(pModel->drawParam[type]);
+
+    FFLiDeleteShape(pDrawParam);
+}
+
+void DeleteShape_Faceline(FFLiCharModel* pModel)
+{
+    DeleteShape(pModel, FFLI_SHAPE_PARTS_TYPE_FACELINE);
+}
+
+struct ModelTypeShapePartsInfo
+{
+    bool                enable;
+    FFLiShapePartsType  partsType;
+};
+
+const ModelTypeShapePartsInfo* GetModelTypeShapePartsInfo(u32 modelFlag)
+{
+    static ModelTypeShapePartsInfo modelTypeShapePartsInfo[2 * 3] = {
+        // FFL_MODEL_TYPE_0
+        { false, FFLI_SHAPE_PARTS_TYPE_HAIR_1 },
+        { false, FFLI_SHAPE_PARTS_TYPE_CAP_1 },
+        { false, FFLI_SHAPE_PARTS_TYPE_FOREHEAD_1 },
+        // FFL_MODEL_TYPE_1
+        { false, FFLI_SHAPE_PARTS_TYPE_HAIR_2 },
+        { false, FFLI_SHAPE_PARTS_TYPE_CAP_2 },
+        { false, FFLI_SHAPE_PARTS_TYPE_FOREHEAD_2 }
+    };
+
+    bool modelType0Enable = modelFlag & 1 << FFL_MODEL_TYPE_0;
+    bool modelType1Enable = modelFlag & 1 << FFL_MODEL_TYPE_1;
+
+    modelTypeShapePartsInfo[0 * 3 + 0].enable = modelType0Enable;
+    modelTypeShapePartsInfo[0 * 3 + 1].enable = modelType0Enable;
+    modelTypeShapePartsInfo[0 * 3 + 2].enable = modelType0Enable;
+
+    modelTypeShapePartsInfo[1 * 3 + 0].enable = modelType1Enable;
+    modelTypeShapePartsInfo[1 * 3 + 1].enable = modelType1Enable;
+    modelTypeShapePartsInfo[1 * 3 + 2].enable = modelType1Enable;
+
+    return modelTypeShapePartsInfo;
+}
+
+void DeleteShape_Hair(FFLiCharModel* pModel, u32 count = 2 * 3)
+{
+    u32 modelFlag = pModel->charModelDesc.modelFlag & 7;
+
+    if (modelFlag & (1 << FFL_MODEL_TYPE_0 |
+                     1 << FFL_MODEL_TYPE_1))
+    {
+        const ModelTypeShapePartsInfo* modelTypeShapePartsInfo = GetModelTypeShapePartsInfo(modelFlag);
+        for (u32 j = count; j > 0; j--)
+            DeleteShape(pModel, modelTypeShapePartsInfo[j - 1].partsType);
+    }
+}
+
+void DeleteShape_Beard(FFLiCharModel* pModel)
+{
+    if (pModel->charInfo.parts.beardType < 4)
+        DeleteShape(pModel, FFLI_SHAPE_PARTS_TYPE_BEARD);
+}
+
+void DeleteShape_Nose(FFLiCharModel* pModel)
+{
+    DeleteShape(pModel, FFLI_SHAPE_PARTS_TYPE_NOSE);
+}
+
+void DeleteShape_Noseline(FFLiCharModel* pModel)
+{
+    DeleteShape(pModel, FFLI_SHAPE_PARTS_TYPE_NOSELINE);
+}
+
+void DeleteShape_Mask(FFLiCharModel* pModel)
+{
+    DeleteShape(pModel, FFLI_SHAPE_PARTS_TYPE_MASK);
+}
+
+void DeleteShape_Glass(FFLiCharModel* pModel)
+{
+    if (pModel->charInfo.parts.glassType > 0)
+        DeleteShape(pModel, FFLI_SHAPE_PARTS_TYPE_GLASS);
+}
+
 FFLResult InitShapes(FFLiCharModel* pModel, FFLiResourceLoader * pResLoader, const FFLiCoordinate* pCoordinate)
 {
     u32 modelFlag = pModel->charModelDesc.modelFlag & 7;
@@ -251,33 +405,9 @@ FFLResult InitShapes(FFLiCharModel* pModel, FFLiResourceLoader * pResLoader, con
     if (modelFlag & (1 << FFL_MODEL_TYPE_0 |
                      1 << FFL_MODEL_TYPE_1))
     {
-        bool modelType0Enable = modelFlag & 1 << FFL_MODEL_TYPE_0;
-        bool modelType1Enable = modelFlag & 1 << FFL_MODEL_TYPE_1;
+        const ModelTypeShapePartsInfo* modelTypeShapePartsInfo = GetModelTypeShapePartsInfo(modelFlag);
 
         bool flipHair = pModel->charInfo.parts.hairDir > 0;
-
-        struct
-        {
-            bool                enable;
-            FFLiShapePartsType  partsType;
-        } modelTypeShapePartsInfo[2 * 3] = {
-            // FFL_MODEL_TYPE_0
-            { false, FFLI_SHAPE_PARTS_TYPE_HAIR_1 },
-            { false, FFLI_SHAPE_PARTS_TYPE_CAP_1 },
-            { false, FFLI_SHAPE_PARTS_TYPE_FOREHEAD_1 },
-            // FFL_MODEL_TYPE_1
-            { false, FFLI_SHAPE_PARTS_TYPE_HAIR_2 },
-            { false, FFLI_SHAPE_PARTS_TYPE_CAP_2 },
-            { false, FFLI_SHAPE_PARTS_TYPE_FOREHEAD_2 }
-        };
-
-        modelTypeShapePartsInfo[0 * 3 + 0].enable = modelType0Enable;
-        modelTypeShapePartsInfo[0 * 3 + 1].enable = modelType0Enable;
-        modelTypeShapePartsInfo[0 * 3 + 2].enable = modelType0Enable;
-
-        modelTypeShapePartsInfo[1 * 3 + 0].enable = modelType1Enable;
-        modelTypeShapePartsInfo[1 * 3 + 1].enable = modelType1Enable;
-        modelTypeShapePartsInfo[1 * 3 + 2].enable = modelType1Enable;
 
         for (u32 i = 0; i < 2 * 3; i++)
         {
@@ -285,7 +415,11 @@ FFLResult InitShapes(FFLiCharModel* pModel, FFLiResourceLoader * pResLoader, con
             {
                 result = InitShape(pModel, modelTypeShapePartsInfo[i].partsType, pModel->charInfo.parts.hairType, 1.0f, 1.0f, &pModel->hairPos, flipHair, pResLoader, pCoordinate);
                 if (result != FFL_RESULT_OK)
+                {
+                    DeleteShape_Hair(pModel, i);
+                    DeleteShape_Faceline(pModel);
                     return result;
+                }
             }
         }
 
@@ -295,7 +429,11 @@ FFLResult InitShapes(FFLiCharModel* pModel, FFLiResourceLoader * pResLoader, con
     {
         result = InitShape(pModel, FFLI_SHAPE_PARTS_TYPE_BEARD, pModel->charInfo.parts.beardType, 1.0f, 1.0f, &pModel->beardPos, false, pResLoader, pCoordinate);
         if (result != FFL_RESULT_OK)
+        {
+            DeleteShape_Hair(pModel);
+            DeleteShape_Faceline(pModel);
             return result;
+        }
     }
 
     {
@@ -308,16 +446,34 @@ FFLResult InitShapes(FFLiCharModel* pModel, FFLiResourceLoader * pResLoader, con
 
         result = InitShape(pModel, FFLI_SHAPE_PARTS_TYPE_NOSE, pModel->charInfo.parts.noseType, noseScale, noseScale, &nosePos, false, pResLoader, pCoordinate);
         if (result != FFL_RESULT_OK)
+        {
+            DeleteShape_Beard(pModel);
+            DeleteShape_Hair(pModel);
+            DeleteShape_Faceline(pModel);
             return result;
+        }
 
         result = InitShape(pModel, FFLI_SHAPE_PARTS_TYPE_NOSELINE, pModel->charInfo.parts.noseType, noseScale, noseScale, &nosePos, false, pResLoader, pCoordinate);
         if (result != FFL_RESULT_OK)
+        {
+            DeleteShape_Nose(pModel);
+            DeleteShape_Beard(pModel);
+            DeleteShape_Hair(pModel);
+            DeleteShape_Faceline(pModel);
             return result;
+        }
     }
 
     result = InitShape(pModel, FFLI_SHAPE_PARTS_TYPE_MASK, pModel->charInfo.parts.faceType, 1.0f, 1.0f, NULL, false, pResLoader, pCoordinate);
     if (result != FFL_RESULT_OK)
+    {
+        DeleteShape_Noseline(pModel);
+        DeleteShape_Nose(pModel);
+        DeleteShape_Beard(pModel);
+        DeleteShape_Hair(pModel);
+        DeleteShape_Faceline(pModel);
         return result;
+    }
 
     if (pModel->charInfo.parts.glassType > 0)
     {
@@ -330,39 +486,94 @@ FFLResult InitShapes(FFLiCharModel* pModel, FFLiResourceLoader * pResLoader, con
 
         result = InitShape(pModel, FFLI_SHAPE_PARTS_TYPE_GLASS, 0, glassScale, glassScale, &glassPos, false, pResLoader, pCoordinate);
         if (result != FFL_RESULT_OK)
+        {
+            DeleteShape_Mask(pModel);
+            DeleteShape_Noseline(pModel);
+            DeleteShape_Nose(pModel);
+            DeleteShape_Beard(pModel);
+            DeleteShape_Hair(pModel);
+            DeleteShape_Faceline(pModel);
             return result;
+        }
     }
 
     return FFL_RESULT_OK;
 }
 
-FFLResult InitTextures(FFLiCharModel* pModel, FFLiResourceLoader* pResLoader)
+void DeleteShapes(FFLiCharModel* pModel)
 {
-    FFLResult result = FFL_RESULT_OK;
+    DeleteShape_Glass(pModel);
+    DeleteShape_Mask(pModel);
+    DeleteShape_Noseline(pModel);
+    DeleteShape_Nose(pModel);
+    DeleteShape_Beard(pModel);
+    DeleteShape_Hair(pModel);
+    DeleteShape_Faceline(pModel);
+}
 
+void DeleteTexture_Cap(FFLiCharModel* pModel, bool isExpand)
+{
     if (FFLiCanDrawShape(&(pModel->drawParam[FFLI_SHAPE_TYPE_OPA_CAP_1])) ||
         FFLiCanDrawShape(&(pModel->drawParam[FFLI_SHAPE_TYPE_OPA_CAP_2])))
     {
-        result = FFLiLoadTextureWithAllocate(&pModel->pCapTexture, FFLI_TEXTURE_PARTS_TYPE_CAP, pModel->charInfo.parts.hairType, pResLoader);
+        FFLiDeleteTexture(&pModel->pCapTexture, isExpand);
+    }
+}
+
+void DeleteTexture_Noseline(FFLiCharModel* pModel, bool isExpand)
+{
+    if (FFLiCanDrawShape(&(pModel->drawParam[FFLI_SHAPE_TYPE_XLU_NOSELINE])))
+        FFLiDeleteTexture(&pModel->pNoselineTexture, isExpand);
+}
+
+void DeleteTexture_Glass(FFLiCharModel* pModel, bool isExpand)
+{
+    if (pModel->charInfo.parts.glassType > 0)
+        FFLiDeleteTexture(&pModel->pGlassTexture, isExpand);
+}
+
+FFLResult InitTextures(FFLiCharModel* pModel, FFLiResourceLoader* pResLoader)
+{
+    if (FFLiCanDrawShape(&(pModel->drawParam[FFLI_SHAPE_TYPE_OPA_CAP_1])) ||
+        FFLiCanDrawShape(&(pModel->drawParam[FFLI_SHAPE_TYPE_OPA_CAP_2])))
+    {
+        FFLResult result = FFLiLoadTextureWithAllocate(&pModel->pCapTexture, FFLI_TEXTURE_PARTS_TYPE_CAP, pModel->charInfo.parts.hairType, pResLoader);
         if (result != FFL_RESULT_OK)
             return result;
     }
 
     if (FFLiCanDrawShape(&(pModel->drawParam[FFLI_SHAPE_TYPE_XLU_NOSELINE])))
     {
-        result = FFLiLoadTextureWithAllocate(&pModel->pNoselineTexture, FFLI_TEXTURE_PARTS_TYPE_NOSELINE, pModel->charInfo.parts.noseType, pResLoader);
+        FFLResult result = FFLiLoadTextureWithAllocate(&pModel->pNoselineTexture, FFLI_TEXTURE_PARTS_TYPE_NOSELINE, pModel->charInfo.parts.noseType, pResLoader);
         if (result != FFL_RESULT_OK)
+        {
+            DeleteTexture_Cap(pModel, pResLoader->IsExpand());
             return result;
+        }
     }
 
     if (pModel->charInfo.parts.glassType > 0)
     {
-        result = FFLiLoadTextureWithAllocate(&pModel->pGlassTexture, FFLI_TEXTURE_PARTS_TYPE_GLASS, pModel->charInfo.parts.glassType, pResLoader);
+        FFLResult result = FFLiLoadTextureWithAllocate(&pModel->pGlassTexture, FFLI_TEXTURE_PARTS_TYPE_GLASS, pModel->charInfo.parts.glassType, pResLoader);
         if (result != FFL_RESULT_OK)
+        {
+            DeleteTexture_Noseline(pModel, pResLoader->IsExpand());
+            DeleteTexture_Cap(pModel, pResLoader->IsExpand());
             return result;
+        }
     }
 
-    return result;
+    return FFL_RESULT_OK;
+}
+
+void DeleteTextures(FFLiCharModel* pModel)
+{
+    RIO_ASSERT(FFLiManager::IsConstruct());
+    bool isExpand = FFLiManager::GetInstance()->GetResourceManager().IsExpand(pModel->charModelDesc.resourceType);
+
+    DeleteTexture_Glass(pModel, isExpand);
+    DeleteTexture_Noseline(pModel, isExpand);
+    DeleteTexture_Cap(pModel, isExpand);
 }
 
 void AddVec3(FFLVec3* pDst, FFLVec3 vec)
@@ -429,7 +640,7 @@ void SetupDrawParam(FFLiCharModel* pModel)
     FFLCullMode hairCullMode = FFL_CULL_MODE_BACK;
 
     pModel->drawParam[FFLI_SHAPE_TYPE_OPA_FACELINE].cullMode = FFL_CULL_MODE_BACK;
-    FFLiInitModulateShapeFaceline(&pModel->drawParam[FFLI_SHAPE_TYPE_OPA_FACELINE].modulateParam, pModel->facelineRenderTexture.textureData);
+    FFLiInitModulateShapeFaceline(&pModel->drawParam[FFLI_SHAPE_TYPE_OPA_FACELINE].modulateParam, *pModel->facelineRenderTexture.pTextureData);
 
     pModel->drawParam[FFLI_SHAPE_TYPE_OPA_BEARD].cullMode = FFL_CULL_MODE_BACK;
     FFLiInitModulateShapeBeard(&pModel->drawParam[FFLI_SHAPE_TYPE_OPA_BEARD].modulateParam, pModel->charInfo.parts.beardColor);
@@ -468,7 +679,7 @@ void SetupDrawParam(FFLiCharModel* pModel)
     if (pMaskRenderTexture != NULL)
     {
         pModel->drawParam[FFLI_SHAPE_TYPE_XLU_MASK].cullMode = FFL_CULL_MODE_BACK;
-        FFLiInitModulateShapeMask(&pModel->drawParam[FFLI_SHAPE_TYPE_XLU_MASK].modulateParam, pMaskRenderTexture->textureData);
+        FFLiInitModulateShapeMask(&pModel->drawParam[FFLI_SHAPE_TYPE_XLU_MASK].modulateParam, *pMaskRenderTexture->pTextureData);
     }
 
     const agl::TextureData* pNoselineTexture = pModel->pNoselineTexture;
@@ -514,4 +725,18 @@ void FFLiCharModelCreator::AfterExecuteGPUStep(FFLiCharModel* pModel)
 {
     InvalidateShapes(pModel);
     InvalidateTextures(pModel);
+
+    rio::Window::instance()->makeContextCurrent();
+
+    u32 width = rio::Window::instance()->getWidth();
+    u32 height = rio::Window::instance()->getHeight();
+
+    rio::Graphics::setViewport(0, 0, width, height);
+    rio::Graphics::setScissor(0, 0, width, height);
+
+#if RIO_IS_CAFE
+    GX2DrawDone();
+#elif RIO_IS_WIN
+    RIO_GL_CALL(glFinish());
+#endif
 }

@@ -8,6 +8,8 @@ void FFLiBugEndianSwap(void* ptr, u32 size);
 u32 FFLiBugCanSwapSize(u32 size);
 
 void* FFLiBugVgtFixedIndexPtr(void* ptr);
+void* FFLiBugVgtFixedIndexOriginalPtr(void* ptr);
+
 u32 FFLiBugCanVgtFixedIndexSize(u32 size);
 
 #endif // FFLI_BUG_H_

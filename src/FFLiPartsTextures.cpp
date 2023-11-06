@@ -1,4 +1,6 @@
+#include <nn/ffl/FFLiManager.h>
 #include <nn/ffl/FFLiPartsTextures.h>
+#include <nn/ffl/FFLiResourceLoader.h>
 #include <nn/ffl/FFLiTexture.h>
 #include <nn/ffl/FFLiUtil.h>
 
@@ -32,6 +34,12 @@ static const FFLiEyeMouthTypeElement EYE_MOUTH_TYPE_ELEMENT[FFL_EXPRESSION_MAX] 
 
 void ExpressionToEyeUseFlag(bool* pUseFlag, u32 expressionFlag);
 void ExpressionToMouthUseFlag(bool* pUseFlag, u32 expressionFlag);
+
+void DeleteTextures_Eye(FFLiPartsTextures* pPartsTextures, u32 expressionFlag, bool isExpand);
+void DeleteTextures_Mouth(FFLiPartsTextures* pPartsTextures, u32 expressionFlag, bool isExpand);
+void DeleteTexture_Eyebrow(FFLiPartsTextures* pPartsTextures, bool isExpand);
+void DeleteTexture_Mustache(FFLiPartsTextures* pPartsTextures, bool isExpand);
+void DeleteTexture_Mole(FFLiPartsTextures* pPartsTextures, bool isExpand);
 
 void InvalidateTextures(agl::TextureData** ppTextures, u32 count);
 
@@ -91,7 +99,13 @@ FFLResult FFLiLoadPartsTextures(FFLiPartsTextures* pPartsTextures, const FFLiCha
             {
                 FFLResult result = FFLiLoadTextureWithAllocate(&(pPartsTextures->pTexturesEye[i]), FFLI_TEXTURE_PARTS_TYPE_EYE, FFLiCharInfoAndTypeToEyeIndex(pCharInfo, FFLiEyeTextureType(i)), pResLoader);
                 if (result != FFL_RESULT_OK)
+                {
+                    for (u32 j = i; j > 0; j--)
+                        if (useFlag[j - 1])
+                            FFLiDeleteTexture(&(pPartsTextures->pTexturesEye[j - 1]), pResLoader->IsExpand());
+
                     return result;
+                }
             }
         }
     }
@@ -105,24 +119,58 @@ FFLResult FFLiLoadPartsTextures(FFLiPartsTextures* pPartsTextures, const FFLiCha
             {
                 FFLResult result = FFLiLoadTextureWithAllocate(&(pPartsTextures->pTexturesMouth[i]), FFLI_TEXTURE_PARTS_TYPE_MOUTH, FFLiCharInfoAndTypeToMouthIndex(pCharInfo, FFLiMouthTextureType(i)), pResLoader);
                 if (result != FFL_RESULT_OK)
+                {
+                    for (u32 j = i; j > 0; j--)
+                        if (useFlag[j - 1])
+                            FFLiDeleteTexture(&(pPartsTextures->pTexturesMouth[j - 1]), pResLoader->IsExpand());
+
+                    DeleteTextures_Eye(pPartsTextures, expressionFlag, pResLoader->IsExpand());
                     return result;
+                }
             }
         }
     }
 
     FFLResult result = FFLiLoadTextureWithAllocate(&pPartsTextures->pTextureEyebrow, FFLI_TEXTURE_PARTS_TYPE_EYEBROW, pCharInfo->parts.eyebrowType, pResLoader);
     if (result != FFL_RESULT_OK)
+    {
+        DeleteTextures_Mouth(pPartsTextures, expressionFlag, pResLoader->IsExpand());
+        DeleteTextures_Eye(pPartsTextures, expressionFlag, pResLoader->IsExpand());
         return result;
+    }
 
     result = FFLiLoadTextureWithAllocate(&pPartsTextures->pTextureMustache, FFLI_TEXTURE_PARTS_TYPE_MUSTACHE, pCharInfo->parts.mustacheType, pResLoader);
     if (result != FFL_RESULT_OK)
+    {
+        DeleteTexture_Eyebrow(pPartsTextures, pResLoader->IsExpand());
+        DeleteTextures_Mouth(pPartsTextures, expressionFlag, pResLoader->IsExpand());
+        DeleteTextures_Eye(pPartsTextures, expressionFlag, pResLoader->IsExpand());
         return result;
+    }
 
     result = FFLiLoadTextureWithAllocate(&pPartsTextures->pTextureMole, FFLI_TEXTURE_PARTS_TYPE_MOLE, pCharInfo->parts.moleType, pResLoader);
     if (result != FFL_RESULT_OK)
+    {
+        DeleteTexture_Mustache(pPartsTextures, pResLoader->IsExpand());
+        DeleteTexture_Eyebrow(pPartsTextures, pResLoader->IsExpand());
+        DeleteTextures_Mouth(pPartsTextures, expressionFlag, pResLoader->IsExpand());
+        DeleteTextures_Eye(pPartsTextures, expressionFlag, pResLoader->IsExpand());
         return result;
+    }
 
     return FFL_RESULT_OK;
+}
+
+void FFLiDeletePartsTextures(FFLiPartsTextures* pPartsTextures, u32 expressionFlag, FFLResourceType resourceType)
+{
+    RIO_ASSERT(FFLiManager::IsConstruct());
+    bool isExpand = FFLiManager::GetInstance()->GetResourceManager().IsExpand(resourceType);
+
+    DeleteTexture_Mole(pPartsTextures, isExpand);
+    DeleteTexture_Mustache(pPartsTextures, isExpand);
+    DeleteTexture_Eyebrow(pPartsTextures, isExpand);
+    DeleteTextures_Mouth(pPartsTextures, expressionFlag, isExpand);
+    DeleteTextures_Eye(pPartsTextures, expressionFlag, isExpand);
 }
 
 void FFLiInvalidatePartsTextures(FFLiPartsTextures* pPartsTextures)
@@ -179,6 +227,41 @@ void ExpressionToMouthUseFlag(bool* pUseFlag, u32 expressionFlag)
         if (expressionFlag & 1 << i)
             pUseFlag[EYE_MOUTH_TYPE_ELEMENT[i].mouthTextureType] = true;
 
+}
+
+void DeleteTextures_Eye(FFLiPartsTextures* pPartsTextures, u32 expressionFlag, bool isExpand)
+{
+    bool useFlag[FFLI_EYE_TEXTURE_TYPE_MAX];
+    ExpressionToEyeUseFlag(useFlag, expressionFlag);
+
+    for (u32 j = FFLI_EYE_TEXTURE_TYPE_MAX; j > 0; j--)
+        if (useFlag[j - 1])
+            FFLiDeleteTexture(&(pPartsTextures->pTexturesEye[j - 1]), isExpand);
+}
+
+void DeleteTextures_Mouth(FFLiPartsTextures* pPartsTextures, u32 expressionFlag, bool isExpand)
+{
+    bool useFlag[FFLI_MOUTH_TEXTURE_TYPE_MAX];
+    ExpressionToMouthUseFlag(useFlag, expressionFlag);
+
+    for (u32 j = FFLI_MOUTH_TEXTURE_TYPE_MAX; j > 0; j--)
+        if (useFlag[j - 1])
+            FFLiDeleteTexture(&(pPartsTextures->pTexturesMouth[j - 1]), isExpand);
+}
+
+void DeleteTexture_Eyebrow(FFLiPartsTextures* pPartsTextures, bool isExpand)
+{
+    FFLiDeleteTexture(&pPartsTextures->pTextureEyebrow, isExpand);
+}
+
+void DeleteTexture_Mustache(FFLiPartsTextures* pPartsTextures, bool isExpand)
+{
+    FFLiDeleteTexture(&pPartsTextures->pTextureMustache, isExpand);
+}
+
+void DeleteTexture_Mole(FFLiPartsTextures* pPartsTextures, bool isExpand)
+{
+    FFLiDeleteTexture(&pPartsTextures->pTextureMole, isExpand);
 }
 
 void InvalidateTextures(agl::TextureData** ppTextures, u32 count)

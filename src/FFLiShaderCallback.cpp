@@ -36,14 +36,3 @@ void FFLiShaderCallback::CallDraw(const FFLDrawParam& drawParam) const
     if (IsExist())
         (*m_pShaderCallback->pDrawFunc)(m_pShaderCallback->pObj, drawParam);
 }
-
-void FFLiShaderCallback::CallSetContextState() const
-{
-#if RIO_IS_CAFE
-    if (IsExist())
-    {
-        GX2SetContextState(m_pShaderCallback->pContextState);
-        GX2Invalidate(GX2_INVALIDATE_MODE_SHADER, NULL, 0xFFFFFFFF);
-    }
-#endif // RIO_IS_CAFE
-}

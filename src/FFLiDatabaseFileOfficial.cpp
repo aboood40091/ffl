@@ -46,7 +46,8 @@ void FFLiDatabaseFileOfficial::Init()
 
 void FFLiDatabaseFileOfficial::UpdateCrc()
 {
-    FFLiPutCRC16(0, this, sizeof(FFLiDatabaseFileOfficial));
+    FFLiPutCRC16(this, sizeof(FFLiDatabaseFileOfficial));
+    RIO_ASSERT(IsValidCrc());
 }
 
 bool FFLiDatabaseFileOfficial::IsValidCrc() const
@@ -181,10 +182,13 @@ bool FFLiDatabaseFileOfficial::AdjustRegularList(AdjustRegularBuffer* pBuffer)
     return ret;
 }
 
-void FFLiDatabaseFileOfficial::SwapEndian()
+void FFLiDatabaseFileOfficial::SwapEndian(bool save)
 {
     // This function is deleted in NSMBU.
     // Therefore, its implementation is only theoretical.
+
+    if (!save)
+        RIO_ASSERT(IsValidCrc());
 
     m_Magic = FFLiSwapEndianImpl<u32>(m_Magic);
     _4 = FFLiSwapEndianImpl<u32>(_4);
@@ -194,8 +198,6 @@ void FFLiDatabaseFileOfficial::SwapEndian()
 
     // Dunno what to do with this
     // _4381c
-
-    m_Crc = FFLiSwapEndianImpl<u16>(m_Crc);
 
     UpdateCrc();
 }

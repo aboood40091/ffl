@@ -18,6 +18,7 @@ typedef struct FFLAdditionalInfo
     {
         struct
         {
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
             u32 gender          : 1;    // (MSB)
             u32 birthMonth      : 4;
             u32 birthDay        : 5;
@@ -27,6 +28,17 @@ typedef struct FFLAdditionalInfo
             u32 ngWord          : 1;
             u32 fontRegion      : 2;
             u32 hairDir         : 1;    // (LSB)
+#else
+            u32 hairDir         : 1;    // (LSB)
+            u32 fontRegion      : 2;
+            u32 ngWord          : 1;
+            u32 build           : 7;
+            u32 height          : 7;
+            u32 favoriteColor   : 4;
+            u32 birthDay        : 5;
+            u32 birthMonth      : 4;
+            u32 gender          : 1;    // (MSB)
+#endif // __BYTE_ORDER__
         };
 
         u32 flags;

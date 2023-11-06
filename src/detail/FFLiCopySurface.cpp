@@ -3,6 +3,8 @@
 #include <nn/ffl/detail/FFLiCopySurface.h>
 
 #if RIO_IS_CAFE
+#include <gfx/rio_Window.h>
+
 #include <gx2/registers.h>
 #endif // RIO_IS_CAFE
 
@@ -25,8 +27,8 @@ void FFLiCopySurface::SetupGPU()
 void FFLiCopySurface::Begin()
 {
 #if RIO_IS_CAFE
-    GX2SetContextState(nullptr);
-    GX2Invalidate(GX2_INVALIDATE_SHADER, NULL, 0xFFFFFFFF);
+    GX2SetContextState(NULL);
+    GX2Invalidate(GX2_INVALIDATE_MODE_SHADER, NULL, 0xFFFFFFFF);
 
     GX2SetDefaultState();
     GX2SetDepthOnlyControl(GX2_DISABLE, GX2_DISABLE, GX2_COMPARE_NEVER);
@@ -44,6 +46,14 @@ void FFLiCopySurface::Begin()
 
     m_Shader.Bind();
     m_Drawer.SetAttributeBuffer();
+}
+
+void FFLiCopySurface::End()
+{
+#if RIO_IS_CAFE
+    GX2SetContextState(rio::Window::instance()->getNativeWindow().getContextState());
+    GX2Invalidate(GX2_INVALIDATE_MODE_SHADER, NULL, 0xFFFFFFFF);
+#endif // RIO_IS_CAFE
 }
 
 void FFLiCopySurface::Execute(agl::TextureData* pTextureData, u32 dstMipLevel, u32 srcMipLevel)

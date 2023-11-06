@@ -58,7 +58,7 @@ public:
 
     FFLResult UpdateMiddleDB(FFLiMiddleDB* pMiddleDB) const;
 
-    void SwapEndian();  // Deleted in NSMBU
+    void SwapEndian(bool save);
 
 private:
     u32                 m_Magic;

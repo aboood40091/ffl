@@ -36,10 +36,17 @@ NN_STATIC_ASSERT(sizeof(FFLVec4) == 0x10);
 
 typedef struct FFLiSnorm10_10_10_2
 {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+    u32 x   : 10;   // (LSB)
+    u32 y   : 10;
+    u32 z   : 10;
+    u32 w   :  2;   // (MSB)
+#else
     u32 w   :  2;   // (MSB)
     u32 z   : 10;
     u32 y   : 10;
     u32 x   : 10;   // (LSB)
+#endif // __BYTE_ORDER__
 }
 FFLiSnorm10_10_10_2;
 NN_STATIC_ASSERT(sizeof(FFLiSnorm10_10_10_2) == 4);

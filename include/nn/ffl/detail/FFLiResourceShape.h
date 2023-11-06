@@ -26,7 +26,7 @@ enum FFLiResourceShapeElementType
 
 const void* FFLiGetResourceShapeElement(u32* pSize, const void* pShapeData, FFLiShapePartsType partsType, FFLiResourceShapeElementType elementType);
 
-void FFLiSwapEndianResourceShapeElement(void* pShapeData, u32, FFLiShapePartsType partsType);   // Deleted in NSMBU
+void FFLiSwapEndianResourceShapeElement(void* pShapeData, FFLiShapePartsType partsType, bool save);
 
 // --------------------------------------------------------------------------
 

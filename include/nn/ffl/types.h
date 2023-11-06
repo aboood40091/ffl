@@ -1,6 +1,15 @@
 #ifndef FFL_TYPES_H_
 #define FFL_TYPES_H_
 
+// Hard-coded for now
+#if (!defined(__BYTE_ORDER__) || !defined(__ORDER_LITTLE_ENDIAN__) || !defined(__ORDER_BIG_ENDIAN__))
+    #error "Need __BYTE_ORDER__, __ORDER_LITTLE_ENDIAN__ and __ORDER_BIG_ENDIAN__ to be defined"
+#endif
+
+#if (__BYTE_ORDER__ != __ORDER_LITTLE_ENDIAN__ && __BYTE_ORDER__ != __ORDER_BIG_ENDIAN__)
+    #error "Host must be either big- or little-endian"
+#endif
+
 #include <types.h>
 
 #ifdef __cplusplus

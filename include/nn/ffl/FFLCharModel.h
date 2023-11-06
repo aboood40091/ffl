@@ -9,11 +9,7 @@
 extern "C" {
 #endif
 
-#if RIO_IS_CAFE
-#define FFL_CHAR_MODEL_SIZE (0xA68)
-#else
-#define FFL_CHAR_MODEL_SIZE (0x948)
-#endif // RIO_IS_CAFE
+#define FFL_CHAR_MODEL_SIZE (0x748)
 
 typedef struct FFLCharModel
 {

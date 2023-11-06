@@ -16,6 +16,8 @@ public:
     void SetupGPU();
 
     void Begin();
+    void End();
+
     void Execute(agl::TextureData* pTextureData, u32 dstMipLevel, u32 srcMipLevel);
 
     bool CanInitCharModel(bool isSetupGPU) const;

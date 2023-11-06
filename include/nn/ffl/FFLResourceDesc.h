@@ -9,8 +9,8 @@ extern "C" {
 
 typedef struct FFLResourceDesc
 {
-    const void* pData[FFL_RESOURCE_TYPE_MAX];
-    u32         size[FFL_RESOURCE_TYPE_MAX];
+    void*   pData[FFL_RESOURCE_TYPE_MAX];
+    u32     size[FFL_RESOURCE_TYPE_MAX];
 }
 FFLResourceDesc;
 NN_STATIC_ASSERT(sizeof(FFLResourceDesc) == 0x10);

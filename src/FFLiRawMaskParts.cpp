@@ -20,10 +20,15 @@ void CalcMVMatrix(rio::Matrix34f* pMVMatrix, const FFLiRawMaskPartsDesc* pDesc);
 void InitPrimitive(FFLPrimitiveParam* pPrimitive);
 void InitAttributes(FFLAttributeBufferParam* pAttributes, FFLiOriginPosition originPosition, const rio::BaseMtx44f* pMVPMatrix);
 
+void DeletePrimitive(FFLPrimitiveParam* pPrimitive);
+void DeleteAttributes(FFLAttributeBufferParam* pAttributes);
+
 void InvalidatePrimitive(FFLPrimitiveParam* pPrimitive);
 void InvalidateAttributes(FFLAttributeBufferParam* pAttributes);
 
 void InitAttributesForFill(FFLAttributeBufferParam* pAttributes);
+
+void DeleteAttributesForFill(FFLAttributeBufferParam* pAttributes);
 
 }
 
@@ -41,6 +46,12 @@ void FFLiInitDrawParamRawMaskParts(FFLiRawMaskPartsDrawParam* pDrawParam, const 
     pDrawParam->cullMode = FFL_CULL_MODE_MAX;
 }
 
+void FFLiDeleteDrawParamRawMaskParts(FFLiRawMaskPartsDrawParam* pDrawParam)
+{
+    DeletePrimitive(&pDrawParam->primitiveParam);
+    DeleteAttributes(&pDrawParam->attributeBufferParam);
+}
+
 void FFLiInvalidateDrawParamRawMaskParts(FFLiRawMaskPartsDrawParam* pDrawParam)
 {
     InvalidatePrimitive(&pDrawParam->primitiveParam);
@@ -52,6 +63,12 @@ void FFLiInitDrawParamRawMaskPartsFill(FFLiRawMaskPartsDrawParam* pDrawParam)
     InitPrimitive(&pDrawParam->primitiveParam);
     InitAttributesForFill(&pDrawParam->attributeBufferParam);
     pDrawParam->cullMode = FFL_CULL_MODE_MAX;
+}
+
+void FFLiDeleteDrawParamRawMaskPartsFill(FFLiRawMaskPartsDrawParam* pDrawParam)
+{
+    DeletePrimitive(&pDrawParam->primitiveParam);
+    DeleteAttributesForFill(&pDrawParam->attributeBufferParam);
 }
 
 void FFLiDrawRawMaskParts(const FFLiRawMaskPartsDrawParam* pDrawParam, const FFLiShaderCallback* pCallback)
@@ -73,6 +90,11 @@ void CalcMVMatrix(rio::Matrix34f* pMVMatrix, const FFLiRawMaskPartsDesc* pDesc)
 void* Allocate(u32 size, u32 alignment)
 {
     return rio::MemUtil::alloc(size, alignment);
+}
+
+void Free(void* ptr)
+{
+    rio::MemUtil::free(ptr);
 }
 
 void EndianSwap(void* ptr, u32 size)
@@ -178,6 +200,17 @@ void InitAttributes(FFLAttributeBufferParam* pAttributes, FFLiOriginPosition ori
     EndianSwap(pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_TEXCOORD].ptr, TEXCOORD_BUFFER_SIZE);
 }
 
+void DeletePrimitive(FFLPrimitiveParam* pPrimitive)
+{
+    Free(FFLiBugVgtFixedIndexOriginalPtr(pPrimitive->pIndexBuffer));
+}
+
+void DeleteAttributes(FFLAttributeBufferParam* pAttributes)
+{
+    Free(pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_POSITION].ptr);
+    Free(pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_TEXCOORD].ptr);
+}
+
 void InvalidatePrimitive(FFLPrimitiveParam* pPrimitive)
 {
 #if RIO_IS_CAFE
@@ -231,6 +264,11 @@ void InitAttributesForFill(FFLAttributeBufferParam* pAttributes)
 
     std::memcpy(pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_POSITION].ptr, POSITION_BUFFER, POSITION_BUFFER_SIZE);
     EndianSwap(pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_POSITION].ptr, POSITION_BUFFER_SIZE);
+}
+
+void DeleteAttributesForFill(FFLAttributeBufferParam* pAttributes)
+{
+    Free(pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_POSITION].ptr);
 }
 
 }

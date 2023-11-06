@@ -25,7 +25,7 @@ public:
     FFLResult LoadResourceHeader();
     FFLResult LoadResourceHeaderImpl();
 
-    FFLResult AttachCache(const void* pData, u32 size, FFLResourceType resourceType);
+    FFLResult AttachCache(void* pData, u32 size, FFLResourceType resourceType);
     bool IsCached() const;
 
     FFLiResourceHeader* Header(FFLResourceType resourceType) const;

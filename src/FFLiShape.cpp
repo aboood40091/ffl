@@ -20,9 +20,15 @@ union F32BitCast
     u32 u;
     struct
     {
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
         u32 sign        : 1;    // (MSB)
         u32 exponent    : 8;
         u32 mantissa    : 23;   // (LSB)
+#else
+        u32 mantissa    : 23;   // (LSB)
+        u32 exponent    : 8;
+        u32 sign        : 1;    // (MSB)
+#endif // __BYTE_ORDER__
     };
 };
 NN_STATIC_ASSERT(sizeof(F32BitCast) == 4);
@@ -63,7 +69,10 @@ FFLResult FFLiLoadShape(FFLDrawParam* pDrawParam, FFLBoundingBox* pBoundingBox, 
 
     FFLResult result = pResLoader->LoadShape(pData, &size, partsType, index);
     if (result != FFL_RESULT_OK)
+    {
+        rio::MemUtil::free(pData);
         return result;
+    }
 
     if (size == 0)
     {
@@ -83,12 +92,36 @@ FFLResult FFLiLoadShape(FFLDrawParam* pDrawParam, FFLBoundingBox* pBoundingBox, 
         {
             FFLiResourceShapeElementType elementType = GetElementType(FFLAttributeBufferType(i));
             FFLAttributeBuffer& attribute = pDrawParam->attributeBufferParam.attributeBuffers[i];
-            attribute.ptr = const_cast<void*>(FFLiGetResourceShapeElement(&attribute.size, pData, partsType, elementType));
+
+            void* ptr = const_cast<void*>(FFLiGetResourceShapeElement(&attribute.size, pData, partsType, elementType));
+            if (ptr == nullptr)
+                attribute.ptr = nullptr;
+
+            else
+            {
+                attribute.ptr = rio::MemUtil::alloc(attribute.size, rio::Drawer::cVtxAlignment);
+                std::memcpy(attribute.ptr, ptr, attribute.size);
+            }
+
             attribute.stride = GetStride(FFLAttributeBufferType(i), attribute.size);
         }
 
-        pDrawParam->primitiveParam.pIndexBuffer = const_cast<void*>(FFLiGetResourceShapeElement(&pDrawParam->primitiveParam.indexCount, pData, partsType, FFLI_RESOURCE_SHAPE_ELEMENT_TYPE_INDEX));
-        pDrawParam->primitiveParam.primitiveType = rio::Drawer::TRIANGLES;
+        {
+            FFLPrimitiveParam& primitive = pDrawParam->primitiveParam;
+
+            void* ptr = const_cast<void*>(FFLiGetResourceShapeElement(&primitive.indexCount, pData, partsType, FFLI_RESOURCE_SHAPE_ELEMENT_TYPE_INDEX));
+            if (ptr == nullptr)
+                primitive.pIndexBuffer = nullptr;
+
+            else
+            {
+                u32 indexSize = primitive.indexCount * sizeof(u16);
+                primitive.pIndexBuffer = rio::MemUtil::alloc(indexSize, rio::Drawer::cIdxAlignment);
+                std::memcpy(primitive.pIndexBuffer, ptr, indexSize);
+            }
+
+            primitive.primitiveType = rio::Drawer::TRIANGLES;
+        }
 
         if (partsType == FFLI_SHAPE_PARTS_TYPE_HAIR_1)
         {
@@ -115,7 +148,30 @@ FFLResult FFLiLoadShape(FFLDrawParam* pDrawParam, FFLBoundingBox* pBoundingBox, 
         std::memcpy(pBoundingBox, FFLiGetResourceShapeElement(&size, pData, partsType, FFLI_RESOURCE_SHAPE_ELEMENT_TYPE_BOUNDING_BOX), sizeof(FFLBoundingBox));
     }
 
+    rio::MemUtil::free(pData);
     return FFL_RESULT_OK;
+}
+
+void FFLiDeleteShape(FFLDrawParam* pDrawParam)
+{
+    for (u32 i = 0; i < FFL_ATTRIBUTE_BUFFER_TYPE_MAX; i++)
+    {
+        FFLAttributeBuffer& attribute = pDrawParam->attributeBufferParam.attributeBuffers[i];
+        if (attribute.ptr != nullptr)
+        {
+            rio::MemUtil::free(attribute.ptr);
+            attribute.ptr = nullptr;
+        }
+    }
+
+    {
+        FFLPrimitiveParam& primitive = pDrawParam->primitiveParam;
+        if (primitive.pIndexBuffer != nullptr)
+        {
+            rio::MemUtil::free(primitive.pIndexBuffer);
+            primitive.pIndexBuffer = nullptr;
+        }
+    }
 }
 
 void FFLiAdjustShape(FFLDrawParam* pDrawParam, FFLBoundingBox* pBoundingBox, f32 scaleX, f32 scaleY, const FFLVec3* pTranslate, bool flipX, const FFLiCoordinate* pCoordinate, FFLiShapePartsType partsType, bool limitNoseScaleZ)

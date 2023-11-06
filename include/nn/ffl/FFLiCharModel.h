@@ -36,11 +36,7 @@ struct FFLiCharModel
     FFLModelType            modelType;
     FFLBoundingBox          boundingBox[3];
 };
-#if RIO_IS_CAFE
-NN_STATIC_ASSERT(sizeof(FFLiCharModel) == 0xA68);
-#else
-NN_STATIC_ASSERT(sizeof(FFLiCharModel) == 0x948);
-#endif // RIO_IS_CAFE
+NN_STATIC_ASSERT(sizeof(FFLiCharModel) == 0x748);
 
 struct FFLCharModelSource;
 struct FFLShaderCallback;

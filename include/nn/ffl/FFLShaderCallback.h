@@ -5,10 +5,6 @@
 
 #include <math/rio_MathTypes.h>
 
-#if RIO_IS_CAFE
-#include <gx2/context.h>
-#endif // RIO_IS_CAFE
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -18,11 +14,7 @@ typedef struct FFLDrawParam FFLDrawParam;
 typedef struct FFLShaderCallback
 {
     void*               pObj;
-#if RIO_IS_CAFE
-    GX2ContextState*    pContextState;
-#else
-    void*               _4;
-#endif // RIO_IS_CAFE
+    void*               _4;     // Deleted
 
     void (*pDrawFunc)(void* pObj, const FFLDrawParam& drawParam);
     void (*pSetMatrixFunc)(void* pObj, const rio::BaseMtx44f& matrix);

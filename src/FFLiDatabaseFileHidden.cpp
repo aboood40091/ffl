@@ -198,7 +198,8 @@ void FFLiDatabaseFileHidden::Init()
 
 void FFLiDatabaseFileHidden::UpdateCrc()
 {
-    FFLiPutCRC16(0, this, sizeof(FFLiDatabaseFileHidden));
+    FFLiPutCRC16(this, sizeof(FFLiDatabaseFileHidden));
+    RIO_ASSERT(IsValidCrc());
 }
 
 bool FFLiDatabaseFileHidden::IsValidCrc() const
@@ -239,10 +240,13 @@ FFLResult FFLiDatabaseFileHidden::UpdateMiddleDB(FFLiMiddleDB* pMiddleDB) const
     return result;
 }
 
-void FFLiDatabaseFileHidden::SwapEndian()
+void FFLiDatabaseFileHidden::SwapEndian(bool save)
 {
     // This function is deleted in NSMBU.
     // Therefore, its implementation is only theoretical.
+
+    if (!save)
+        RIO_ASSERT(IsValidCrc());
 
     m_Magic = FFLiSwapEndianImpl<u32>(m_Magic);
     m_StartIndex = FFLiSwapEndianImpl<u16>(m_StartIndex);
@@ -256,8 +260,6 @@ void FFLiDatabaseFileHidden::SwapEndian()
 
     // Dunno what to do with this
     // _abe8
-
-    m_Crc = FFLiSwapEndianImpl<u16>(m_Crc);
 
     UpdateCrc();
 }

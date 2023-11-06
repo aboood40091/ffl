@@ -462,12 +462,22 @@ FFLiFsResult LoadDatabaseHidden(FFLiDatabaseFileHidden* pHidden, const char* pPa
     if (!CheckFFLiFsResult(result))
         return result;
 
+#if __BYTE_ORDER__ != __ORDER_BIG_ENDIAN__
+    pHidden->SwapEndian(false);
+#endif // __BYTE_ORDER__
+
     return FFLiFsResult { FFLI_FS_FILE_RESULT_OK, rio::RAW_ERROR_OK };
 }
 
 FFLiFsResult SaveDatabaseHidden(const FFLiDatabaseFileHidden& hidden, FFLiFileWriteBuffer* pWriteBuffer, const char* pPath)
 {
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
     return WriteFile(&hidden, sizeof(FFLiDatabaseFileHidden), pWriteBuffer, pPath);
+#else
+    FFLiDatabaseFileHidden hiddenBE = hidden;
+    hiddenBE.SwapEndian(true);
+    return WriteFile(&hiddenBE, sizeof(FFLiDatabaseFileHidden), pWriteBuffer, pPath);
+#endif // __BYTE_ORDER__
 }
 
 FFLiFsResult LoadDatabaseOfficial(FFLiDatabaseFileOfficial* pOfficial, const char* pPath)
@@ -476,12 +486,22 @@ FFLiFsResult LoadDatabaseOfficial(FFLiDatabaseFileOfficial* pOfficial, const cha
     if (!CheckFFLiFsResult(result))
         return result;
 
+#if __BYTE_ORDER__ != __ORDER_BIG_ENDIAN__
+    pOfficial->SwapEndian(false);
+#endif // __BYTE_ORDER__
+
     return FFLiFsResult { FFLI_FS_FILE_RESULT_OK, rio::RAW_ERROR_OK };
 }
 
 FFLiFsResult SaveDatabaseOfficial(const FFLiDatabaseFileOfficial& official, FFLiFileWriteBuffer* pWriteBuffer, const char* pPath)
 {
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
     return WriteFile(&official, sizeof(FFLiDatabaseFileOfficial), pWriteBuffer, pPath);
+#else
+    FFLiDatabaseFileOfficial officialBE = official;
+    officialBE.SwapEndian(true);
+    return WriteFile(&officialBE, sizeof(FFLiDatabaseFileOfficial), pWriteBuffer, pPath);
+#endif // __BYTE_ORDER__
 }
 
 FFLiFsResult CopyDatabaseOfficial(const char* pPathTo, const char* pPathFrom, FFLiFileWriteBuffer* pWriteBuffer)

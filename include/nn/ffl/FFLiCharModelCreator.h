@@ -22,6 +22,8 @@ public:
     void ExecuteGPUStep(FFLiCharModel* pModel, const FFLShaderCallback* pCallback);
     void AfterExecuteGPUStep(FFLiCharModel* pModel);
 
+    static void Delete(FFLiCharModel* pModel);
+
     void InvalidateShapes(FFLiCharModel* pModel);
 
 private:

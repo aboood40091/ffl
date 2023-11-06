@@ -12,7 +12,7 @@ public:
     FFLiResourceCache();
     ~FFLiResourceCache();
 
-    FFLResult Attach(const void* pData, u32 size, FFLResourceType resourceType);
+    FFLResult Attach(void* pData, u32 size, FFLResourceType resourceType);
     bool IsAttached() const;
 
     bool IsValid(FFLResourceType resourceType) const;

@@ -16,6 +16,11 @@ void* FFLiBugVgtFixedIndexPtr(void* ptr)
     return (u8*)ptr + (rio::Drawer::cIdxAlignment - 4);
 }
 
+void* FFLiBugVgtFixedIndexOriginalPtr(void* ptr)
+{
+    return (u8*)ptr - (rio::Drawer::cIdxAlignment - 4);
+}
+
 u32 FFLiBugCanVgtFixedIndexSize(u32 size)
 {
     return size + (rio::Drawer::cIdxAlignment - 4);

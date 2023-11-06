@@ -83,6 +83,10 @@ FFLResult FFLiResourceManager::LoadResourceHeaderImpl()
         if (!fileHandle.tryClose())
             return FFL_RESULT_FILE_INVALID;
 
+#if __BYTE_ORDER__ != __ORDER_BIG_ENDIAN__
+        pHeader->SwapEndian();
+#endif // __BYTE_ORDER__
+
         FFLResult result = FFLiIsVaildResourceHeader(pHeader);
         if (result != FFL_RESULT_OK)
             return result;
@@ -91,7 +95,7 @@ FFLResult FFLiResourceManager::LoadResourceHeaderImpl()
     return FFL_RESULT_OK;
 }
 
-FFLResult FFLiResourceManager::AttachCache(const void* pData, u32 size, FFLResourceType resourceType)
+FFLResult FFLiResourceManager::AttachCache(void* pData, u32 size, FFLResourceType resourceType)
 {
     return m_ResourceCache.Attach(pData, size, resourceType);
 }

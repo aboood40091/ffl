@@ -52,6 +52,11 @@ public:
         return m_SystemContext;
     }
 
+    const FFLiResourceManager& GetResourceManager() const
+    {
+        return m_ResourceManager;
+    }
+
     FFLiDatabaseManager& GetDatabaseManager()
     {
         return m_DatabaseManager;

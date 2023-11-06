@@ -6,11 +6,6 @@
 
 #include <nn/ffl/FFLiAuthorID.h>
 
-// Note: Keep in mind that bitfields are not portable.
-//       The Wii U compiler orders fields in bitfield structs such that the first field is at the MSB.
-//       However, the 3DS compiler orders fields in bitfield structs such that the first field is at the LSB.
-//       Therefore, if you would like to use these structures for 3DS, make sure to reverse the order of fields in every bitfield struct.
-
 class FFLiMiiDataCore
 {
 public:
@@ -656,6 +651,21 @@ private:
     {
         struct
         {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+            u32 m_MiiVersion    : 8;    // (LSB)
+            u32 m_Copyable      : 1;    // bool
+            u32 m_NgWord        : 1;    // bool
+            u32 m_RegionMove    : 2;
+            u32 m_FontRegion    : 2;
+            u32                 : 2;    // Unused
+
+            u32 m_PageIndex     : 4;
+            u32 m_SlotIndex     : 4;
+
+            u32 _0_24_27        : 4;
+            u32 m_BirthPlatform : 3;
+            u32                 : 1;    // Unused (MSB)
+#else
             u32                 : 1;    // Unused (MSB)
             u32 m_BirthPlatform : 3;
             u32 _0_24_27        : 4;
@@ -669,6 +679,7 @@ private:
             u32 m_NgWord        : 1;    // bool
             u32 m_Copyable      : 1;    // bool
             u32 m_MiiVersion    : 8;    // (LSB)
+#endif // __BYTE_ORDER__
         };
 
         u32 _0;
@@ -693,12 +704,21 @@ private:
     {
         struct
         {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+            u16 m_Gender        : 1;    // (LSB)
+            u16 m_BirthMonth    : 4;
+            u16 m_BirthDay      : 5;
+            u16 m_FavoriteColor : 4;
+            u16 m_FavoriteMii   : 1;    // bool
+            u16 m_PlaceHolder   : 1;    // Unused (MSB)
+#else
             u16 m_PlaceHolder   : 1;    // Unused (MSB)
             u16 m_FavoriteMii   : 1;    // bool
             u16 m_FavoriteColor : 4;
             u16 m_BirthDay      : 5;
             u16 m_BirthMonth    : 4;
             u16 m_Gender        : 1;    // (LSB)
+#endif // __BYTE_ORDER__
         };
 
         u16 _18;
@@ -713,11 +733,19 @@ private:
     {
         struct
         {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+            u16 m_LocalOnly     : 1;    // bool (LSB)
+            u16 m_FaceType      : 4;
+            u16 m_FacelineColor : 3;
+            u16 m_FaceLine      : 4;
+            u16 m_FaceMakeup    : 4;    // (MSB)
+#else
             u16 m_FaceMakeup    : 4;    // (MSB)
             u16 m_FaceLine      : 4;
             u16 m_FacelineColor : 3;
             u16 m_FaceType      : 4;
             u16 m_LocalOnly     : 1;    // bool (LSB)
+#endif // __BYTE_ORDER__
         };
 
         u16 _30;
@@ -726,10 +754,17 @@ private:
     {
         struct
         {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+            u16 m_HairType  : 8;    // (LSB)
+            u16 m_HairColor : 3;
+            u16 m_HairDir   : 1;
+            u16             : 4;    // Unused (MSB)
+#else
             u16             : 4;    // Unused (MSB)
             u16 m_HairDir   : 1;
             u16 m_HairColor : 3;
             u16 m_HairType  : 8;    // (LSB)
+#endif // __BYTE_ORDER__
         };
 
         u16 _32;
@@ -738,10 +773,17 @@ private:
     {
         struct
         {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+            u16 m_EyeType   : 6;    // (LSB)
+            u16 m_EyeColor  : 3;
+            u16 m_EyeScale  : 4;
+            u16 m_EyeScaleY : 3;    // (MSB)
+#else
             u16 m_EyeScaleY : 3;    // (MSB)
             u16 m_EyeScale  : 4;
             u16 m_EyeColor  : 3;
             u16 m_EyeType   : 6;    // (LSB)
+#endif // __BYTE_ORDER__
         };
 
         u16 _34;
@@ -750,10 +792,17 @@ private:
     {
         struct
         {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+            u16 m_EyeRotate         : 5;    // (LSB)
+            u16 m_EyeSpacingX       : 4;
+            u16 m_EyePositionY      : 5;
+            u16                     : 2;    // Unused (MSB)
+#else
             u16                     : 2;    // Unused (MSB)
             u16 m_EyePositionY      : 5;
             u16 m_EyeSpacingX       : 4;
             u16 m_EyeRotate         : 5;    // (LSB)
+#endif // __BYTE_ORDER__
         };
 
         u16 _36;
@@ -762,11 +811,19 @@ private:
     {
         struct
         {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+            u16 m_EyebrowType   : 5;    // (LSB)
+            u16 m_EyebrowColor  : 3;
+            u16 m_EyebrowScale  : 4;
+            u16 m_EyebrowScaleY : 3;
+            u16                 : 1;    // Unused (MSB)
+#else
             u16                 : 1;    // Unused (MSB)
             u16 m_EyebrowScaleY : 3;
             u16 m_EyebrowScale  : 4;
             u16 m_EyebrowColor  : 3;
             u16 m_EyebrowType   : 5;    // (LSB)
+#endif // __BYTE_ORDER__
         };
 
         u16 _38;
@@ -775,10 +832,17 @@ private:
     {
         struct
         {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+            u16 m_EyebrowRotate         : 5;    // (LSB)
+            u16 m_EyebrowSpacingX       : 4;
+            u16 m_EyebrowPositionY      : 5;
+            u16                         : 2;    // Unused (MSB)
+#else
             u16                         : 2;    // Unused (MSB)
             u16 m_EyebrowPositionY      : 5;
             u16 m_EyebrowSpacingX       : 4;
             u16 m_EyebrowRotate         : 5;    // (LSB)
+#endif // __BYTE_ORDER__
         };
 
         u16 _3A;
@@ -787,10 +851,17 @@ private:
     {
         struct
         {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+            u16 m_NoseType      : 5;    // (LSB)
+            u16 m_NoseScale     : 4;
+            u16 m_NosePositionY : 5;
+            u16                 : 2;    // Unused (MSB)
+#else
             u16                 : 2;    // Unused (MSB)
             u16 m_NosePositionY : 5;
             u16 m_NoseScale     : 4;
             u16 m_NoseType      : 5;    // (LSB)
+#endif // __BYTE_ORDER__
         };
 
         u16 _3C;
@@ -799,10 +870,17 @@ private:
     {
         struct
         {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+            u16 m_MouthType     : 6;    // (LSB)
+            u16 m_MouthColor    : 3;
+            u16 m_MouthScale    : 4;
+            u16 m_MouthScaleY   : 3;    // (MSB)
+#else
             u16 m_MouthScaleY   : 3;    // (MSB)
             u16 m_MouthScale    : 4;
             u16 m_MouthColor    : 3;
             u16 m_MouthType     : 6;    // (LSB)
+#endif // __BYTE_ORDER__
         };
 
         u16 _3E;
@@ -811,9 +889,15 @@ private:
     {
         struct
         {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+            u16 m_MouthPositionY    : 5;    // (LSB)
+            u16 m_MustacheType      : 3;
+            u16                     : 8;    // Unused (MSB)
+#else
             u16                     : 8;    // Unused (MSB)
             u16 m_MustacheType      : 3;
             u16 m_MouthPositionY    : 5;    // (LSB)
+#endif // __BYTE_ORDER__
         };
 
         u16 _40;
@@ -822,11 +906,19 @@ private:
     {
         struct
         {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+            u16 m_BeardType         : 3;    // (LSB)
+            u16 m_BeardColor        : 3;
+            u16 m_MustacheScale     : 4;
+            u16 m_MustachePositionY : 5;
+            u16                     : 1;    // Unused (MSB)
+#else
             u16                     : 1;    // Unused (MSB)
             u16 m_MustachePositionY : 5;
             u16 m_MustacheScale     : 4;
             u16 m_BeardColor        : 3;
             u16 m_BeardType         : 3;    // (LSB)
+#endif // __BYTE_ORDER__
         };
 
         u16 _42;
@@ -835,10 +927,17 @@ private:
     {
         struct
         {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+            u16 m_GlassType         : 4;    // (LSB)
+            u16 m_GlassColor        : 3;
+            u16 m_GlassScale        : 4;
+            u16 m_GlassPositionY    : 5;    // (MSB)
+#else
             u16 m_GlassPositionY    : 5;    // (MSB)
             u16 m_GlassScale        : 4;
             u16 m_GlassColor        : 3;
             u16 m_GlassType         : 4;    // (LSB)
+#endif // __BYTE_ORDER__
         };
 
         u16 _44;
@@ -847,11 +946,19 @@ private:
     {
         struct
         {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+            u16 m_MoleType      : 1;    // (LSB)
+            u16 m_MoleScale     : 4;
+            u16 m_MolePositionX : 5;
+            u16 m_MolePositionY : 5;
+            u16                 : 1;    // Unused (MSB)
+#else
             u16                 : 1;    // Unused (MSB)
             u16 m_MolePositionY : 5;
             u16 m_MolePositionX : 5;
             u16 m_MoleScale     : 4;
             u16 m_MoleType      : 1;    // (LSB)
+#endif // __BYTE_ORDER__
         };
 
         u16 _46;

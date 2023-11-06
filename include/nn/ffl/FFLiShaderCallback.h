@@ -25,7 +25,6 @@ public:
 
     void CallSetMatrix(const rio::BaseMtx44f& mat) const;
     void CallDraw(const FFLDrawParam& drawParam) const;
-    void CallSetContextState() const;
 
 private:
     const FFLShaderCallback*    m_pShaderCallback;

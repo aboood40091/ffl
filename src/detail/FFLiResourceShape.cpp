@@ -55,13 +55,15 @@ const void* FFLiGetResourceShapeElement(u32* pSize, const void* pShapeData, FFLi
     return NULL;
 }
 
-void FFLiSwapEndianResourceShapeElement(void* pShapeData, u32, FFLiShapePartsType partsType)
+void FFLiSwapEndianResourceShapeElement(void* pShapeData, FFLiShapePartsType partsType, bool save)
 {
     // This function is deleted in NSMBU.
     // Therefore, its implementation is only theoretical.
 
     FFLiResourceShapeDataHeader* pShape = static_cast<FFLiResourceShapeDataHeader*>(pShapeData);
-    pShape->SwapEndian();
+
+    if (!save)
+        pShape->SwapEndian();
 
     SwapEndianAttribute(pShape, pShape->GetElementPos(FFLI_RESOURCE_SHAPE_ELEMENT_TYPE_POSITION), pShape->GetElementSize(FFLI_RESOURCE_SHAPE_ELEMENT_TYPE_POSITION));
     SwapEndianAttribute(pShape, pShape->GetElementPos(FFLI_RESOURCE_SHAPE_ELEMENT_TYPE_NORMAL), pShape->GetElementSize(FFLI_RESOURCE_SHAPE_ELEMENT_TYPE_NORMAL));
@@ -75,9 +77,12 @@ void FFLiSwapEndianResourceShapeElement(void* pShapeData, u32, FFLiShapePartsTyp
 
     if (partsType == FFLI_SHAPE_PARTS_TYPE_HAIR_1)
         SwapEndianHairTransform(pShape->GetTransform());
-    
+
     else if (partsType == FFLI_SHAPE_PARTS_TYPE_FACELINE)
         SwapEndianFacelineTransform(pShape->GetTransform());
+
+    if (save)
+        pShape->SwapEndian();
 }
 
 void FFLiResourceShapeDataHeader::SwapEndian()

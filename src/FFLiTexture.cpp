@@ -4,6 +4,8 @@
 #include <nn/ffl/FFLiTexture.h>
 
 #if RIO_IS_CAFE
+#include <cstring>
+
 #define GX2_SURFACE_DIM_2D GX2_SURFACE_DIM_TEXTURE_2D
 #define GX2_AA_MODE_1X GX2_AA_MODE1X
 #endif // RIO_IS_CAFE
@@ -24,7 +26,10 @@ FFLResult FFLiLoadTextureWithAllocate(agl::TextureData** ppTextureData, FFLiText
     {
         FFLResult result = pResLoader->LoadTexture(pData, &size, partsType, index);
         if (result != FFL_RESULT_OK)
+        {
+            rio::MemUtil::free(pData);
             return result;
+        }
     }
     else
     {
@@ -51,13 +56,93 @@ FFLResult FFLiLoadTextureWithAllocate(agl::TextureData** ppTextureData, FFLiText
 
     void* imagePtr = footer.GetImagePtrImpl(size);
     void* mipPtr = footer.GetMipPtrImpl(size);
-    if (mipPtr == nullptr && surface.numMips > 1)
+    if (mipPtr == nullptr && footer.NumMips() > 1)
         mipPtr = (void*)((uintptr_t)imagePtr + surface.mipOffset[0]);
 
+#if RIO_IS_WIN
     surface.imagePtr = imagePtr;
     surface.mipPtr = mipPtr;
 
+    GX2Surface linearSurface;
+    linearSurface.dim = GX2_SURFACE_DIM_2D;
+    linearSurface.width = footer.Width();
+    linearSurface.height = footer.Height();
+    linearSurface.depth = 1;
+    linearSurface.numMips = footer.NumMips();
+    linearSurface.format = footer.SurfaceFormat();
+    linearSurface.aa = GX2_AA_MODE_1X;
+    linearSurface.use = GX2_SURFACE_USE_TEXTURE;
+    linearSurface.tileMode = GX2_TILE_MODE_LINEAR_SPECIAL;
+    linearSurface.swizzle = 0;
+
+    GX2CalcSurfaceSizeAndAlignment(&linearSurface);
+
+    linearSurface.imagePtr = new u8[linearSurface.imageSize];
+    if (linearSurface.mipSize > 0)
+        linearSurface.mipPtr = new u8[linearSurface.mipSize];
+    else
+        linearSurface.mipPtr = nullptr;
+
+    GX2CopySurface(&surface, 0, 0, &linearSurface, 0, 0);
+
+    for (u32 i = 1; i < footer.NumMips(); i++)
+        GX2CopySurface(&surface, i, 0, &linearSurface, i, 0);
+
+    (*ppTextureData)->initializeFromSurface(linearSurface);
+#else
+    if (!pResLoader->IsExpand())
+    {
+        surface.imagePtr = rio::MemUtil::alloc(surface.imageSize, surface.alignment);
+        std::memcpy(surface.imagePtr, imagePtr, surface.imageSize);
+
+        if (surface.mipSize > 0)
+        {
+            surface.mipPtr = rio::MemUtil::alloc(surface.mipSize, surface.alignment);
+            std::memcpy(surface.mipPtr, mipPtr, surface.mipSize);
+        }
+        else
+        {
+            surface.mipPtr = nullptr;
+        }
+    }
+    else
+    {
+        surface.imagePtr = imagePtr;
+        surface.mipPtr = mipPtr;
+    }
+
     (*ppTextureData)->initializeFromSurface(surface);
+#endif // RIO_IS_WIN
+
+    if (!pResLoader->IsExpand())
+        rio::MemUtil::free(pData);
 
     return FFL_RESULT_OK;
+}
+
+void FFLiDeleteTexture(agl::TextureData** ppTextureData, bool isExpand)
+{
+    agl::TextureData*& pTextureData = *ppTextureData;
+
+#if RIO_IS_WIN
+    u8* imagePtr = (u8*)pTextureData->getSurface().image;
+    u8* mipPtr = (u8*)pTextureData->getSurface().mipmaps;
+
+    delete[] imagePtr;
+    if (pTextureData->getMipByteSize() > 0)
+        delete[] mipPtr;
+#else
+    if (!isExpand)
+    {
+        void* imagePtr = pTextureData->getImagePtr();
+        void* mipPtr = pTextureData->getMipPtr();
+
+        rio::MemUtil::free(imagePtr);
+        if (pTextureData->getMipByteSize() > 0)
+            rio::MemUtil::free(mipPtr);
+    }
+#endif
+
+    delete pTextureData;
+    pTextureData = nullptr;
 }

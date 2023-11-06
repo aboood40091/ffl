@@ -2,6 +2,7 @@
 #define FFLI_PARTS_TEXTURES_H_
 
 #include <nn/ffl/FFLExpression.h>
+#include <nn/ffl/FFLResourceType.h>
 #include <nn/ffl/FFLResult.h>
 
 #include <common/aglTextureData.h>
@@ -51,6 +52,7 @@ s32 FFLiCharInfoAndTypeToEyeIndex(const FFLiCharInfo* pCharInfo, FFLiEyeTextureT
 s32 FFLiCharInfoAndTypeToMouthIndex(const FFLiCharInfo* pCharInfo, FFLiMouthTextureType type);
 
 FFLResult FFLiLoadPartsTextures(FFLiPartsTextures* pPartsTextures, const FFLiCharInfo* pCharInfo, u32 expressionFlag, FFLiResourceLoader* pResLoader);
+void FFLiDeletePartsTextures(FFLiPartsTextures* pPartsTextures, u32 expressionFlag, FFLResourceType resourceType);
 
 void FFLiInvalidatePartsTextures(FFLiPartsTextures* pPartsTextures);
 

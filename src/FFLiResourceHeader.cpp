@@ -222,6 +222,7 @@ void FFLiResourceHeader::SwapEndian()
 
     m_IsExpand = FFLiSwapEndianImpl<u32>(m_IsExpand);
 
+    FFLiSwapEndianArrayImpl<u32>(GetTextureHeader()->partsMaxSize, FFLI_TEXTURE_PARTS_TYPE_MAX);
     for (u32 i = 0; i < FFLI_TEXTURE_PARTS_TYPE_MAX; i++)
     {
         u32 num;
@@ -229,6 +230,7 @@ void FFLiResourceHeader::SwapEndian()
         SwapEndianResourcePartsInfo(pPartsInfo, num);
     }
 
+    FFLiSwapEndianArrayImpl<u32>(GetShapeHeader()->partsMaxSize, FFLI_SHAPE_PARTS_TYPE_MAX);
     for (u32 i = 0; i < FFLI_SHAPE_PARTS_TYPE_MAX; i++)
     {
         u32 num;

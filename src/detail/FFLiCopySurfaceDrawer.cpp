@@ -7,10 +7,22 @@
 
 FFLiCopySurfaceDrawer::FFLiCopySurfaceDrawer()
 {
+    m_Position.pBuffer = nullptr;
+    m_TexCoord.pBuffer = nullptr;
 }
 
 FFLiCopySurfaceDrawer::~FFLiCopySurfaceDrawer()
 {
+    if (m_Position.pBuffer != nullptr)
+    {
+        rio::MemUtil::free(m_Position.pBuffer);
+        m_Position.pBuffer = nullptr;
+    }
+    if (m_TexCoord.pBuffer != nullptr)
+    {
+        rio::MemUtil::free(m_TexCoord.pBuffer);
+        m_TexCoord.pBuffer = nullptr;
+    }
 }
 
 void FFLiCopySurfaceDrawer::SetupCPU()
