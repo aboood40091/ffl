@@ -9,7 +9,7 @@ bool ShouldCallInvalidate(GX2ShaderMode shaderMode);
 
 void FFLiTempSetContextState(const GX2ContextState* pContextState)
 {
-    GX2SetContextState(pContextState);
+    GX2SetContextState(const_cast<GX2ContextState*>(pContextState));
 
     Invalidate();
 }

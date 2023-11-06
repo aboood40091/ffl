@@ -14,8 +14,6 @@ public:
     virtual ~FFLiZlibInflator();
 
     virtual s32 Process(void** ppDst, u32* pDstSize, const void** ppSrc, u32* pSrcSize, s32 flush);
-    virtual u32 TotalInputSize() const;
-    virtual u32 TotalOutputSize() const;
 
 private:
     FFLiZlibAllocator   m_ZlibAllocator;

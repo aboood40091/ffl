@@ -11,7 +11,6 @@ public:
     }
 
     virtual void* Allocate(u32 size) = 0;
-    virtual void* Allocate(u32 size, u32 alignment) = 0;
     virtual void Free(void* ptr) = 0;
 };
 NN_STATIC_ASSERT(sizeof(FFLiAllocatorInterface) == 4);

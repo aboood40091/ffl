@@ -10,7 +10,8 @@ namespace nn { namespace act {
 
 // Thanks for deprecating this, Nintendo... :/
 
-Result GetTransferableIdEx(u64* pTransferableId, u32 uniqueId, u8 slotNo);
+Result GetTransferableIdEx(u64* pTransferableId, u32 uniqueId, u8 slotNo)
+   asm("GetTransferableIdEx__Q2_2nn3actFPULUiUc");
 
 } } // namespace nn::act
 

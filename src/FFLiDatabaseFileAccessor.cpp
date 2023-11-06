@@ -364,7 +364,7 @@ FFLResult GetDatabasePath(char* pDst, u32 size, u64 titleID, const char* filenam
 FFLiFsResult ReadFile(void* pDst, u32 size, FFLiFsCommand* pCommand, const char* pPath)
 {
     FFLiFsFile file(pCommand);
-    
+
     FSStatus status = file.Open(pPath, "r", FS_RET_NOT_FOUND);
     if (status != FS_STATUS_OK)
     {
@@ -392,14 +392,14 @@ FFLiFsResult ReadFile(void* pDst, u32 size, FFLiFsCommand* pCommand, const char*
         if (!CheckFFLiFsResult(result))
             return result;
     }
-        
+
     FFLiFsResult result = { FFLI_FS_FILE_RESULT_OK, FS_STATUS_OK };
     return result;
 }
 
 FSStatus WriteFileImpl(FFLiFsFile& file, const void* pSrc, u32 size, FFLiFileWriteBuffer* pWriteBuffer)
 {
-    FSStatus ret = 0;
+    FSStatus ret = FSStatus(0);
 
     const u32 count = (size + (FFLI_FILE_WRITE_BUFFER_SIZE - 1)) / FFLI_FILE_WRITE_BUFFER_SIZE;
 
@@ -419,7 +419,7 @@ FFLiFsResult WriteFile(const void* pSrc, u32 size, FFLiFsCommand* pCommand, FFLi
 {
     FFLiFsFile file(pCommand);
 
-    FSStatus status = file.Open(pPath, "w", FS_RET_NOT_FOUND | FS_RET_PERMISSION_ERROR);
+    FSStatus status = file.Open(pPath, "w", FSRetFlag(FS_RET_NOT_FOUND | FS_RET_PERMISSION_ERROR));
     if (status != FS_STATUS_OK)
     {
         if (CheckFileNotFound(status))
@@ -454,7 +454,7 @@ FFLiFsResult WriteFile(const void* pSrc, u32 size, FFLiFsCommand* pCommand, FFLi
         if (!CheckFFLiFsResult(result))
             return result;
     }
-        
+
     FFLiFsResult result = { FFLI_FS_FILE_RESULT_OK, FS_STATUS_OK };
     return result;
 }

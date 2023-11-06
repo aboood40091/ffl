@@ -29,17 +29,17 @@ FSStatus FFLiFsFile::Close(FSRetFlag errHandling)
 
 FSStatus FFLiFsFile::Read(void* dst, u32 size, u32 count, FSRetFlag errHandling, FSFlag flag)
 {
-    return FSReadFile(&m_pFsCommand->GetClient()->GetFSClient(), &m_pFsCommand->GetFSCmdBlock(), dst, size, count, m_Handle, flag, errHandling);
+    return FSReadFile(&m_pFsCommand->GetClient()->GetFSClient(), &m_pFsCommand->GetFSCmdBlock(), (u8*)dst, size, count, m_Handle, flag, errHandling);
 }
 
 FSStatus FFLiFsFile::ReadWithPos(void* dst, u32 size, u32 count, u32 pos, FSRetFlag errHandling, FSFlag flag)
 {
-    return FSReadFileWithPos(&m_pFsCommand->GetClient()->GetFSClient(), &m_pFsCommand->GetFSCmdBlock(), dst, size, count, pos, m_Handle, flag, errHandling);
+    return FSReadFileWithPos(&m_pFsCommand->GetClient()->GetFSClient(), &m_pFsCommand->GetFSCmdBlock(), (u8*)dst, size, count, pos, m_Handle, flag, errHandling);
 }
 
 FSStatus FFLiFsFile::Write(const void* src, u32 size, u32 count, FSRetFlag errHandling, FSFlag flag)
 {
-    return FSWriteFile(&m_pFsCommand->GetClient()->GetFSClient(), &m_pFsCommand->GetFSCmdBlock(), src, size, count, m_Handle, flag, errHandling);
+    return FSWriteFile(&m_pFsCommand->GetClient()->GetFSClient(), &m_pFsCommand->GetFSCmdBlock(), (u8*)src, size, count, m_Handle, flag, errHandling);
 }
 
 bool FFLiFsFile::IsOpened() const

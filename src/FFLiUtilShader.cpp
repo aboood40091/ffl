@@ -78,7 +78,7 @@ bool FFLiUtilShader::BuildShader(FFLiUtilShader::FetchShader* pFetchShader, cons
         s32 location = GX2GetVertexAttribVarLocation(pVertexShader, pAttribs[i].name);
         if (location < 0)
             return false;
-        
+
         GX2InitAttribStream(&(pFetchShader->pStreams[i]), location, pAttribs[i].buffer, pAttribs[i].offset, pAttribs[i].format);
     }
 
@@ -211,7 +211,7 @@ static bool GetPixelUniformBlockLocation(u32* pLocation, const GX2PixelShader* p
     if (pUB == NULL)
         return false;
 
-    *pLocation = pUB->location;
+    *pLocation = pUB->offset;
     return true;
 }
 
@@ -221,7 +221,7 @@ static bool GetVertexUniformBlockLocation(u32* pLocation, const GX2VertexShader*
     if (pUB == NULL)
         return false;
 
-    *pLocation = pUB->location;
+    *pLocation = pUB->offset;
     return true;
 }
 
