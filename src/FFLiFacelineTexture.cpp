@@ -156,7 +156,7 @@ void FFLiRenderFacelineTexture(FFLiRenderTexture* pRenderTexture, const FFLiChar
     GX2SetAlphaTest(GX2_DISABLE, GX2_COMPARE_ALWAYS, 0.0f);
     GX2SetColorControl(GX2_LOGIC_OP_NONE, 0xFF, GX2_DISABLE, GX2_ENABLE);
     GX2SetDepthOnlyControl(GX2_DISABLE, GX2_DISABLE, GX2_COMPARE_LESS);
-    GX2SetCullOnlyControl(GX2_FRONT_FACE_CCW, GX2_DISABLE, GX2_ENABLE);
+    GX2SetCullOnlyControl(GX2_FRONT_FACE_CW, GX2_DISABLE, GX2_DISABLE);
     GX2SetBlendControl(
         GX2_RENDER_TARGET_0,
         
