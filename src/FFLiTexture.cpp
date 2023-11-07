@@ -14,28 +14,33 @@
 
 FFLResult FFLiLoadTextureWithAllocate(agl::TextureData** ppTextureData, FFLiTexturePartsType partsType, u32 index, FFLiResourceLoader* pResLoader)
 {
-    u32 size = pResLoader->GetTextureAlignedMaxSize(partsType);
-
-    void* pData = NULL;
-    if (!pResLoader->IsExpand())
-        pData = rio::MemUtil::alloc(size, TEXTURE_DATA_MAX_ALIGNMENT);
-
     *ppTextureData = new agl::TextureData;
+
+    u32 size = pResLoader->GetTextureAlignedMaxSize(partsType);
+    void* pData;
 
     if (!pResLoader->IsExpand())
     {
+        pData = rio::MemUtil::alloc(size, TEXTURE_DATA_MAX_ALIGNMENT);
         FFLResult result = pResLoader->LoadTexture(pData, &size, partsType, index);
         if (result != FFL_RESULT_OK)
         {
+            delete *ppTextureData;
+            *ppTextureData = nullptr;
             rio::MemUtil::free(pData);
             return result;
         }
     }
     else
     {
+        pData = NULL;
         FFLResult result = pResLoader->GetPointerTextureByExpandCache(&pData, &size, partsType, index);
         if (result != FFL_RESULT_OK)
+        {
+            delete *ppTextureData;
+            *ppTextureData = nullptr;
             return result;
+        }
     }
 
     const FFLiResourceTextureFooter& footer = FFLiResourceTextureFooter::GetFooterImpl(pData, size);
