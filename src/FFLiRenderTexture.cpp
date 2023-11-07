@@ -16,39 +16,9 @@
 
 #include <gx2/clear.h>
 #include <gx2/mem.h>
-
-#define GX2_SURFACE_DIM_2D GX2_SURFACE_DIM_TEXTURE_2D
-#define GX2_AA_MODE_1X GX2_AA_MODE1X
 #endif // RIO_IS_CAFE
 
 #include <cstring>
-
-u32 FFLiGetBufferRenderTexture(u32 width, u32 height, rio::TextureFormat format, u32 numMips)
-{
-#if RIO_IS_CAFE
-    GX2Surface surface;
-    surface.dim = GX2_SURFACE_DIM_2D;
-    surface.width = width;
-    surface.height = height;
-    surface.depth = 1;
-    surface.numMips = numMips;
-    surface.format = (GX2SurfaceFormat)format;
-    surface.aa = GX2_AA_MODE_1X;
-    surface.use = GX2_SURFACE_USE_TEXTURE;
-    surface.tileMode = GX2_TILE_MODE_DEFAULT;
-    surface.swizzle = 0;
-
-    GX2CalcSurfaceSizeAndAlignment(&surface);
-
-    return (
-        surface.alignment +
-        FFLiRoundUp(surface.imageSize, surface.alignment) +
-        FFLiRoundUp(surface.mipSize, surface.alignment)
-    );
-#else
-    return 0;
-#endif // RIO_IS_CAFE
-}
 
 void FFLiInitRenderTexture(FFLiRenderTexture* pRenderTexture, u32 width, u32 height, rio::TextureFormat format, u32 numMips)
 {
