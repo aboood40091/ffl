@@ -160,6 +160,8 @@ void FFLiRenderFacelineTexture(FFLiRenderTexture* pRenderTexture, const FFLiChar
     );
     renderState.apply();
 
+    pCallback->CallApplyAlphaTestDisable();
+
     FFLiRenderTexture& renderTexture = *pRenderTexture;
 
     FFLiInvalidateRenderTexture(&renderTexture);
