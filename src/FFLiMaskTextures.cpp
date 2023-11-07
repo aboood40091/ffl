@@ -128,7 +128,11 @@ void FFLiDeleteTempObjectMaskTextures(FFLiMaskTexturesTempObject* pObject, u32 e
     FFLiDeletePartsTextures(&pObject->partsTextures, expressionFlag, resourceType);
 }
 
-void FFLiRenderMaskTextures(FFLiMaskTextures* pMaskTextures, FFLiMaskTexturesTempObject* pObject, const FFLiShaderCallback* pCallback, FFLiCopySurface* pCopySurface)
+void FFLiRenderMaskTextures(FFLiMaskTextures* pMaskTextures, FFLiMaskTexturesTempObject* pObject, const FFLiShaderCallback* pCallback
+#if RIO_IS_CAFE
+, FFLiCopySurface* pCopySurface
+#endif // RIO_IS_CAFE
+)
 {
     static const FFLColor BLACK = { };
 
@@ -156,8 +160,10 @@ void FFLiRenderMaskTextures(FFLiMaskTextures* pMaskTextures, FFLiMaskTexturesTem
 #elif RIO_IS_CAFE
                 pCopySurface->Begin();
 
+                GX2Surface* pSurface = const_cast<GX2Surface*>(&renderTexture.pTextureData->getSurface());
+
                 for (u32 i = 1; i < renderTexture.pTextureData->getMipLevelNum(); i++)
-                    pCopySurface->Execute(renderTexture.pTextureData, i, i - 1);
+                    pCopySurface->Execute(pSurface, i, pSurface, i - 1);
 
                 pCopySurface->End();
 #endif

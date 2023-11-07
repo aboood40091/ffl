@@ -1,5 +1,6 @@
 #include <nn/ffl/FFLColor.h>
 #include <nn/ffl/FFLDrawParam.h>
+#include <nn/ffl/FFLVec.h>
 
 #include <nn/ffl/FFLiColor.h>
 #include <nn/ffl/FFLiFacelineTexture.h>
@@ -19,6 +20,10 @@
 
 #include <gpu/rio_RenderState.h>
 #include <misc/rio_MemUtil.h>
+
+#if RIO_IS_CAFE
+#include <gx2/mem.h>
+#endif // RIO_IS_CAFE
 
 #include <cstring>
 
@@ -122,7 +127,11 @@ void FFLiDeleteTempObjectFacelineTexture(FFLiFacelineTextureTempObject* pObject,
     DeleteTexture_FaceLine(pObject, isExpand);
 }
 
-void FFLiRenderFacelineTexture(FFLiRenderTexture* pRenderTexture, const FFLiCharInfo* pCharInfo, u32 resolution, FFLiFacelineTextureTempObject* pObject, const FFLiShaderCallback* pCallback, FFLiCopySurface* pCopySurface)
+void FFLiRenderFacelineTexture(FFLiRenderTexture* pRenderTexture, const FFLiCharInfo* pCharInfo, u32 resolution, FFLiFacelineTextureTempObject* pObject, const FFLiShaderCallback* pCallback
+#if RIO_IS_CAFE
+    , FFLiCopySurface* pCopySurface
+#endif // RIO_IS_CAFE
+)
 {
     bool enableBeardTexture = pCharInfo->parts.beardType >= 4;
 
@@ -170,8 +179,10 @@ void FFLiRenderFacelineTexture(FFLiRenderTexture* pRenderTexture, const FFLiChar
 #elif RIO_IS_CAFE
         pCopySurface->Begin();
 
+        GX2Surface* pSurface = const_cast<GX2Surface*>(&renderTexture.pTextureData->getSurface());
+
         for (u32 i = 1; i < renderTexture.pTextureData->getMipLevelNum(); i++)
-            pCopySurface->Execute(renderTexture.pTextureData, i, i - 1);
+            pCopySurface->Execute(pSurface, i, pSurface, i - 1);
 
         pCopySurface->End();
 #endif
@@ -339,7 +350,7 @@ void InvalidatePrimitive(FFLPrimitiveParam* pPrimitive)
 {
 #if RIO_IS_CAFE
     GX2Invalidate(
-        GX2_INVALIDATE_CPU_ATTRIB_BUFFER,
+        GX2_INVALIDATE_MODE_CPU_ATTRIBUTE_BUFFER,
         pPrimitive->pIndexBuffer,
         sizeof(u16) * pPrimitive->indexCount    // Apparently Nintendo forgot the index count is 4
     );
@@ -354,7 +365,7 @@ void InvalidateAttributes(FFLAttributeBufferParam* pAttributes)
         void* ptr = pAttributes->attributeBuffers[i].ptr;
         if (ptr != NULL)
             GX2Invalidate(
-                GX2_INVALIDATE_CPU_ATTRIB_BUFFER,
+                GX2_INVALIDATE_MODE_CPU_ATTRIBUTE_BUFFER,
                 ptr,
                 pAttributes->attributeBuffers[i].size
             );

@@ -87,6 +87,7 @@ public:
         return m_InitDesc;
     }
 
+#if RIO_IS_CAFE
     FFLiCopySurface& GetCopySurface()
     {
         return m_CopySurface;
@@ -96,6 +97,7 @@ public:
     {
         return m_CopySurface;
     }
+#endif // RIO_IS_CAFE
 
     bool CanInitCharModel() const;
 
@@ -113,7 +115,9 @@ private:
     FFLiShaderCallback          m_ShaderCallback;
     FFLiCharModelCreateParam    m_CharModelCreateParam;
     FFLInitDesc                 m_InitDesc;
+#if RIO_IS_CAFE
     FFLiCopySurface             m_CopySurface;
+#endif // RIO_IS_CAFE
     bool                        m_IsSetupGPU;
 };
 //NN_STATIC_ASSERT(sizeof(FFLiManager) == 0x29B0);

@@ -171,8 +171,16 @@ void FFLiCharModelCreator::ExecuteGPUStep(FFLiCharModel* pModel, const FFLShader
 
     shaderCallback.CallSetMatrix(rio::Matrix44f::ident);
 
-    FFLiRenderMaskTextures(&pModel->maskTextures, &pModel->pTextureTempObject->maskTextures, &shaderCallback, &m_pManager->GetCopySurface());
-    FFLiRenderFacelineTexture(&pModel->facelineRenderTexture, &pModel->charInfo, resolution, &pModel->pTextureTempObject->facelineTexture, &shaderCallback, &m_pManager->GetCopySurface());
+    FFLiRenderMaskTextures(&pModel->maskTextures, &pModel->pTextureTempObject->maskTextures, &shaderCallback
+#if RIO_IS_CAFE
+        , &m_pManager->GetCopySurface()
+#endif // RIO_IS_CAFE
+    );
+    FFLiRenderFacelineTexture(&pModel->facelineRenderTexture, &pModel->charInfo, resolution, &pModel->pTextureTempObject->facelineTexture, &shaderCallback
+#if RIO_IS_CAFE
+        , &m_pManager->GetCopySurface()
+#endif // RIO_IS_CAFE
+    );
 
     AfterExecuteGPUStep(pModel);
 

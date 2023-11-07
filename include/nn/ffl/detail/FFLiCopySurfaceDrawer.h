@@ -1,9 +1,11 @@
 #ifndef FFLI_COPY_SURFACE_DRAWER_H_
 #define FFLI_COPY_SURFACE_DRAWER_H_
 
-#include <nn/ffl/FFLVec.h>
+#include <misc/rio_Types.h>
 
-#include <gpu/rio_VertexArray.h>
+#if RIO_IS_CAFE
+
+#include <nn/ffl/FFLVec.h>
 
 class FFLiCopySurfaceDrawer
 {
@@ -12,28 +14,17 @@ public:
     ~FFLiCopySurfaceDrawer();
 
     void SetupCPU();
-    void SetupGPU(u32 positionLocation, u32 texCoordLocation);
+    void SetupGPU();
 
-    void SetAttributeBuffer();
+    void SetAttributeBuffer(u32 positionBufferIndex, u32 texCoordBufferIndex);
     void Draw();
 
 private:
-    struct Attribute
-    {
-        Attribute()
-            : pBuffer(NULL)
-        {
-        }
-
-        FFLVec2*            pBuffer;
-        rio::VertexStream   vertexStream;
-        rio::VertexBuffer   vertexBuffer;
-    };
-
-    Attribute           m_Position;
-    Attribute           m_TexCoord;
-    rio::VertexArray    m_VertexArray;
+    FFLVec2*    m_pPositionBuffer;
+    FFLVec2*    m_pTexCoordBuffer;
 };
-//NN_STATIC_ASSERT(sizeof(FFLiCopySurfaceDrawer) == 8);
+NN_STATIC_ASSERT(sizeof(FFLiCopySurfaceDrawer) == 8);
+
+#endif // RIO_IS_CAFE
 
 #endif // FFLI_COPY_SURFACE_DRAWER_H_

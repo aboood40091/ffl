@@ -108,7 +108,9 @@ FFLiManager::FFLiManager(const FFLInitDesc* pInitDesc)
     , m_DatabaseManager(m_pDatabaseFile, m_pFileWriteBuffer, &m_SystemContext)
     , m_CharModelCreateParam(&m_DatabaseManager, &m_ResourceManager, &m_ShaderCallback)
     , m_InitDesc(*pInitDesc)
+#if RIO_IS_CAFE
     , m_CopySurface()
+#endif // RIO_IS_CAFE
     , m_IsSetupGPU(false)
 {
 }
@@ -173,14 +175,16 @@ FFLResult FFLiManager::BeforeDestruct()
 
 bool FFLiManager::CanInitCharModel() const
 {
-    return m_CopySurface.CanInitCharModel(m_IsSetupGPU);
+    return m_IsSetupGPU;
 }
 
 void FFLiManager::SetupGPU()
 {
     m_IsSetupGPU = true;
 
+#if RIO_IS_CAFE
     m_CopySurface.SetupGPU();
+#endif // RIO_IS_CAFE
 }
 
 FFLResult FFLiManager::FlushQuota(bool force)

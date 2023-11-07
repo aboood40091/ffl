@@ -1,5 +1,3 @@
-#if RIO_IS_CAFE
-
 // ---------- FFLiCopySurfaceShaderObj Vertex Shader ----------
 
 __attribute__((aligned(GX2_SHADER_PROGRAM_ALIGNMENT))) static const u32 FFLiCopySurfaceShaderObj_VS_shaderPtr[74] =
@@ -65,7 +63,7 @@ static GX2VertexShader FFLiCopySurfaceShaderObj_VS = {
   2,
   FFLiCopySurfaceShaderObj_VS_attrib_vars,
   0,
-  (GX2Boolean)0,
+  FALSE,
   {
     0x00000000,0x00000000,0x00000000,0x00000000     // 0x0000
 
@@ -124,36 +122,4 @@ static GX2PixelShader FFLiCopySurfaceShaderObj_PS = {
   FFLiCopySurfaceShaderObj_PS_sampler_vars,
 };
 
-#elif RIO_IS_WIN
 
-static const char* const FFLiCopySurfaceShaderObj_VS_src =
-    "#version 330 core\n\n"
-
-    "layout (location=0) in vec2 a_position;\n"
-    "layout (location=1) in vec2 a_texCoord;\n\n"
-
-    "out vec2 texCoord;\n\n"
-
-    "void main(void)\n"
-    "{\n"
-    "    gl_Position = vec4(a_position, 0, 1);\n"
-    "    texCoord = a_texCoord;\n"
-    "}\n"
-    ;
-
-static const char* const FFLiCopySurfaceShaderObj_PS_src =
-    "#version 330 core\n\n"
-
-    "uniform sampler2D s_texture;\n\n"
-
-    "in vec2 texCoord;\n\n"
-
-    "out vec4 FragColor;\n\n"
-
-    "void main(void)\n"
-    "{\n"
-    "    FragColor = texture(s_texture, texCoord);\n"
-    "}\n"
-    ;
-
-#endif

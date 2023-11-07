@@ -1,11 +1,12 @@
 #ifndef FFLI_COPY_SURFACE_H_
 #define FFLI_COPY_SURFACE_H_
 
+#include <misc/rio_Types.h>
+
+#if RIO_IS_CAFE
+
 #include <nn/ffl/detail/FFLiCopySurfaceDrawer.h>
 #include <nn/ffl/detail/FFLiCopySurfaceShader.h>
-
-#include <common/aglRenderBuffer.h>
-#include <common/aglRenderTarget.h>
 
 class FFLiCopySurface
 {
@@ -18,16 +19,18 @@ public:
     void Begin();
     void End();
 
-    void Execute(agl::TextureData* pTextureData, u32 dstMipLevel, u32 srcMipLevel);
+    void Execute(GX2Surface* pDstSurface, u32 dstMipLevel, const GX2Surface* pSrcSurface, u32 srcMipLevel);
 
-    bool CanInitCharModel(bool isSetupGPU) const;
+private:
+    void SetupSrcSurface(const GX2Surface* pSurface, u32 mipLevel);
+    void SetupDstSurface(GX2Surface* pSurface, u32 mipLevel);
 
 private:
     FFLiCopySurfaceShader   m_Shader;
     FFLiCopySurfaceDrawer   m_Drawer;
-    agl::RenderBuffer       m_RenderBuffer;
-    agl::RenderTargetColor  m_ColorTarget;
 };
-//NN_STATIC_ASSERT(sizeof(FFLiCopySurface) == 0x44);
+NN_STATIC_ASSERT(sizeof(FFLiCopySurface) == 0x44);
+
+#endif // RIO_IS_CAFE
 
 #endif // FFLI_COPY_SURFACE_H_

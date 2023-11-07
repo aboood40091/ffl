@@ -1,12 +1,15 @@
+#include <misc/rio_Types.h>
+
+#if RIO_IS_CAFE
+
 #include <nn/ffl/FFLiMipMapUtil.h>
 
 #include <nn/ffl/detail/FFLiCopySurface.h>
 
-#if RIO_IS_CAFE
 #include <gfx/rio_Window.h>
 
+#include <gx2/mem.h>
 #include <gx2/registers.h>
-#endif // RIO_IS_CAFE
 
 FFLiCopySurface::FFLiCopySurface()
 {
@@ -21,64 +24,150 @@ FFLiCopySurface::~FFLiCopySurface()
 void FFLiCopySurface::SetupGPU()
 {
     m_Shader.SetupGPU();
-    m_Drawer.SetupGPU(0, 1);
+    m_Drawer.SetupGPU();
 }
 
 void FFLiCopySurface::Begin()
 {
-#if RIO_IS_CAFE
     GX2SetContextState(NULL);
     GX2Invalidate(GX2_INVALIDATE_MODE_SHADER, NULL, 0xFFFFFFFF);
 
     GX2SetDefaultState();
-    GX2SetDepthOnlyControl(GX2_DISABLE, GX2_DISABLE, GX2_COMPARE_NEVER);
+    GX2SetDepthOnlyControl(GX2_DISABLE, GX2_DISABLE, GX2_COMPARE_FUNC_NEVER);
     GX2SetTargetChannelMasks(
         GX2_CHANNEL_MASK_RGBA,
-        GX2_CHANNEL_MASK_NONE,
-        GX2_CHANNEL_MASK_NONE,
-        GX2_CHANNEL_MASK_NONE,
-        GX2_CHANNEL_MASK_NONE,
-        GX2_CHANNEL_MASK_NONE,
-        GX2_CHANNEL_MASK_NONE,
-        GX2_CHANNEL_MASK_NONE
+        (GX2ChannelMask)0,
+        (GX2ChannelMask)0,
+        (GX2ChannelMask)0,
+        (GX2ChannelMask)0,
+        (GX2ChannelMask)0,
+        (GX2ChannelMask)0,
+        (GX2ChannelMask)0
     );
-#endif // RIO_IS_CAFE
 
     m_Shader.Bind();
-    m_Drawer.SetAttributeBuffer();
+    m_Drawer.SetAttributeBuffer(0, 1);
 }
 
 void FFLiCopySurface::End()
 {
-#if RIO_IS_CAFE
     GX2SetContextState(rio::Window::instance()->getNativeWindow().getContextState());
     GX2Invalidate(GX2_INVALIDATE_MODE_SHADER, NULL, 0xFFFFFFFF);
-#endif // RIO_IS_CAFE
 }
 
-void FFLiCopySurface::Execute(agl::TextureData* pTextureData, u32 dstMipLevel, u32 srcMipLevel)
+void FFLiCopySurface::Execute(GX2Surface* pDstSurface, u32 dstMipLevel, const GX2Surface* pSrcSurface, u32 srcMipLevel)
 {
-    RIO_ASSERT(pTextureData);
+    SetupSrcSurface(pSrcSurface, srcMipLevel);
+    SetupDstSurface(pDstSurface, dstMipLevel);
 
-    m_Shader.SetTexture(*pTextureData, srcMipLevel);
+    {
+        if (pDstSurface->imageSize != 0)
+            GX2Invalidate(GX2_INVALIDATE_MODE_TEXTURE, pDstSurface->image, pDstSurface->imageSize);
 
-    m_ColorTarget.applyTextureData(*pTextureData);
-    m_ColorTarget.setMipLevel(dstMipLevel);
+        if (pDstSurface->mipmapSize != 0)
+            GX2Invalidate(GX2_INVALIDATE_MODE_TEXTURE, pDstSurface->mipmaps, pDstSurface->mipmapSize);
+    }
 
-    m_RenderBuffer.setRenderTargetColor(&m_ColorTarget);
-    m_RenderBuffer.setRenderTargetDepthNull();
-    m_RenderBuffer.setSize(
-        FFLiGetMipMapLevelSize(pTextureData->getWidth(), dstMipLevel),
-        FFLiGetMipMapLevelSize(pTextureData->getHeight(), dstMipLevel)
-    );
-    m_RenderBuffer.bind();
-
-    pTextureData->invalidateGPUCache();
     m_Drawer.Draw();
-    m_ColorTarget.invalidateGPUCache();
+
+    {
+        if (pDstSurface->imageSize != 0)
+            GX2Invalidate(GX2_INVALIDATE_MODE_COLOR_BUFFER, pDstSurface->image, pDstSurface->imageSize);
+
+        if (pDstSurface->mipmapSize != 0)
+            GX2Invalidate(GX2_INVALIDATE_MODE_COLOR_BUFFER, pDstSurface->mipmaps, pDstSurface->mipmapSize);
+    }
 }
 
-bool FFLiCopySurface::CanInitCharModel(bool isSetupGPU) const
+void FFLiCopySurface::SetupSrcSurface(const GX2Surface* pSurface, u32 mipLevel)
 {
-    return isSetupGPU;
+    static const u32 compMap[54] = {
+        0x04040405, 0x00040405, 0x00010405, 0x04040405,
+        0x04040405, 0x00040405, 0x00040405, 0x00010405,
+        0x00010205, 0x00010205, 0x00010203, 0x00010203,
+        0x03020100, 0x00040405, 0x00040405, 0x00010405,
+        0x00010405, 0x04040405, 0x04040405, 0x04040405,
+        0x04040405, 0x04040405, 0x00010205, 0x04040405,
+        0x04040405, 0x00010203, 0x00010203, 0x03020100,
+        0x00010405, 0x00010405, 0x00010405, 0x00010203,
+        0x00010203, 0x04040405, 0x00010203, 0x00010203,
+        0x04040405, 0x04040405, 0x04040405, 0x00010205,
+        0x00010205, 0x00040405, 0x00010405, 0x00010205,
+        0x04040405, 0x04040405, 0x04040405, 0x00010205,
+        0x00010205, 0x00010203, 0x00010203, 0x00010203,
+        0x00040405, 0x00010405
+    };
+
+    GX2Texture texture;
+
+    texture.surface.dim = pSurface->dim;
+    texture.surface.width = pSurface->width;
+    texture.surface.height = pSurface->height;
+    texture.surface.depth = pSurface->depth;
+    texture.surface.mipLevels = pSurface->mipLevels;
+    texture.surface.format = pSurface->format;
+    texture.surface.aa = GX2_AA_MODE1X;
+    texture.surface.use = GX2_SURFACE_USE_TEXTURE;
+    texture.surface.tileMode = GX2_TILE_MODE_DEFAULT;
+    texture.surface.swizzle = 0;
+    GX2CalcSurfaceSizeAndAlignment(&texture.surface);
+
+    texture.viewFirstMip = 0;
+    texture.viewNumMips = pSurface->mipLevels;
+    texture.viewFirstSlice = 0;
+    texture.viewNumSlices = pSurface->depth;
+    texture.compMap = compMap[pSurface->format & 0x3f];
+    GX2InitTextureRegs(&texture);
+
+    texture.surface.image = pSurface->image;
+    if (texture.surface.mipLevels > 1 && pSurface->mipmaps == nullptr)
+        texture.surface.mipmaps = (u8*)pSurface->image + texture.surface.mipLevelOffset[0];
+    else
+        texture.surface.mipmaps = pSurface->mipmaps;
+
+    m_Shader.SetTexture(&texture, mipLevel);
 }
+
+void FFLiCopySurface::SetupDstSurface(GX2Surface* pSurface, u32 mipLevel)
+{
+    GX2ColorBuffer colorBuffer;
+
+    colorBuffer.surface.dim = GX2_SURFACE_DIM_TEXTURE_2D;
+    colorBuffer.surface.width = pSurface->width;
+    colorBuffer.surface.height = pSurface->height;
+    colorBuffer.surface.depth = 1;
+    colorBuffer.surface.mipLevels = pSurface->mipLevels;
+    colorBuffer.surface.mipmaps = nullptr;
+    colorBuffer.surface.format = pSurface->format;
+    colorBuffer.surface.aa = GX2_AA_MODE1X;
+    colorBuffer.surface.use = GX2_SURFACE_USE_COLOR_BUFFER | GX2_SURFACE_USE_TEXTURE;
+    colorBuffer.surface.tileMode = GX2_TILE_MODE_DEFAULT;
+    colorBuffer.surface.swizzle = 0;
+    GX2CalcSurfaceSizeAndAlignment(&colorBuffer.surface);
+
+    colorBuffer.viewMip = mipLevel;
+    colorBuffer.viewFirstSlice = 0;
+    colorBuffer.viewNumSlices = 1;
+    GX2InitColorBufferRegs(&colorBuffer);
+
+    colorBuffer.surface.image = pSurface->image;
+    colorBuffer.surface.mipmaps = pSurface->mipmaps;
+    GX2SetColorBuffer(&colorBuffer, GX2_RENDER_TARGET_0);
+
+    GX2SetViewport(
+        0.0f,
+        0.0f,
+        f32(FFLiGetMipMapLevelSize(colorBuffer.surface.width, mipLevel)),
+        f32(FFLiGetMipMapLevelSize(colorBuffer.surface.height, mipLevel)),
+        0.0f,
+        1.0f
+    );
+    GX2SetScissor(
+        0.0f,
+        0.0f,
+        f32(FFLiGetMipMapLevelSize(colorBuffer.surface.width, mipLevel)),
+        f32(FFLiGetMipMapLevelSize(colorBuffer.surface.height, mipLevel))
+    );
+}
+
+#endif // RIO_IS_CAFE
