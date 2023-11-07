@@ -149,7 +149,7 @@ void FFLiRenderFacelineTexture(FFLiRenderTexture* pRenderTexture, const FFLiChar
     rio::RenderState renderState;
     renderState.setBlendEnable(true);
     renderState.setDepthEnable(false, false);
-    renderState.setCullingMode(rio::Graphics::CULLING_MODE_BACK);
+    renderState.setCullingMode(rio::Graphics::CULLING_MODE_NONE);
     renderState.setBlendFactorSeparate(
         rio::Graphics::BLEND_MODE_SRC_ALPHA, rio::Graphics::BLEND_MODE_ONE_MINUS_SRC_ALPHA,
         rio::Graphics::BLEND_MODE_ONE, rio::Graphics::BLEND_MODE_ONE
