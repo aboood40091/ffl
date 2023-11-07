@@ -15,8 +15,8 @@ struct FFLiFacelineTextureTempObject
     FFLDrawParam        drawParamFaceMake;
     agl::TextureData*   pTextureFaceBeard;
     FFLDrawParam        drawParamFaceBeard;
-    void*               _144;   // Removed
-    void*               _148;   // Removed
+    void*               _144;   // Deleted
+    void*               _148;   // Deleted
 };
 NN_STATIC_ASSERT(sizeof(FFLiFacelineTextureTempObject) == 0x14C);
 

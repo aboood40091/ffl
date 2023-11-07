@@ -9,8 +9,8 @@ extern "C" {
 
 typedef struct FFLInitDesc
 {
-    const void*             _0; // Removed
-    void*                   _4; // Removed
+    const void*             _0; // Deleted
+    void*                   _4; // Deleted
     FFLFontRegion           fontRegion;
     BOOL                    _c;
     BOOL                    _10;
