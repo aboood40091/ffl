@@ -19,6 +19,16 @@ FFLiCopySurfaceDrawer::FFLiCopySurfaceDrawer()
 
 FFLiCopySurfaceDrawer::~FFLiCopySurfaceDrawer()
 {
+    if (m_pPositionBuffer != NULL)
+    {
+        rio::MemUtil::free(m_pPositionBuffer);
+        m_pPositionBuffer = NULL;
+    }
+    if (m_pTexCoordBuffer != NULL)
+    {
+        rio::MemUtil::free(m_pTexCoordBuffer);
+        m_pTexCoordBuffer = NULL;
+    }
 }
 
 void FFLiCopySurfaceDrawer::SetupCPU()

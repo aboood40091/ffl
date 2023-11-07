@@ -39,6 +39,7 @@ FFLiCopySurfaceShader::FFLiCopySurfaceShader()
 
 FFLiCopySurfaceShader::~FFLiCopySurfaceShader()
 {
+    FFLiUtilShader::DestroyShader(&m_FetchShader);
 }
 
 namespace {

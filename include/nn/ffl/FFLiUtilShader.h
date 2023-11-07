@@ -30,6 +30,7 @@ public:
 
 public:
     static bool BuildShader(FFLiUtilShader::FetchShader* pFetchShader, const GX2VertexShader* pVertexShader, const FFLiUtilShader::AttributeStreamDesc* pAttribs, u32 numAttribs, bool invalidate);
+    static void DestroyShader(FFLiUtilShader::FetchShader* pFetchShader);
 
     static bool GetSamplerLocation(u32* pLocation, const GX2PixelShader* pShader, const char* name);
 };

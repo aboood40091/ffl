@@ -77,7 +77,7 @@ bool FFLiUtilShader::BuildShader(FFLiUtilShader::FetchShader* pFetchShader, cons
     u32 size = GX2CalcFetchShaderSizeEx(numAttribs, GX2_FETCH_SHADER_TESSELLATION_NONE, GX2_TESSELLATION_MODE_DISCRETE);
     void* pBuffer = rio::MemUtil::alloc(size, GX2_SHADER_ALIGNMENT);
 
-    pFetchShader->pStreams = static_cast<GX2AttribStream*>(rio::MemUtil::alloc(sizeof(GX2AttribStream) * numAttribs, 4));
+    pFetchShader->pStreams = new GX2AttribStream[numAttribs];
 
     for (u32 i = 0; i < numAttribs; i++)
     {
@@ -105,6 +105,20 @@ bool FFLiUtilShader::BuildShader(FFLiUtilShader::FetchShader* pFetchShader, cons
         InvalidateFetchShader(&pFetchShader->fetchShader);
 
     return true;
+}
+
+void FFLiUtilShader::DestroyShader(FFLiUtilShader::FetchShader* pFetchShader)
+{
+    if (pFetchShader->fetchShader.program != nullptr)
+    {
+        rio::MemUtil::free(pFetchShader->fetchShader.program);
+        pFetchShader->fetchShader.program = nullptr;
+    }
+    if (pFetchShader->pStreams != nullptr)
+    {
+        delete[] pFetchShader->pStreams;
+        pFetchShader->pStreams = nullptr;
+    }
 }
 
 bool FFLiUtilShader::GetSamplerLocation(u32* pLocation, const GX2PixelShader* pShader, const char* name)
