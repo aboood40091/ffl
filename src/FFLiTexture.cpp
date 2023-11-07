@@ -114,8 +114,8 @@ FFLResult FFLiLoadTextureWithAllocate(agl::TextureData** ppTextureData, FFLiText
     (*ppTextureData)->initializeFromSurface(surface);
 #endif // RIO_IS_WIN
 
-    if (!pResLoader->IsExpand())
-        rio::MemUtil::free(pData);
+  //if (!pResLoader->IsExpand())
+  //    rio::MemUtil::free(pData);
 
     return FFL_RESULT_OK;
 }
