@@ -58,14 +58,16 @@ FFLResult FFLiLoadTextureWithAllocate(agl::TextureData** ppTextureData, FFLiText
     GX2CalcSurfaceSizeAndAlignment(&surface);
 
     void* imagePtr = footer.GetImagePtrImpl(size);
+    RIO_ASSERT(imagePtr == pData);
+
     void* mipPtr = footer.GetMipPtrImpl(size);
     if (mipPtr == nullptr && footer.NumMips() > 1)
         mipPtr = (void*)((uintptr_t)imagePtr + surface.mipOffset[0]);
 
-#if RIO_IS_WIN
     surface.imagePtr = imagePtr;
     surface.mipPtr = mipPtr;
 
+#if RIO_IS_WIN
     GX2Surface linearSurface;
     linearSurface.dim = GX2_SURFACE_DIM_2D;
     linearSurface.width = footer.Width();
@@ -92,33 +94,12 @@ FFLResult FFLiLoadTextureWithAllocate(agl::TextureData** ppTextureData, FFLiText
         GX2CopySurface(&surface, i, 0, &linearSurface, i, 0);
 
     (*ppTextureData)->initializeFromSurface(linearSurface);
-#else
+
     if (!pResLoader->IsExpand())
-    {
-        surface.imagePtr = rio::MemUtil::alloc(surface.imageSize, surface.alignment);
-        rio::MemUtil::copy(surface.imagePtr, imagePtr, surface.imageSize);
-
-        if (surface.mipSize > 0)
-        {
-            surface.mipPtr = rio::MemUtil::alloc(surface.mipSize, surface.alignment);
-            rio::MemUtil::copy(surface.mipPtr, mipPtr, surface.mipSize);
-        }
-        else
-        {
-            surface.mipPtr = nullptr;
-        }
-    }
-    else
-    {
-        surface.imagePtr = imagePtr;
-        surface.mipPtr = mipPtr;
-    }
-
+        rio::MemUtil::free(pData);
+#else
     (*ppTextureData)->initializeFromSurface(surface);
 #endif // RIO_IS_WIN
-
-  //if (!pResLoader->IsExpand())
-  //    rio::MemUtil::free(pData);
 
     return FFL_RESULT_OK;
 }
@@ -137,12 +118,8 @@ void FFLiDeleteTexture(agl::TextureData** ppTextureData, bool isExpand)
 #else
     if (!isExpand)
     {
-        void* imagePtr = pTextureData->getImagePtr();
-        void* mipPtr = pTextureData->getMipPtr();
-
-        rio::MemUtil::free(imagePtr);
-        if (pTextureData->getMipByteSize() > 0)
-            rio::MemUtil::free(mipPtr);
+        void* pData = pTextureData->getImagePtr();
+        rio::MemUtil::free(pData);
     }
 #endif
 
