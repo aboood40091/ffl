@@ -60,7 +60,7 @@ FFLResult FFLiResourceLoader::LoadTexture(void* pData, u32* pSize, FFLiTexturePa
 
 #if __BYTE_ORDER__ != __ORDER_BIG_ENDIAN__
     u32 size = *pSize;
-    if (((IsCached() && partsInfo.strategy != FFLI_RESOURCE_STRATEGY_UNCOMPRESSED) || !IsCached()) && size)
+    if (size && ((IsCached() && partsInfo.strategy != FFLI_RESOURCE_STRATEGY_UNCOMPRESSED) || !IsCached()))
     {
         FFLiResourceTextureFooter& footer = FFLiResourceTextureFooter::GetFooterImpl(pData, size);
         footer.SwapEndian();
@@ -85,7 +85,7 @@ FFLResult FFLiResourceLoader::LoadShape(void* pData, u32* pSize, FFLiShapePartsT
 
 #if __BYTE_ORDER__ != __ORDER_BIG_ENDIAN__
     u32 size = *pSize;
-    if (((IsCached() && partsInfo.strategy != FFLI_RESOURCE_STRATEGY_UNCOMPRESSED) || !IsCached()) && size)
+    if (size && ((IsCached() && partsInfo.strategy != FFLI_RESOURCE_STRATEGY_UNCOMPRESSED) || !IsCached()))
     {
         FFLiSwapEndianResourceShapeElement(pData, partsType, false);
     }

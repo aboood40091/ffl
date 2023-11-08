@@ -146,7 +146,7 @@ FFLResult FFLiLoadShape(FFLDrawParam* pDrawParam, FFLBoundingBox* pBoundingBox, 
         rio::MemUtil::copy(pBoundingBox, FFLiGetResourceShapeElement(&size, pData, partsType, FFLI_RESOURCE_SHAPE_ELEMENT_TYPE_BOUNDING_BOX), sizeof(FFLBoundingBox));
     }
 
-  //rio::MemUtil::free(pData);
+    rio::MemUtil::free(pData);
     return FFL_RESULT_OK;
 }
 
