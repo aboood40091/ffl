@@ -60,20 +60,26 @@ bool FFLiCanDrawShape(const FFLDrawParam* pDrawParam)
     return pDrawParam->primitiveParam.indexCount != 0;
 }
 
-FFLResult FFLiLoadShape(FFLDrawParam* pDrawParam, FFLBoundingBox* pBoundingBox, FFLiCharModel* pModel, FFLiShapePartsType partsType, u16 index, FFLiResourceLoader* pResLoader)
+FFLResult FFLiLoadShape(void** ppShapeData, FFLDrawParam* pDrawParam, FFLBoundingBox* pBoundingBox, FFLiCharModel* pModel, FFLiShapePartsType partsType, u16 index, FFLiResourceLoader* pResLoader)
 {
+    void*& pData = *ppShapeData;
+
     u32 size = pResLoader->GetShapeAlignedMaxSize(partsType);
-    void* pData = rio::MemUtil::alloc(size, rio::FileDevice::cBufferMinAlignment);
+    pData = rio::MemUtil::alloc(size, rio::FileDevice::cBufferMinAlignment);
 
     FFLResult result = pResLoader->LoadShape(pData, &size, partsType, index);
     if (result != FFL_RESULT_OK)
     {
         rio::MemUtil::free(pData);
+        pData = nullptr;
         return result;
     }
 
     if (size == 0)
     {
+        rio::MemUtil::free(pData);
+        pData = nullptr;
+
         rio::MemUtil::set(pDrawParam, 0, sizeof(FFLDrawParam));
 
         const u32 NaN = 0x7FC00000;
@@ -90,34 +96,13 @@ FFLResult FFLiLoadShape(FFLDrawParam* pDrawParam, FFLBoundingBox* pBoundingBox, 
         {
             FFLiResourceShapeElementType elementType = GetElementType(FFLAttributeBufferType(i));
             FFLAttributeBuffer& attribute = pDrawParam->attributeBufferParam.attributeBuffers[i];
-
-            void* ptr = const_cast<void*>(FFLiGetResourceShapeElement(&attribute.size, pData, partsType, elementType));
-            if (ptr == nullptr)
-                attribute.ptr = nullptr;
-
-            else
-            {
-                attribute.ptr = rio::MemUtil::alloc(attribute.size, rio::Drawer::cVtxAlignment);
-                rio::MemUtil::copy(attribute.ptr, ptr, attribute.size);
-            }
-
+            attribute.ptr = const_cast<void*>(FFLiGetResourceShapeElement(&attribute.size, pData, partsType, elementType));
             attribute.stride = GetStride(FFLAttributeBufferType(i), attribute.size);
         }
 
         {
             FFLPrimitiveParam& primitive = pDrawParam->primitiveParam;
-
-            void* ptr = const_cast<void*>(FFLiGetResourceShapeElement(&primitive.indexCount, pData, partsType, FFLI_RESOURCE_SHAPE_ELEMENT_TYPE_INDEX));
-            if (ptr == nullptr)
-                primitive.pIndexBuffer = nullptr;
-
-            else
-            {
-                u32 indexSize = primitive.indexCount * sizeof(u16);
-                primitive.pIndexBuffer = rio::MemUtil::alloc(indexSize, rio::Drawer::cIdxAlignment);
-                rio::MemUtil::copy(primitive.pIndexBuffer, ptr, indexSize);
-            }
-
+            primitive.pIndexBuffer = const_cast<void*>(FFLiGetResourceShapeElement(&primitive.indexCount, pData, partsType, FFLI_RESOURCE_SHAPE_ELEMENT_TYPE_INDEX));
             primitive.primitiveType = rio::Drawer::TRIANGLES;
         }
 
@@ -146,29 +131,18 @@ FFLResult FFLiLoadShape(FFLDrawParam* pDrawParam, FFLBoundingBox* pBoundingBox, 
         rio::MemUtil::copy(pBoundingBox, FFLiGetResourceShapeElement(&size, pData, partsType, FFLI_RESOURCE_SHAPE_ELEMENT_TYPE_BOUNDING_BOX), sizeof(FFLBoundingBox));
     }
 
-    rio::MemUtil::free(pData);
     return FFL_RESULT_OK;
 }
 
-void FFLiDeleteShape(FFLDrawParam* pDrawParam)
+void FFLiDeleteShape(void** ppShapeData, FFLDrawParam* pDrawParam)
 {
-    for (u32 i = 0; i < FFL_ATTRIBUTE_BUFFER_TYPE_MAX; i++)
+    void*& pData = *ppShapeData;
+    if (pData != nullptr)
     {
-        FFLAttributeBuffer& attribute = pDrawParam->attributeBufferParam.attributeBuffers[i];
-        if (attribute.ptr != nullptr)
-        {
-            rio::MemUtil::free(attribute.ptr);
-            attribute.ptr = nullptr;
-        }
-    }
+        rio::MemUtil::free(pData);
+        pData = nullptr;
 
-    {
-        FFLPrimitiveParam& primitive = pDrawParam->primitiveParam;
-        if (primitive.pIndexBuffer != nullptr)
-        {
-            rio::MemUtil::free(primitive.pIndexBuffer);
-            primitive.pIndexBuffer = nullptr;
-        }
+        rio::MemUtil::set(pDrawParam, 0, sizeof(FFLDrawParam));
     }
 }
 

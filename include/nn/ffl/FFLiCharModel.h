@@ -24,6 +24,7 @@ struct FFLiCharModel
     FFLExpression           expression;
     FFLiTextureTempObject*  pTextureTempObject;
     FFLDrawParam            drawParam[FFLI_SHAPE_TYPE_MAX];
+    void*                   pShapeData[FFLI_SHAPE_TYPE_MAX];
     FFLiRenderTexture       facelineRenderTexture;
     agl::TextureData*       pCapTexture;
     agl::TextureData*       pGlassTexture;
@@ -36,7 +37,7 @@ struct FFLiCharModel
     FFLModelType            modelType;
     FFLBoundingBox          boundingBox[3];
 };
-NN_STATIC_ASSERT(sizeof(FFLiCharModel) == 0x748);
+NN_STATIC_ASSERT(sizeof(FFLiCharModel) == 0x778);
 
 struct FFLCharModelSource;
 struct FFLShaderCallback;

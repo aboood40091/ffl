@@ -298,10 +298,11 @@ void CalcluateBoundingBox(FFLBoundingBox* pDst, const FFLBoundingBox* pSrc, FFLi
 FFLResult InitShape(FFLiCharModel* pModel, FFLiShapePartsType partsType, u32 index, f32 scaleX, f32 scaleY, const FFLVec3* pTranslate, bool flipX, FFLiResourceLoader* pResLoader, const FFLiCoordinate* pCoordinate)
 {
     FFLiShapeType type = ConvertShapePartsTypeToShapeType(partsType);
+    void** ppShapeData = &(pModel->pShapeData[type]);
     FFLDrawParam* pDrawParam = &(pModel->drawParam[type]);
     FFLBoundingBox boundingBox;
 
-    FFLResult result = FFLiLoadShape(pDrawParam, &boundingBox, pModel, partsType, index, pResLoader);
+    FFLResult result = FFLiLoadShape(ppShapeData, pDrawParam, &boundingBox, pModel, partsType, index, pResLoader);
     if (result != FFL_RESULT_OK)
         return result;
 
@@ -313,9 +314,10 @@ FFLResult InitShape(FFLiCharModel* pModel, FFLiShapePartsType partsType, u32 ind
 void DeleteShape(FFLiCharModel* pModel, FFLiShapePartsType partsType)
 {
     FFLiShapeType type = ConvertShapePartsTypeToShapeType(partsType);
+    void** ppShapeData = &(pModel->pShapeData[type]);
     FFLDrawParam* pDrawParam = &(pModel->drawParam[type]);
 
-    FFLiDeleteShape(pDrawParam);
+    FFLiDeleteShape(ppShapeData, pDrawParam);
 }
 
 void DeleteShape_Faceline(FFLiCharModel* pModel)
