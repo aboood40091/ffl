@@ -14,7 +14,7 @@
 #include <nn/ffl/detail/FFLiCharInfo.h>
 #include <nn/ffl/detail/FFLiCopySurface.h>
 
-#include <cstring>
+#include <misc/rio_MemUtil.h>
 
 namespace {
 
@@ -70,9 +70,9 @@ void FFLiDeleteMaskTextures(FFLiMaskTextures* pMaskTextures)
     }
 }
 
-FFLResult FFLiInitTempObjectMaskTextures(FFLiMaskTexturesTempObject* pObject, const FFLiMaskTextures* pMaskTextures, const FFLiCharInfo* pCharInfo, u32 expressionFlag, u32 resolution, bool enableMipMap, FFLiResourceLoader* pResLoader, FFLiRenderTextureBuffer* pRenderTextureBuffer)
+FFLResult FFLiInitTempObjectMaskTextures(FFLiMaskTexturesTempObject* pObject, const FFLiMaskTextures* pMaskTextures, const FFLiCharInfo* pCharInfo, u32 expressionFlag, u32 resolution, bool enableMipMap, FFLiResourceLoader* pResLoader)
 {
-    std::memset(pObject, 0, sizeof(FFLiMaskTexturesTempObject));
+    rio::MemUtil::set(pObject, 0, sizeof(FFLiMaskTexturesTempObject));
 
     FFLResult result = FFLiLoadPartsTextures(&pObject->partsTextures, pCharInfo, expressionFlag, pResLoader);
     if (result != FFL_RESULT_OK)

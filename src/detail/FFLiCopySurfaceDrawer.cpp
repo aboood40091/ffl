@@ -9,8 +9,6 @@
 #include <gx2/draw.h>
 #include <gx2/mem.h>
 
-#include <cstring>
-
 FFLiCopySurfaceDrawer::FFLiCopySurfaceDrawer()
     : m_pPositionBuffer(NULL)
     , m_pTexCoordBuffer(NULL)
@@ -55,8 +53,8 @@ void FFLiCopySurfaceDrawer::SetupCPU()
     m_pPositionBuffer = static_cast<FFLVec2*>(rio::MemUtil::alloc(POSITION_BUFFER_SIZE, GX2_VERTEX_BUFFER_ALIGNMENT));
     m_pTexCoordBuffer = static_cast<FFLVec2*>(rio::MemUtil::alloc(TEXCOORD_BUFFER_SIZE, GX2_VERTEX_BUFFER_ALIGNMENT));
 
-    std::memcpy(m_pPositionBuffer, POSITION_BUFFER, POSITION_BUFFER_SIZE);
-    std::memcpy(m_pTexCoordBuffer, TEXCOORD_BUFFER, TEXCOORD_BUFFER_SIZE);
+    rio::MemUtil::copy(m_pPositionBuffer, POSITION_BUFFER, POSITION_BUFFER_SIZE);
+    rio::MemUtil::copy(m_pTexCoordBuffer, TEXCOORD_BUFFER, TEXCOORD_BUFFER_SIZE);
 }
 
 void FFLiCopySurfaceDrawer::SetupGPU()

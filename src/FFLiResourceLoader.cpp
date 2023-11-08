@@ -7,8 +7,6 @@
 
 #include <filedevice/rio_FileDeviceMgr.h>
 
-#include <cstring>
-
 namespace {
 
 bool Uncompress(void* pDst, const void* pSrc, FFLiResourceUncompressBuffer* pBuffer, const FFLiResourcePartsInfo& partsInfo);
@@ -142,7 +140,7 @@ FFLResult FFLiResourceLoader::LoadFromCache(void* pData, const FFLiResourceParts
 
     if (partsInfo.strategy == FFLI_RESOURCE_STRATEGY_UNCOMPRESSED)
     {
-        std::memcpy(pData, ptr, partsInfo.dataSize);
+        rio::MemUtil::copy(pData, ptr, partsInfo.dataSize);
     }
     else
     {

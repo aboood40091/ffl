@@ -6,8 +6,6 @@
 
 #include <filedevice/rio_FileDeviceMgr.h>
 
-#include <cstring>
-
 namespace {
 
 const char* RESOUCE_FILE_NAME[2][FFL_RESOURCE_TYPE_MAX] = {
@@ -26,8 +24,8 @@ const char* RESOUCE_FILE_NAME[2][FFL_RESOURCE_TYPE_MAX] = {
 FFLiResourceManager::FFLiResourceManager(FFLiResourceMultiHeader* pHeader)
     : m_pResourceMultiHeader(pHeader)
 {
-    std::memset(m_pResourceMultiHeader, 0, sizeof(FFLiResourceMultiHeader));
-    std::memset(m_Path, 0, (s32)FFL_RESOURCE_TYPE_MAX * (s32)FFL_PATH_MAX_LEN);
+    rio::MemUtil::set(m_pResourceMultiHeader, 0, sizeof(FFLiResourceMultiHeader));
+    rio::MemUtil::set(m_Path, 0, (s32)FFL_RESOURCE_TYPE_MAX * (s32)FFL_PATH_MAX_LEN);
 }
 
 FFLiResourceManager::~FFLiResourceManager()

@@ -2,8 +2,6 @@
 #include <nn/ffl/FFLiPath.h>
 #include <nn/ffl/FFLiSystemContext.h>
 
-#include <cstring>
-
 #if RIO_IS_CAFE
 #include <nn/act.h>
 #endif // RIO_IS_CAFE
@@ -19,14 +17,14 @@ FFLiSystemContext::~FFLiSystemContext()
 
 void FFLiSystemContext::Init(u32 seed)
 {
-    std::memset(&m_AuthorID, 0, sizeof(FFLiAuthorID));
+    rio::MemUtil::set(&m_AuthorID, 0, sizeof(FFLiAuthorID));
 
     m_RandomContext.Init(seed);
 
     static const FFLiCreateIDBase DEFAULT_CREATE_ID_BASE = {
         0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
     };
-    std::memcpy(&m_CreateIDBase, &DEFAULT_CREATE_ID_BASE, sizeof(FFLiCreateIDBase));
+    rio::MemUtil::copy(&m_CreateIDBase, &DEFAULT_CREATE_ID_BASE, sizeof(FFLiCreateIDBase));
 
     m_TitleID = 0;
 }
@@ -56,9 +54,9 @@ bool FFLiSystemContext::AfterConstruct()
     if (result.IsFailure())
         return false;
 
-    std::memcpy(&m_AuthorID, &id, sizeof(FFLiAuthorID));
+    rio::MemUtil::copy(&m_AuthorID, &id, sizeof(FFLiAuthorID));
 #else
-    std::memset(&m_AuthorID, 0, sizeof(FFLiAuthorID));
+    rio::MemUtil::set(&m_AuthorID, 0, sizeof(FFLiAuthorID));
 #endif // RIO_IS_CAFE
     m_TitleID = FFLiGetMiiStudioTitleID();
     return true;

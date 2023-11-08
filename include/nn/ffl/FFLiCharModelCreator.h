@@ -10,7 +10,6 @@ struct FFLShaderCallback;
 struct  FFLiCharModel;
 class   FFLiCharModelCreateParam;
 class   FFLiManager;
-struct  FFLiRenderTextureBuffer;
 
 class FFLiCharModelCreator
 {

@@ -2,7 +2,7 @@
 #include <nn/ffl/FFLiMiddleDB.h>
 #include <nn/ffl/FFLiMiiData.h>
 
-#include <cstring>
+#include <misc/rio_MemUtil.h>
 
 u32 FFLiGetMiddleDBBufferSize(u16 miiDataNum)
 {
@@ -91,7 +91,7 @@ void FFLiMiddleDB::Init(FFLMiddleDBType type, void* pData, u16 num)
     m_Size = num;
     m_StoredSize = 0;
 
-    std::memset(m_ParamData, 0, FFLI_MIDDLE_DB_PARAM_SIZE);
+    rio::MemUtil::set(m_ParamData, 0, FFLI_MIDDLE_DB_PARAM_SIZE);
 
     switch (type)
     {
@@ -108,7 +108,7 @@ void FFLiMiddleDB::Init(FFLMiddleDBType type, void* pData, u16 num)
         break;
     }
 
-    std::memset(m_pMiiDataOfficial, 0, FFLiGetMiddleDBBufferSize(m_Size));
+    rio::MemUtil::set(m_pMiiDataOfficial, 0, FFLiGetMiddleDBBufferSize(m_Size));
 }
 
 void FFLiMiddleDB::SetHiddenParam(FFLGender gender)
@@ -139,7 +139,7 @@ FFLMiddleDBType FFLiMiddleDB::Type() const
 void FFLiMiddleDB::ClearData()
 {
     m_StoredSize = 0;
-    std::memset(m_pMiiDataOfficial, 0, FFLiGetMiddleDBBufferSize(Size()));
+    rio::MemUtil::set(m_pMiiDataOfficial, 0, FFLiGetMiddleDBBufferSize(Size()));
 }
 
 const FFLiMiddleDBHiddenParam& FFLiMiddleDB::HiddenParam() const
@@ -170,7 +170,7 @@ void FFLiMiddleDB::Add(const FFLiMiiDataHidden& miiDataHidden)
 {
     FFLiMiiDataOfficial& miiDataOfficial = m_pMiiDataOfficial[StoredSize()];
     static_cast<FFLiMiiDataCore&>(miiDataOfficial) = static_cast<const FFLiMiiDataCore&>(miiDataHidden);
-    std::memset(miiDataOfficial.CreatorName(), 0, sizeof(u16) * 10);
+    rio::MemUtil::set(miiDataOfficial.CreatorName(), 0, sizeof(u16) * 10);
     m_StoredSize++;
 }
 

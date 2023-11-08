@@ -6,7 +6,7 @@
 #include <nn/ffl/detail/FFLiCharInfo.h>
 #include <nn/ffl/detail/FFLiCrc.h>
 
-#include <cstring>
+#include <misc/rio_MemUtil.h>
 
 static inline bool IsInvalidCharCode(u16 c)
 {
@@ -112,21 +112,21 @@ bool FFLiMiiDataCoreRFL2CharInfo(FFLiCharInfo* pCharInfo, const FFLiMiiDataCoreR
 
     pCharInfo->_114 = 0;
 
-    std::memset(&pCharInfo->authorID, 0, sizeof(FFLiAuthorID));
+    rio::MemUtil::set(&pCharInfo->authorID, 0, sizeof(FFLiAuthorID));
 
-    std::memcpy(pCharInfo->name, miiDataCoreRFL.Name(), sizeof(u16) * 10);
+    rio::MemUtil::copy(pCharInfo->name, miiDataCoreRFL.Name(), sizeof(u16) * 10);
     pCharInfo->name[10] = L'\0';
     bool nameReplaced = replaceName ? ReplaceNameFromRFL(pCharInfo->name, 10, 5) : false;
 
-    std::memset(&pCharInfo->creatorID, 0, sizeof(FFLCreateID));                         // Create ID is cleared here...
+    rio::MemUtil::set(&pCharInfo->creatorID, 0, sizeof(FFLCreateID));                         // Create ID is cleared here...
 
     pCharInfo->birthMonth = miiDataCoreRFL.BirthMonth();
     pCharInfo->birthDay = miiDataCoreRFL.BirthDay();
 
     if (pCreatorName != NULL)
-        std::memcpy(pCharInfo->creatorName, pCreatorName, sizeof(u16) * (10 + 1));
+        rio::MemUtil::copy(pCharInfo->creatorName, pCreatorName, sizeof(u16) * (10 + 1));
     else
-        std::memset(pCharInfo->creatorName, 0, sizeof(u16) * (10 + 1));
+        rio::MemUtil::set(pCharInfo->creatorName, 0, sizeof(u16) * (10 + 1));
     pCharInfo->creatorName[10] = L'\0';
     bool creatorNameReplaced = replaceName ? ReplaceNameFromRFL(pCharInfo->creatorName, 10, 0) : false;
 
@@ -140,7 +140,7 @@ bool FFLiMiiDataCoreRFL2CharInfo(FFLiCharInfo* pCharInfo, const FFLiMiiDataCoreR
 
 void FFLiClearCreatorNameFromOfficial(FFLiMiiDataOfficial* pMiiDataOfficial)
 {
-    std::memset(pMiiDataOfficial->CreatorName(), 0, sizeof(u16) * 10);
+    rio::MemUtil::set(pMiiDataOfficial->CreatorName(), 0, sizeof(u16) * 10);
 }
 
 void FFLiMiiDataCore2CharInfo(FFLiCharInfo* pCharInfo, const FFLiMiiDataCore& miiDataCore, const u16* pCreatorName, bool resetBirthday)
@@ -220,20 +220,20 @@ void FFLiMiiDataCore2CharInfo(FFLiCharInfo* pCharInfo, const FFLiMiiDataCore& mi
 
     pCharInfo->_114 = miiDataCore.FlagBit24To27();
 
-    std::memcpy(&pCharInfo->authorID, &miiDataCore.AuthorID(), sizeof(FFLiAuthorID));
+    rio::MemUtil::copy(&pCharInfo->authorID, &miiDataCore.AuthorID(), sizeof(FFLiAuthorID));
 
-    std::memcpy(pCharInfo->name, miiDataCore.Name(), sizeof(u16) * (10 + 1));
+    rio::MemUtil::copy(pCharInfo->name, miiDataCore.Name(), sizeof(u16) * (10 + 1));
     pCharInfo->name[10] = L'\0';
 
-    std::memcpy(&pCharInfo->creatorID, &miiDataCore.CreatorID(), sizeof(FFLCreateID));
+    rio::MemUtil::copy(&pCharInfo->creatorID, &miiDataCore.CreatorID(), sizeof(FFLCreateID));
 
     pCharInfo->birthMonth = resetBirthday ? 0 : miiDataCore.BirthMonth();
     pCharInfo->birthDay = resetBirthday ? 0 : miiDataCore.BirthDay();
 
     if (pCreatorName != NULL)
-        std::memcpy(pCharInfo->creatorName, pCreatorName, sizeof(u16) * (10 + 1));
+        rio::MemUtil::copy(pCharInfo->creatorName, pCreatorName, sizeof(u16) * (10 + 1));
     else
-        std::memset(pCharInfo->creatorName, 0, sizeof(u16) * (10 + 1));
+        rio::MemUtil::set(pCharInfo->creatorName, 0, sizeof(u16) * (10 + 1));
     pCharInfo->creatorName[10] = L'\0';
 
     pCharInfo->_112 = 0;
@@ -251,15 +251,15 @@ void FFLiCharInfo2MiiDataCore(FFLiMiiDataCore* pMiiDataCore, const FFLiCharInfo&
     pMiiDataCore->SetSlotIndex(charInfo.slotIndex);
     pMiiDataCore->SetFlagBit24To27(charInfo._114);
     pMiiDataCore->SetBirthPlatform(charInfo.birthPlatform);
-    std::memcpy(&pMiiDataCore->AuthorID(), &charInfo.authorID, sizeof(FFLiAuthorID));
-    std::memcpy(&pMiiDataCore->CreatorID(), &charInfo.creatorID, sizeof(FFLCreateID));
-    std::memset(pMiiDataCore->Padding1(), 0, pMiiDataCore->Padding1Size());
+    rio::MemUtil::copy(&pMiiDataCore->AuthorID(), &charInfo.authorID, sizeof(FFLiAuthorID));
+    rio::MemUtil::copy(&pMiiDataCore->CreatorID(), &charInfo.creatorID, sizeof(FFLCreateID));
+    rio::MemUtil::set(pMiiDataCore->Padding1(), 0, pMiiDataCore->Padding1Size());
     pMiiDataCore->SetGender(charInfo.gender);
     pMiiDataCore->SetBirthMonth(resetBirthday ? 0 : charInfo.birthMonth);
     pMiiDataCore->SetBirthDay(resetBirthday ? 0 : charInfo.birthDay);
     pMiiDataCore->SetFavoriteColor(charInfo.favoriteColor);
     pMiiDataCore->SetFavoriteMii(charInfo.favoriteMii);
-    std::memcpy(pMiiDataCore->Name(), charInfo.name, sizeof(u16) * 10);
+    rio::MemUtil::copy(pMiiDataCore->Name(), charInfo.name, sizeof(u16) * 10);
     pMiiDataCore->SetHeight(charInfo.height);
     pMiiDataCore->SetBuild(charInfo.build);
     pMiiDataCore->SetFaceType(charInfo.parts.faceType);
@@ -315,7 +315,7 @@ void FFLiMiiDataOfficial2CharInfo(FFLiCharInfo* pCharInfo, const FFLiMiiDataOffi
 void FFLiCharInfo2MiiDataOfficial(FFLiMiiDataOfficial* pMiiDataOfficial, const FFLiCharInfo& charInfo, bool resetBirthday)
 {
     FFLiCharInfo2MiiDataCore(pMiiDataOfficial, charInfo, resetBirthday);
-    std::memcpy(pMiiDataOfficial->CreatorName(), charInfo.creatorName, sizeof(u16) * 10);
+    rio::MemUtil::copy(pMiiDataOfficial->CreatorName(), charInfo.creatorName, sizeof(u16) * 10);
 }
 
 FFLResult FFLiStoreDataCFLToCharInfo(FFLiCharInfo* pCharInfo, const FFLiStoreDataCFL& storeDataCFL)
@@ -324,7 +324,7 @@ FFLResult FFLiStoreDataCFLToCharInfo(FFLiCharInfo* pCharInfo, const FFLiStoreDat
         return FFL_RESULT_FILE_INVALID;
 
     FFLiStoreData storeData;
-    std::memcpy((char*)&storeData, (char*)&storeDataCFL, FFL_STOREDATA_SIZE);
+    rio::MemUtil::copy((char*)&storeData, (char*)&storeDataCFL, FFL_STOREDATA_SIZE);
 #if __BYTE_ORDER__ != __ORDER_LITTLE_ENDIAN__
     storeData.SwapEndian();
 #endif // __BYTE_ORDER__
@@ -343,13 +343,13 @@ FFLResult FFLiCharInfoToStoreDataCFL(FFLiStoreDataCFL* pStoreDataCFL, const FFLi
 void FFLiMiiDataOfficialToStoreDataCFL(FFLiStoreDataCFL& storeDataCFL, const FFLiMiiDataOfficial& miiDataOfficial)
 {
     FFLiStoreData storeData;
-    std::memset(&storeData, 0, FFL_STOREDATA_SIZE);
+    rio::MemUtil::set(&storeData, 0, FFL_STOREDATA_SIZE);
     static_cast<FFLiMiiDataOfficial&>(storeData) = miiDataOfficial;
     storeData.SetCRC();
 #if __BYTE_ORDER__ != __ORDER_LITTLE_ENDIAN__
     storeData.SwapEndian();
 #endif // __BYTE_ORDER__
-    std::memcpy(&storeDataCFL, &storeData, FFL_STOREDATA_SIZE);
+    rio::MemUtil::copy(&storeDataCFL, &storeData, FFL_STOREDATA_SIZE);
 }
 
 namespace {

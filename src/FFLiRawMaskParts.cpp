@@ -11,8 +11,6 @@
 #include <gx2/mem.h>
 #endif // RIO_IS_CAFE
 
-#include <cstring>
-
 namespace {
 
 void CalcMVMatrix(rio::Matrix34f* pMVMatrix, const FFLiRawMaskPartsDesc* pDesc);
@@ -113,7 +111,7 @@ void InitPrimitive(FFLPrimitiveParam* pPrimitive)
     pPrimitive->indexCount = 4;
     pPrimitive->pIndexBuffer = FFLiBugVgtFixedIndexPtr(Allocate(FFLiBugCanVgtFixedIndexSize(FFLiBugCanSwapSize(INDEX_BUFFER_SIZE)), rio::Drawer::cIdxAlignment));
 
-    std::memcpy(pPrimitive->pIndexBuffer, INDEX_BUFFER, INDEX_BUFFER_SIZE);
+    rio::MemUtil::copy(pPrimitive->pIndexBuffer, INDEX_BUFFER, INDEX_BUFFER_SIZE);
     EndianSwap(pPrimitive->pIndexBuffer, INDEX_BUFFER_SIZE);
 }
 
@@ -184,7 +182,7 @@ void InitAttributes(FFLAttributeBufferParam* pAttributes, FFLiOriginPosition ori
         { 0, 0 }
     } };
 
-    std::memcpy(pAttributes, &ATTRIBUTES, sizeof(FFLAttributeBufferParam));
+    rio::MemUtil::copy(pAttributes, &ATTRIBUTES, sizeof(FFLAttributeBufferParam));
 
     pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_POSITION].ptr = Allocate(FFLiBugCanSwapSize(POSITION_BUFFER_SIZE), rio::Drawer::cVtxAlignment);
     pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_TEXCOORD].ptr = Allocate(FFLiBugCanSwapSize(TEXCOORD_BUFFER_SIZE), rio::Drawer::cVtxAlignment);
@@ -258,11 +256,11 @@ void InitAttributesForFill(FFLAttributeBufferParam* pAttributes)
         { 0, 0 }
     } };
 
-    std::memcpy(pAttributes, &ATTRIBUTES, sizeof(FFLAttributeBufferParam));
+    rio::MemUtil::copy(pAttributes, &ATTRIBUTES, sizeof(FFLAttributeBufferParam));
 
     pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_POSITION].ptr = Allocate(FFLiBugCanSwapSize(POSITION_BUFFER_SIZE), rio::Drawer::cVtxAlignment);
 
-    std::memcpy(pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_POSITION].ptr, POSITION_BUFFER, POSITION_BUFFER_SIZE);
+    rio::MemUtil::copy(pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_POSITION].ptr, POSITION_BUFFER, POSITION_BUFFER_SIZE);
     EndianSwap(pAttributes->attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_POSITION].ptr, POSITION_BUFFER_SIZE);
 }
 

@@ -4,8 +4,6 @@
 #include <nn/ffl/FFLiTexture.h>
 
 #if RIO_IS_CAFE
-#include <cstring>
-
 #define GX2_SURFACE_DIM_2D GX2_SURFACE_DIM_TEXTURE_2D
 #define GX2_AA_MODE_1X GX2_AA_MODE1X
 #endif // RIO_IS_CAFE
@@ -98,12 +96,12 @@ FFLResult FFLiLoadTextureWithAllocate(agl::TextureData** ppTextureData, FFLiText
     if (!pResLoader->IsExpand())
     {
         surface.imagePtr = rio::MemUtil::alloc(surface.imageSize, surface.alignment);
-        std::memcpy(surface.imagePtr, imagePtr, surface.imageSize);
+        rio::MemUtil::copy(surface.imagePtr, imagePtr, surface.imageSize);
 
         if (surface.mipSize > 0)
         {
             surface.mipPtr = rio::MemUtil::alloc(surface.mipSize, surface.alignment);
-            std::memcpy(surface.mipPtr, mipPtr, surface.mipSize);
+            rio::MemUtil::copy(surface.mipPtr, mipPtr, surface.mipSize);
         }
         else
         {

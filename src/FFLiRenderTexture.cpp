@@ -2,7 +2,6 @@
 
 #include <nn/ffl/FFLiMipMapUtil.h>
 #include <nn/ffl/FFLiRenderTexture.h>
-#include <nn/ffl/FFLiRenderTextureBuffer.h>
 #include <nn/ffl/FFLiShaderCallback.h>
 #include <nn/ffl/FFLiTexture.h>
 #include <nn/ffl/FFLiUtil.h>
@@ -17,8 +16,6 @@
 #include <gx2/clear.h>
 #include <gx2/mem.h>
 #endif // RIO_IS_CAFE
-
-#include <cstring>
 
 void FFLiInitRenderTexture(FFLiRenderTexture* pRenderTexture, u32 width, u32 height, rio::TextureFormat format, u32 numMips)
 {

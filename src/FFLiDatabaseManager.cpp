@@ -7,7 +7,7 @@
 
 #include <nn/ffl/detail/FFLiCharInfo.h>
 
-#include <cstring>
+#include <misc/rio_MemUtil.h>
 
 FFLiDatabaseManager::FFLiDatabaseManager(FFLiDatabaseFile* pFile, FFLiFileWriteBuffer* pWriteBuffer, FFLiSystemContext* pContext)
     : m_pSystemContext(pContext)
@@ -115,7 +115,7 @@ void ReplaceNameIfAccord(u16* s, u32 size)
     }
 
     if (found)
-        std::memcpy(s, L"???", sizeof(L"???"));
+        rio::MemUtil::copy(s, L"???", sizeof(L"???"));
 }
 
 void ReplaceNameAndCreatorIfAccord(FFLiCharInfo* pCharInfo)
@@ -132,12 +132,12 @@ FFLResult FFLiDatabaseManager::PickupCharInfo(FFLiCharInfo* pCharInfo, FFLDataSo
 
     u32 magic = 0;
     if (pBuffer != NULL)
-        std::memcpy(&magic, pBuffer, sizeof(u32));
+        rio::MemUtil::copy(&magic, pBuffer, sizeof(u32));
 
     switch (dataSource)
     {
     case FFL_DATA_SOURCE_BUFFER:
-        std::memcpy(pCharInfo, pBuffer, sizeof(FFLiCharInfo));
+        rio::MemUtil::copy(pCharInfo, pBuffer, sizeof(FFLiCharInfo));
         result = FFL_RESULT_OK;
         break;
     case FFL_DATA_SOURCE_OFFICIAL:

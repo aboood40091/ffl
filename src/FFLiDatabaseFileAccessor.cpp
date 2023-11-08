@@ -9,8 +9,6 @@
 
 #include <filedevice/rio_FileDeviceMgr.h>
 
-#include <cstring>
-
 enum FFLiFsFileResult
 {
     FFLI_FS_FILE_RESULT_OK                  = 0,
@@ -67,9 +65,9 @@ FFLiDatabaseFileAccessor::FFLiDatabaseFileAccessor(FFLiDatabaseFile* pFile, FFLi
     , _d9c(0)
     , m_IsSaveHiddenNeeded(false)
 {
-    std::memset(m_PathOfficial, 0, FFL_PATH_MAX_LEN);
-    std::memset(m_PathBackup,   0, FFL_PATH_MAX_LEN);
-    std::memset(m_PathHidden,   0, FFL_PATH_MAX_LEN);
+    rio::MemUtil::set(m_PathOfficial, 0, FFL_PATH_MAX_LEN);
+    rio::MemUtil::set(m_PathBackup,   0, FFL_PATH_MAX_LEN);
+    rio::MemUtil::set(m_PathHidden,   0, FFL_PATH_MAX_LEN);
 }
 
 FFLiDatabaseFileAccessor::~FFLiDatabaseFileAccessor()
@@ -399,7 +397,7 @@ rio::RawErrorCode WriteFileImpl(rio::FileHandle& fileHandle, const void* pSrc, u
     for (u32 i = 0; i < count; i++)
     {
         u32 writeSize = FFLiMin(size - i * FFLI_FILE_WRITE_BUFFER_SIZE, FFLI_FILE_WRITE_BUFFER_SIZE);
-        std::memcpy(pWriteBuffer, ((const u8*)pSrc) + i * FFLI_FILE_WRITE_BUFFER_SIZE, writeSize);
+        rio::MemUtil::copy(pWriteBuffer, ((const u8*)pSrc) + i * FFLI_FILE_WRITE_BUFFER_SIZE, writeSize);
 
         u32 writtenSize = 0;
         if (fileHandle.tryWrite(&writtenSize, pWriteBuffer->data, writeSize) && writtenSize > 0)

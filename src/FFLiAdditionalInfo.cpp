@@ -8,7 +8,7 @@
 
 #include <nn/ffl/detail/FFLiCharInfo.h>
 
-#include <cstring>
+#include <misc/rio_MemUtil.h>
 
 namespace {
 
@@ -54,10 +54,10 @@ void FFLiGetAdditionalInfo(FFLAdditionalInfo* pAdditionalInfo, const FFLiCharInf
     }
     else
     {
-        std::memcpy(pAdditionalInfo->name, pCharInfo->name, sizeof(u16) * (10 + 1));
+        rio::MemUtil::copy(pAdditionalInfo->name, pCharInfo->name, sizeof(u16) * (10 + 1));
         pAdditionalInfo->name[10] = L'\0';
 
-        std::memcpy(pAdditionalInfo->creatorName, pCharInfo->creatorName, sizeof(u16) * (10 + 1));
+        rio::MemUtil::copy(pAdditionalInfo->creatorName, pCharInfo->creatorName, sizeof(u16) * (10 + 1));
         pAdditionalInfo->creatorName[10] = L'\0';
 
         ReplaceInvalidNameChar(pAdditionalInfo->name, 10);
@@ -70,7 +70,7 @@ void FFLiGetAdditionalInfo(FFLAdditionalInfo* pAdditionalInfo, const FFLiCharInf
         }
     }
 
-    std::memcpy(&pAdditionalInfo->creatorID, &pCharInfo->creatorID, sizeof(FFLCreateID));
+    rio::MemUtil::copy(&pAdditionalInfo->creatorID, &pCharInfo->creatorID, sizeof(FFLCreateID));
 
     pAdditionalInfo->gender = pCharInfo->gender;
 

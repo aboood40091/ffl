@@ -6,7 +6,7 @@
 #include <nn/ffl/detail/FFLiCharInfo.h>
 #include <nn/ffl/detail/FFLiCrc.h>
 
-#include <cstring>
+#include <misc/rio_MemUtil.h>
 
 static u32 GetMiiDataNum();
 
@@ -37,9 +37,9 @@ void FFLiDatabaseFileOfficial::Init()
 
     _4 = 0;
 
-    std::memset(_4381c, 0, sizeof(_4381c));
-    std::memset(m_MiiDataOfficial, 0, sizeof(m_MiiDataOfficial));
-    std::memset(m_CreateID, 0, sizeof(m_CreateID));
+    rio::MemUtil::set(_4381c, 0, sizeof(_4381c));
+    rio::MemUtil::set(m_MiiDataOfficial, 0, sizeof(m_MiiDataOfficial));
+    rio::MemUtil::set(m_CreateID, 0, sizeof(m_CreateID));
 
     UpdateCrc();
 }
@@ -151,7 +151,7 @@ bool IsExistCreateID(const FFLCreateID& createID, const FFLiDatabaseFileOfficial
 
 void SetNullCreateID(FFLCreateID& createID)
 {
-    std::memset(&createID, 0, sizeof(FFLCreateID));
+    rio::MemUtil::set(&createID, 0, sizeof(FFLCreateID));
 }
 
 }

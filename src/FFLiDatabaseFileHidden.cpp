@@ -6,8 +6,9 @@
 
 #include <nn/ffl/detail/FFLiCrc.h>
 
+#include <misc/rio_MemUtil.h>
+
 #include <algorithm>
-#include <cstring>
 
 void FFLiOrderData::Init()
 {
@@ -190,8 +191,8 @@ void FFLiDatabaseFileHidden::Init()
     for (u32 i = 0; i < 500; i++)
         m_OrderData[i].Init();
 
-    std::memset(m_MiiDataHidden, 0, sizeof(m_MiiDataHidden));
-    std::memset(_abe8, 0, sizeof(_abe8));
+    rio::MemUtil::set(m_MiiDataHidden, 0, sizeof(m_MiiDataHidden));
+    rio::MemUtil::set(_abe8, 0, sizeof(_abe8));
 
     UpdateCrc();
 }

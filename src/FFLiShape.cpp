@@ -6,8 +6,6 @@
 #include <nn/ffl/detail/FFLiBug.h>
 #include <nn/ffl/detail/FFLiResourceShape.h>
 
-#include <cstring>
-
 #include <gpu/rio_VertexStream.h>
 
 #if RIO_IS_CAFE
@@ -76,7 +74,7 @@ FFLResult FFLiLoadShape(FFLDrawParam* pDrawParam, FFLBoundingBox* pBoundingBox, 
 
     if (size == 0)
     {
-        std::memset(pDrawParam, 0, sizeof(FFLDrawParam));
+        rio::MemUtil::set(pDrawParam, 0, sizeof(FFLDrawParam));
 
         const u32 NaN = 0x7FC00000;
         static const u32 INVALID_BOUNDING_BOX[2][3] = {
@@ -84,7 +82,7 @@ FFLResult FFLiLoadShape(FFLDrawParam* pDrawParam, FFLBoundingBox* pBoundingBox, 
             { NaN, NaN, NaN }
         };
         NN_STATIC_ASSERT(sizeof(INVALID_BOUNDING_BOX) == sizeof(FFLBoundingBox));
-        std::memcpy(pBoundingBox, INVALID_BOUNDING_BOX, sizeof(FFLBoundingBox));
+        rio::MemUtil::copy(pBoundingBox, INVALID_BOUNDING_BOX, sizeof(FFLBoundingBox));
     }
     else
     {
@@ -100,7 +98,7 @@ FFLResult FFLiLoadShape(FFLDrawParam* pDrawParam, FFLBoundingBox* pBoundingBox, 
             else
             {
                 attribute.ptr = rio::MemUtil::alloc(attribute.size, rio::Drawer::cVtxAlignment);
-                std::memcpy(attribute.ptr, ptr, attribute.size);
+                rio::MemUtil::copy(attribute.ptr, ptr, attribute.size);
             }
 
             attribute.stride = GetStride(FFLAttributeBufferType(i), attribute.size);
@@ -117,7 +115,7 @@ FFLResult FFLiLoadShape(FFLDrawParam* pDrawParam, FFLBoundingBox* pBoundingBox, 
             {
                 u32 indexSize = primitive.indexCount * sizeof(u16);
                 primitive.pIndexBuffer = rio::MemUtil::alloc(indexSize, rio::Drawer::cIdxAlignment);
-                std::memcpy(primitive.pIndexBuffer, ptr, indexSize);
+                rio::MemUtil::copy(primitive.pIndexBuffer, ptr, indexSize);
             }
 
             primitive.primitiveType = rio::Drawer::TRIANGLES;
@@ -145,7 +143,7 @@ FFLResult FFLiLoadShape(FFLDrawParam* pDrawParam, FFLBoundingBox* pBoundingBox, 
             pModel->partsTransform._0 = pTransform->GetHairPosition();
         }
 
-        std::memcpy(pBoundingBox, FFLiGetResourceShapeElement(&size, pData, partsType, FFLI_RESOURCE_SHAPE_ELEMENT_TYPE_BOUNDING_BOX), sizeof(FFLBoundingBox));
+        rio::MemUtil::copy(pBoundingBox, FFLiGetResourceShapeElement(&size, pData, partsType, FFLI_RESOURCE_SHAPE_ELEMENT_TYPE_BOUNDING_BOX), sizeof(FFLBoundingBox));
     }
 
   //rio::MemUtil::free(pData);

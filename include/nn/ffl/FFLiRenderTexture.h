@@ -18,7 +18,6 @@ NN_STATIC_ASSERT(sizeof(FFLiRenderTexture) == 0x10);
 
 struct FFLColor;
 
-struct  FFLiRenderTextureBuffer;
 class   FFLiShaderCallback;
 
 void FFLiInitRenderTexture(FFLiRenderTexture* pRenderTexture, u32 width, u32 height, rio::TextureFormat format, u32 numMips);

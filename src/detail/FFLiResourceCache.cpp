@@ -3,11 +3,11 @@
 
 #include <nn/ffl/detail/FFLiResourceCache.h>
 
-#include <cstring>
+#include <misc/rio_MemUtil.h>
 
 FFLiResourceCache::FFLiResourceCache()
 {
-    std::memset(m_Res, 0, sizeof(m_Res));
+    rio::MemUtil::set(m_Res, 0, sizeof(m_Res));
 }
 
 FFLiResourceCache::~FFLiResourceCache()

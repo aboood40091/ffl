@@ -11,7 +11,6 @@
 #include <nn/ffl/FFLiResourceLoaderBuffer.h>
 #include <nn/ffl/FFLiManager.h>
 #include <nn/ffl/FFLiModulate.h>
-#include <nn/ffl/FFLiRenderTextureBuffer.h>
 #include <nn/ffl/FFLiShape.h>
 #include <nn/ffl/FFLiShapePartsType.h>
 #include <nn/ffl/FFLiShapeType.h>
@@ -25,8 +24,6 @@
 #if RIO_IS_CAFE
 #include <gx2/event.h>
 #endif // RIO_IS_CAFE
-
-#include <cstring>
 
 union F32BitCast
 {
@@ -82,7 +79,7 @@ FFLResult FFLiCharModelCreator::ExecuteCPUStep(FFLiCharModel* pModel, const FFLC
     if (!FFLiCharModelCreateParam::CheckModelDesc(pDesc))
         return FFL_RESULT_ERROR;
 
-    std::memset((char*)pModel, 0, sizeof(FFLiCharModel));
+    rio::MemUtil::set(pModel, 0, sizeof(FFLiCharModel));
 
     pModel->charModelDesc = *pDesc;
     pModel->modelType = ModelFlagToModelType(pModel->charModelDesc.modelFlag);
@@ -104,12 +101,9 @@ FFLResult FFLiCharModelCreator::ExecuteCPUStep(FFLiCharModel* pModel, const FFLC
 
     pModel->pTextureTempObject = new FFLiTextureTempObject;
 
-    FFLiRenderTextureBuffer renderTextureBuffer;
-    std::memset(&renderTextureBuffer, 0, sizeof(FFLiRenderTextureBuffer));
-
     pModel->expression = FFLiInitMaskTextures(&pModel->maskTextures, pDesc->expressionFlag, resolution, isEnabledMipMap);
 
-    result = FFLiInitTempObjectMaskTextures(&pModel->pTextureTempObject->maskTextures, &pModel->maskTextures, &pModel->charInfo, pDesc->expressionFlag, resolution, isEnabledMipMap, &resLoader, &renderTextureBuffer);
+    result = FFLiInitTempObjectMaskTextures(&pModel->pTextureTempObject->maskTextures, &pModel->maskTextures, &pModel->charInfo, pDesc->expressionFlag, resolution, isEnabledMipMap, &resLoader);
     if (result != FFL_RESULT_OK)
     {
         FFLiDeleteMaskTextures(&pModel->maskTextures);
@@ -120,7 +114,7 @@ FFLResult FFLiCharModelCreator::ExecuteCPUStep(FFLiCharModel* pModel, const FFLC
 
     FFLiInitFacelineTexture(&pModel->facelineRenderTexture, resolution, isEnabledMipMap);
 
-    result = FFLiInitTempObjectFacelineTexture(&pModel->pTextureTempObject->facelineTexture, &pModel->facelineRenderTexture, &pModel->charInfo, resolution, isEnabledMipMap, &resLoader, &renderTextureBuffer);
+    result = FFLiInitTempObjectFacelineTexture(&pModel->pTextureTempObject->facelineTexture, &pModel->facelineRenderTexture, &pModel->charInfo, resolution, isEnabledMipMap, &resLoader);
     if (result != FFL_RESULT_OK)
     {
         FFLiDeleteFacelineTexture(&pModel->facelineRenderTexture);

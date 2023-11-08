@@ -6,8 +6,6 @@
 
 #include <nn/ffl/detail/FFLiCharInfo.h>
 
-#include <cstring>
-
 namespace {
 
 static const FFLiEyeMouthTypeElement EYE_MOUTH_TYPE_ELEMENT[FFL_EXPRESSION_MAX] = {
@@ -86,7 +84,7 @@ s32 FFLiCharInfoAndTypeToMouthIndex(const FFLiCharInfo* pCharInfo, FFLiMouthText
 
 FFLResult FFLiLoadPartsTextures(FFLiPartsTextures* pPartsTextures, const FFLiCharInfo* pCharInfo, u32 expressionFlag, FFLiResourceLoader* pResLoader)
 {
-    std::memset(pPartsTextures, 0, sizeof(FFLiPartsTextures));
+    rio::MemUtil::set(pPartsTextures, 0, sizeof(FFLiPartsTextures));
 
     bool useFlag[FFLI_EYE_TEXTURE_TYPE_MAX];    // max(FFLI_EYE_TEXTURE_TYPE_MAX, FFLI_MOUTH_TEXTURE_TYPE_MAX)
 
@@ -207,7 +205,7 @@ namespace {
 
 void ExpressionToEyeUseFlag(bool* pUseFlag, u32 expressionFlag)
 {
-    std::memset(pUseFlag, 0, sizeof(bool) * FFLI_EYE_TEXTURE_TYPE_MAX);
+    rio::MemUtil::set(pUseFlag, 0, sizeof(bool) * FFLI_EYE_TEXTURE_TYPE_MAX);
 
     for (u32 i = 0; i < FFL_EXPRESSION_MAX; i++)
     {
@@ -221,7 +219,7 @@ void ExpressionToEyeUseFlag(bool* pUseFlag, u32 expressionFlag)
 
 void ExpressionToMouthUseFlag(bool* pUseFlag, u32 expressionFlag)
 {
-    std::memset(pUseFlag, 0, sizeof(bool) * FFLI_MOUTH_TEXTURE_TYPE_MAX);
+    rio::MemUtil::set(pUseFlag, 0, sizeof(bool) * FFLI_MOUTH_TEXTURE_TYPE_MAX);
 
     for (u32 i = 0; i < FFL_EXPRESSION_MAX; i++)
         if (expressionFlag & 1 << i)

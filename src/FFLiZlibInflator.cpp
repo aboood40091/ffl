@@ -1,11 +1,11 @@
 #include <nn/ffl/FFLiZlibInflator.h>
 
-#include <cstring>
+#include <misc/rio_MemUtil.h>
 
 FFLiZlibInflator::FFLiZlibInflator(s32 windowBits)
     : m_IsStreamEnd(false)
 {
-    std::memset(&m_Stream, 0, sizeof(z_stream));
+    rio::MemUtil::set(&m_Stream, 0, sizeof(z_stream));
     inflateInit2(&m_Stream, windowBits);
 }
 
