@@ -3,7 +3,7 @@
 
 #include <nn/ffl/types.h>
 
-#include <common/aglTextureData.h>
+#include <gpu/rio_Texture.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -83,7 +83,7 @@ typedef struct FFLModulateParam
     const FFLColor*         pColorR;
     const FFLColor*         pColorG;
     const FFLColor*         pColorB;
-    const agl::TextureData* pTextureData;
+    const rio::Texture2D*   pTexture2D;
 }
 FFLModulateParam;
 NN_STATIC_ASSERT(sizeof(FFLModulateParam) == 0x18);

@@ -26,9 +26,9 @@ struct FFLiCharModel
     FFLDrawParam            drawParam[FFLI_SHAPE_TYPE_MAX];
     void*                   pShapeData[FFLI_SHAPE_TYPE_MAX];
     FFLiRenderTexture       facelineRenderTexture;
-    agl::TextureData*       pCapTexture;
-    agl::TextureData*       pGlassTexture;
-    agl::TextureData*       pNoselineTexture;
+    rio::Texture2D*         pCapTexture;
+    rio::Texture2D*         pGlassTexture;
+    rio::Texture2D*         pNoselineTexture;
     FFLiMaskTextures        maskTextures;
     FFLVec3                 beardPos;
     FFLVec3                 hairPos;

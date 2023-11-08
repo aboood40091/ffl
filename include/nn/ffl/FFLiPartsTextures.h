@@ -5,7 +5,7 @@
 #include <nn/ffl/FFLResourceType.h>
 #include <nn/ffl/FFLResult.h>
 
-#include <common/aglTextureData.h>
+#include <gpu/rio_Texture.h>
 
 enum FFLiEyeTextureType
 {
@@ -30,11 +30,11 @@ enum FFLiMouthTextureType
 
 struct FFLiPartsTextures
 {
-    agl::TextureData*   pTexturesEye[FFLI_EYE_TEXTURE_TYPE_MAX];
-    agl::TextureData*   pTexturesMouth[FFLI_MOUTH_TEXTURE_TYPE_MAX];
-    agl::TextureData*   pTextureEyebrow;
-    agl::TextureData*   pTextureMustache;
-    agl::TextureData*   pTextureMole;
+    rio::Texture2D* pTexturesEye[FFLI_EYE_TEXTURE_TYPE_MAX];
+    rio::Texture2D* pTexturesMouth[FFLI_MOUTH_TEXTURE_TYPE_MAX];
+    rio::Texture2D* pTextureEyebrow;
+    rio::Texture2D* pTextureMustache;
+    rio::Texture2D* pTextureMole;
 };
 NN_STATIC_ASSERT(sizeof(FFLiPartsTextures) == 0x38);
 

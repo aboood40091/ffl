@@ -6,7 +6,6 @@
 #include <nn/ffl/FFLiTexture.h>
 #include <nn/ffl/FFLiUtil.h>
 
-#include <detail/aglTextureDataUtil.h>
 #include <gpu/rio_RenderState.h>
 
 #if RIO_IS_CAFE
@@ -19,160 +18,30 @@
 
 void FFLiInitRenderTexture(FFLiRenderTexture* pRenderTexture, u32 width, u32 height, rio::TextureFormat format, u32 numMips)
 {
-    agl::TextureData* pTextureData = new agl::TextureData;
-    agl::RenderBuffer* pRenderBuffer = new agl::RenderBuffer;
-    agl::RenderTargetColor* pColorTarget = new agl::RenderTargetColor;
-    agl::RenderTargetDepth* pDepthTarget = new agl::RenderTargetDepth;
-
-    pRenderTexture->pTextureData = pTextureData;
-    pRenderTexture->pRenderBuffer = pRenderBuffer;
-    pRenderTexture->pColorTarget = pColorTarget;
-    pRenderTexture->pDepthTarget = pDepthTarget;
-
-    pTextureData->initialize(
-        agl::detail::TextureDataUtil::convFormatGX2ToAGL((GX2SurfaceFormat)format, true, false),
+    rio::Texture2D* pTexture2D = new rio::Texture2D(
+        format,
         width,
         height,
         numMips
     );
+    rio::RenderBuffer* pRenderBuffer = new rio::RenderBuffer;
+    rio::RenderTargetColor* pColorTarget = new rio::RenderTargetColor;
+    rio::RenderTargetDepth* pDepthTarget = new rio::RenderTargetDepth;
 
-#if RIO_IS_CAFE
-
-    pTextureData->setImagePtr(rio::MemUtil::alloc(pTextureData->getImageByteSize(), pTextureData->getAlignment()));
-
-    if (pTextureData->getMipLevelNum() > 1)
-        pTextureData->setMipPtr(rio::MemUtil::alloc(pTextureData->getMipByteSize(), pTextureData->getAlignment()));
-    else
-        pTextureData->setMipPtr(nullptr);
-
-#elif RIO_IS_WIN
-
-    const auto& handle = std::make_shared<agl::TextureHandle>();
-    handle->bind();
-
-    RIO_GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0));
-    RIO_GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, pTextureData->getMipLevelNum() - 1));
-
-    RIO_GL_CALL(glPixelStorei(GL_UNPACK_ALIGNMENT, 1));
-
-    const rio::NativeTextureFormat& native_format = pTextureData->getNativeTextureFormat();
-
-    switch (pTextureData->getTextureFormat())
-    {
-    case agl::cTextureFormat_BC1_uNorm:
-    case agl::cTextureFormat_BC2_uNorm:
-    case agl::cTextureFormat_BC3_uNorm:
-    case agl::cTextureFormat_BC4_uNorm:
-    case agl::cTextureFormat_BC4_sNorm:
-    case agl::cTextureFormat_BC5_uNorm:
-    case agl::cTextureFormat_BC5_sNorm:
-        {
-            RIO_GL_CALL(glCompressedTexImage2D(
-                GL_TEXTURE_2D,
-                0,
-                native_format.internalformat,
-                pTextureData->getWidth(),
-                pTextureData->getHeight(),
-                0,
-                pTextureData->getImageByteSize(),
-                nullptr
-            ));
-
-            if (pTextureData->getMipLevelNum() > 1)
-            {
-                for (u32 i = 0; i < pTextureData->getMipLevelNum() - 2; i++)
-                    RIO_GL_CALL(glCompressedTexImage2D(
-                        GL_TEXTURE_2D,
-                        i + 1,
-                        native_format.internalformat,
-                        pTextureData->getWidth(i + 1),
-                        pTextureData->getHeight(i + 1),
-                        0,
-                        pTextureData->getMipLevelByteSize(i + 1),
-                        nullptr
-                    ));
-
-                RIO_GL_CALL(glCompressedTexImage2D(
-                    GL_TEXTURE_2D,
-                    (pTextureData->getMipLevelNum() - 2) + 1,
-                    native_format.internalformat,
-                    pTextureData->getWidth((pTextureData->getMipLevelNum() - 2) + 1),
-                    pTextureData->getHeight((pTextureData->getMipLevelNum() - 2) + 1),
-                    0,
-                    pTextureData->getMipLevelByteSize((pTextureData->getMipLevelNum() - 2) + 1),
-                    nullptr
-                ));
-            }
-        }
-        break;
-    case agl::cTextureFormat_BC1_SRGB:
-    case agl::cTextureFormat_BC2_SRGB:
-    case agl::cTextureFormat_BC3_SRGB:
-        {
-            RIO_GL_CALL(glCompressedTexImage2DARB(
-                GL_TEXTURE_2D,
-                0,
-                native_format.internalformat,
-                pTextureData->getWidth(),
-                pTextureData->getHeight(),
-                0,
-                pTextureData->getImageByteSize(),
-                nullptr
-            ));
-
-            if (pTextureData->getMipLevelNum() > 1)
-            {
-                for (u32 i = 0; i < pTextureData->getMipLevelNum() - 2; i++)
-                    RIO_GL_CALL(glCompressedTexImage2DARB(
-                        GL_TEXTURE_2D,
-                        i + 1,
-                        native_format.internalformat,
-                        pTextureData->getWidth(i + 1),
-                        pTextureData->getHeight(i + 1),
-                        0,
-                        pTextureData->getMipLevelByteSize(i + 1),
-                        nullptr
-                    ));
-
-                RIO_GL_CALL(glCompressedTexImage2DARB(
-                    GL_TEXTURE_2D,
-                    (pTextureData->getMipLevelNum() - 2) + 1,
-                    native_format.internalformat,
-                    pTextureData->getWidth((pTextureData->getMipLevelNum() - 2) + 1),
-                    pTextureData->getHeight((pTextureData->getMipLevelNum() - 2) + 1),
-                    0,
-                    pTextureData->getMipLevelByteSize((pTextureData->getMipLevelNum() - 2) + 1),
-                    nullptr
-                ));
-            }
-        }
-        break;
-    default:
-        {
-            RIO_GL_CALL(glTexStorage2D(
-                GL_TEXTURE_2D,
-                pTextureData->getMipLevelNum(),
-                native_format.internalformat,
-                pTextureData->getWidth(),
-                pTextureData->getHeight()
-            ));
-        }
-        break;
-    }
-
-    pTextureData->setHandle(handle);
-
-#endif
+    pRenderTexture->pTexture2D = pTexture2D;
+    pRenderTexture->pRenderBuffer = pRenderBuffer;
+    pRenderTexture->pColorTarget = pColorTarget;
+    pRenderTexture->pDepthTarget = pDepthTarget;
 }
 
 void FFLiDeleteRenderTexture(FFLiRenderTexture* pRenderTexture)
 {
-    agl::TextureData* pTextureData = pRenderTexture->pTextureData;
-    agl::RenderBuffer* pRenderBuffer = pRenderTexture->pRenderBuffer;
-    agl::RenderTargetColor* pColorTarget = pRenderTexture->pColorTarget;
-    agl::RenderTargetDepth* pDepthTarget = pRenderTexture->pDepthTarget;
+    rio::Texture2D* pTexture2D = pRenderTexture->pTexture2D;
+    rio::RenderBuffer* pRenderBuffer = pRenderTexture->pRenderBuffer;
+    rio::RenderTargetColor* pColorTarget = pRenderTexture->pColorTarget;
+    rio::RenderTargetDepth* pDepthTarget = pRenderTexture->pDepthTarget;
 
-    pRenderTexture->pTextureData = nullptr;
+    pRenderTexture->pTexture2D = nullptr;
     pRenderTexture->pRenderBuffer = nullptr;
     pRenderTexture->pColorTarget = nullptr;
     pRenderTexture->pDepthTarget = nullptr;
@@ -181,34 +50,36 @@ void FFLiDeleteRenderTexture(FFLiRenderTexture* pRenderTexture)
     delete pColorTarget;
     delete pDepthTarget;
 
-#if RIO_IS_CAFE
-    rio::MemUtil::free(pTextureData->getImagePtr());
-    if (pTextureData->getMipLevelNum() > 1)
-        rio::MemUtil::free(pTextureData->getMipPtr());
-#endif // RIO_IS_CAFE
-
-    delete pTextureData;
+    delete pTexture2D;
 }
 
 void FFLiInvalidateRenderTexture(FFLiRenderTexture* pRenderTexture)
 {
-    pRenderTexture->pTextureData->invalidateGPUCache();
+#if RIO_IS_CAFE
+    const GX2Texture& texture = pRenderTexture->pTexture2D->getNativeTexture();
+
+    if (texture.surface.image)
+        GX2Invalidate(GX2_INVALIDATE_MODE_TEXTURE, texture.surface.image, texture.surface.imageSize);
+
+    if (texture.surface.mipmaps)
+        GX2Invalidate(GX2_INVALIDATE_MODE_TEXTURE, texture.surface.mipmaps, texture.surface.mipmapSize);
+#endif // RIO_IS_CAFE
 }
 
-void FFLiSetupRenderTexture(FFLiRenderTexture* pRenderTexture, const FFLColor* pClearColor, agl::TextureData* pDepthBuffer, u32 mipLevel, const FFLiShaderCallback* pCallback)
+void FFLiSetupRenderTexture(FFLiRenderTexture* pRenderTexture, const FFLColor* pClearColor, rio::Texture2D* pDepthBuffer, u32 mipLevel, const FFLiShaderCallback* pCallback)
 {
-    agl::TextureData* pTextureData = pRenderTexture->pTextureData;
-    agl::RenderBuffer* pRenderBuffer = pRenderTexture->pRenderBuffer;
-    agl::RenderTargetColor* pColorTarget = pRenderTexture->pColorTarget;
-    agl::RenderTargetDepth* pDepthTarget = pRenderTexture->pDepthTarget;
+    rio::Texture2D* pTexture2D = pRenderTexture->pTexture2D;
+    rio::RenderBuffer* pRenderBuffer = pRenderTexture->pRenderBuffer;
+    rio::RenderTargetColor* pColorTarget = pRenderTexture->pColorTarget;
+    rio::RenderTargetDepth* pDepthTarget = pRenderTexture->pDepthTarget;
 
-    pColorTarget->applyTextureData(*pTextureData);
+    pColorTarget->linkTexture2D(*pTexture2D);
     pColorTarget->setMipLevel(mipLevel);
     pRenderBuffer->setRenderTargetColor(pColorTarget);
 
     if (pDepthBuffer != NULL)
     {
-        pDepthTarget->applyTextureData(*pDepthBuffer);
+        pDepthTarget->linkTexture2D(*pDepthBuffer);
         pRenderBuffer->setRenderTargetDepth(pDepthTarget);
     }
     else
@@ -221,8 +92,8 @@ void FFLiSetupRenderTexture(FFLiRenderTexture* pRenderTexture, const FFLColor* p
     }
 
     pRenderBuffer->setSize(
-        FFLiGetMipMapLevelSize(pTextureData->getWidth(), mipLevel),
-        FFLiGetMipMapLevelSize(pTextureData->getHeight(), mipLevel)
+        FFLiGetMipMapLevelSize(pTexture2D->getWidth(), mipLevel),
+        FFLiGetMipMapLevelSize(pTexture2D->getHeight(), mipLevel)
     );
 
     pRenderBuffer->bind();
@@ -230,7 +101,8 @@ void FFLiSetupRenderTexture(FFLiRenderTexture* pRenderTexture, const FFLColor* p
     if (pClearColor != NULL)
     {
 #if RIO_IS_CAFE
-        GX2ClearColor(&pColorTarget->getInnerBuffer(), pClearColor->r, pClearColor->g, pClearColor->b, pClearColor->a);
+        GX2ColorBuffer* pGX2ColorBuffer = &pColorTarget->getNativeColorBuffer();
+        GX2ClearColor(pGX2ColorBuffer, pClearColor->r, pClearColor->g, pClearColor->b, pClearColor->a);
 #elif RIO_IS_WIN
         RIO_GL_CALL(glClearColor(pClearColor->r, pClearColor->g, pClearColor->b, pClearColor->a));
         RIO_GL_CALL(glClear(GL_COLOR_BUFFER_BIT));
@@ -239,7 +111,7 @@ void FFLiSetupRenderTexture(FFLiRenderTexture* pRenderTexture, const FFLColor* p
         if (pDepthBuffer)
         {
 #if RIO_IS_CAFE
-            GX2DepthBuffer* pGX2DepthBuffer = &pDepthTarget->getInnerBuffer();
+            GX2DepthBuffer* pGX2DepthBuffer = &pDepthTarget->getNativeDepthBuffer();
             GX2ClearDepthStencilEx(pGX2DepthBuffer, pGX2DepthBuffer->depthClear, pGX2DepthBuffer->stencilClear, GX2_CLEAR_FLAGS_BOTH);
 #elif RIO_IS_WIN
             RIO_GL_CALL(glDepthMask(GL_TRUE));
@@ -257,7 +129,7 @@ void FFLiSetupRenderTexture(FFLiRenderTexture* pRenderTexture, const FFLColor* p
 
 void FFLiFlushRenderTexture(FFLiRenderTexture* pRenderTexture)
 {
-    agl::RenderBuffer* pRenderBuffer = pRenderTexture->pRenderBuffer;
+    rio::RenderBuffer* pRenderBuffer = pRenderTexture->pRenderBuffer;
     RIO_ASSERT(pRenderBuffer->getRenderTargetColor());
     pRenderBuffer->getRenderTargetColor()->invalidateGPUCache();
 }

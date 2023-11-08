@@ -147,22 +147,22 @@ void FFLiRenderMaskTextures(FFLiMaskTextures* pMaskTextures, FFLiMaskTexturesTem
             FFLiRenderTexture& renderTexture = *(pMaskTextures->pRenderTextures[i]);
 
             FFLiInvalidateRenderTexture(&renderTexture);
-            RIO_ASSERT(renderTexture.pTextureData->getTextureFormat() == agl::cTextureFormat_R8_G8_B8_A8_uNorm);
+            RIO_ASSERT(renderTexture.pTexture2D->getTextureFormat() == rio::TEXTURE_FORMAT_R8_G8_B8_A8_UNORM);
             FFLiSetupRenderTexture(&renderTexture, &BLACK, NULL, 0, pCallback);
 
             FFLiDrawRawMask(pObject->pRawMaskDrawParam[i], pCallback);
 
-            if (renderTexture.pTextureData->getMipLevelNum() > 1)
+            if (renderTexture.pTexture2D->getNumMips() > 1)
             {
 #if RIO_IS_WIN
-                renderTexture.pTextureData->getHandle()->bind();
+                RIO_GL_CALL(glBindTexture(GL_TEXTURE_2D, renderTexture.pTexture2D->getNativeTextureHandle()));
                 RIO_GL_CALL(glGenerateMipmap(GL_TEXTURE_2D));
 #elif RIO_IS_CAFE
                 pCopySurface->Begin();
 
-                GX2Surface* pSurface = const_cast<GX2Surface*>(&renderTexture.pTextureData->getSurface());
+                GX2Surface* pSurface = const_cast<GX2Surface*>(&renderTexture.pTexture2D->getNativeTexture().surface);
 
-                for (u32 i = 1; i < renderTexture.pTextureData->getMipLevelNum(); i++)
+                for (u32 i = 1; i < renderTexture.pTexture2D->getNumMips(); i++)
                     pCopySurface->Execute(pSurface, i, pSurface, i - 1);
 
                 pCopySurface->End();

@@ -54,6 +54,10 @@ void InvalidatePrimitive(FFLPrimitiveParam* pPrimitive);
 void InvalidateAttributes(FFLAttributeBufferParam* pAttributes);
 void InvalidateDrawParam(FFLDrawParam* pDrawParam);
 
+#if RIO_IS_CAFE
+void InvalidateTexture(const GX2Texture& texture);
+#endif // RIO_IS_CAFE
+
 }
 
 void FFLiInitFacelineTexture(FFLiRenderTexture* pRenderTexture, u32 resolution, bool enableMipMap)
@@ -131,16 +135,20 @@ void FFLiRenderFacelineTexture(FFLiRenderTexture* pRenderTexture, const FFLiChar
 #endif // RIO_IS_CAFE
 )
 {
+#if RIO_IS_CAFE
     bool enableBeardTexture = pCharInfo->parts.beardType >= 4;
+#endif // RIO_IS_CAFE
 
     InvalidateDrawParam(&pObject->drawParamFaceLine);
     InvalidateDrawParam(&pObject->drawParamFaceMake);
     InvalidateDrawParam(&pObject->drawParamFaceBeard);
 
-    pObject->pTextureFaceLine->invalidateGPUCache();
-    pObject->pTextureFaceMake->invalidateGPUCache();
+#if RIO_IS_CAFE
+    InvalidateTexture(pObject->pTextureFaceLine->getNativeTexture());
+    InvalidateTexture(pObject->pTextureFaceMake->getNativeTexture());
     if (enableBeardTexture)
-        pObject->pTextureFaceBeard->invalidateGPUCache();
+        InvalidateTexture(pObject->pTextureFaceBeard->getNativeTexture());
+#endif // RIO_IS_CAFE
 
     FFLColor facelineColor = FFLiGetSrgbFetchFacelineColor(pCharInfo->parts.facelineColor);
 
@@ -163,7 +171,7 @@ void FFLiRenderFacelineTexture(FFLiRenderTexture* pRenderTexture, const FFLiChar
     FFLiRenderTexture& renderTexture = *pRenderTexture;
 
     FFLiInvalidateRenderTexture(&renderTexture);
-    RIO_ASSERT(renderTexture.pTextureData->getTextureFormat() == agl::cTextureFormat_R8_G8_B8_A8_uNorm);
+    RIO_ASSERT(renderTexture.pTexture2D->getTextureFormat() == rio::TEXTURE_FORMAT_R8_G8_B8_A8_UNORM);
     FFLiSetupRenderTexture(&renderTexture, &facelineColor, NULL, 0, pCallback);
 
     pCallback->CallDraw(pObject->drawParamFaceMake);
@@ -171,17 +179,17 @@ void FFLiRenderFacelineTexture(FFLiRenderTexture* pRenderTexture, const FFLiChar
     if (pObject->pTextureFaceBeard != NULL)
         pCallback->CallDraw(pObject->drawParamFaceBeard);
 
-    if (renderTexture.pTextureData->getMipLevelNum() > 1)
+    if (renderTexture.pTexture2D->getNumMips() > 1)
     {
 #if RIO_IS_WIN
-        renderTexture.pTextureData->getHandle()->bind();
+        RIO_GL_CALL(glBindTexture(GL_TEXTURE_2D, renderTexture.pTexture2D->getNativeTextureHandle()));
         RIO_GL_CALL(glGenerateMipmap(GL_TEXTURE_2D));
 #elif RIO_IS_CAFE
         pCopySurface->Begin();
 
-        GX2Surface* pSurface = const_cast<GX2Surface*>(&renderTexture.pTextureData->getSurface());
+        GX2Surface* pSurface = const_cast<GX2Surface*>(&renderTexture.pTexture2D->getNativeTexture().surface);
 
-        for (u32 i = 1; i < renderTexture.pTextureData->getMipLevelNum(); i++)
+        for (u32 i = 1; i < renderTexture.pTexture2D->getNumMips(); i++)
             pCopySurface->Execute(pSurface, i, pSurface, i - 1);
 
         pCopySurface->End();
@@ -378,5 +386,18 @@ void InvalidateDrawParam(FFLDrawParam* pDrawParam)
     InvalidatePrimitive(&pDrawParam->primitiveParam);
     InvalidateAttributes(&pDrawParam->attributeBufferParam);
 }
+
+#if RIO_IS_CAFE
+
+void InvalidateTexture(const GX2Texture& texture)
+{
+    if (texture.surface.image)
+        GX2Invalidate(GX2_INVALIDATE_MODE_TEXTURE, texture.surface.image, texture.surface.imageSize);
+
+    if (texture.surface.mipmaps)
+        GX2Invalidate(GX2_INVALIDATE_MODE_TEXTURE, texture.surface.mipmaps, texture.surface.mipmapSize);
+}
+
+#endif // RIO_IS_CAFE
 
 }

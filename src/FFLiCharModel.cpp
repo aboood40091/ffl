@@ -38,7 +38,7 @@ void FFLiSetExpression(FFLiCharModel* pModel, FFLExpression expression)
     if (1 << expression & pModel->charModelDesc.expressionFlag)
     {
         pModel->expression = expression;
-        FFLiInitModulateShapeMask(&pModel->drawParam[FFLI_SHAPE_TYPE_XLU_MASK].modulateParam, *pModel->maskTextures.pRenderTextures[expression]->pTextureData);
+        FFLiInitModulateShapeMask(&pModel->drawParam[FFLI_SHAPE_TYPE_XLU_MASK].modulateParam, *pModel->maskTextures.pRenderTextures[expression]->pTexture2D);
     }
 }
 

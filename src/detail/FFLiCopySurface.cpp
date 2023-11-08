@@ -81,23 +81,6 @@ void FFLiCopySurface::Execute(GX2Surface* pDstSurface, u32 dstMipLevel, const GX
 
 void FFLiCopySurface::SetupSrcSurface(const GX2Surface* pSurface, u32 mipLevel)
 {
-    static const u32 compMap[54] = {
-        0x04040405, 0x00040405, 0x00010405, 0x04040405,
-        0x04040405, 0x00040405, 0x00040405, 0x00010405,
-        0x00010205, 0x00010205, 0x00010203, 0x00010203,
-        0x03020100, 0x00040405, 0x00040405, 0x00010405,
-        0x00010405, 0x04040405, 0x04040405, 0x04040405,
-        0x04040405, 0x04040405, 0x00010205, 0x04040405,
-        0x04040405, 0x00010203, 0x00010203, 0x03020100,
-        0x00010405, 0x00010405, 0x00010405, 0x00010203,
-        0x00010203, 0x04040405, 0x00010203, 0x00010203,
-        0x04040405, 0x04040405, 0x04040405, 0x00010205,
-        0x00010205, 0x00040405, 0x00010405, 0x00010205,
-        0x04040405, 0x04040405, 0x04040405, 0x00010205,
-        0x00010205, 0x00010203, 0x00010203, 0x00010203,
-        0x00040405, 0x00010405
-    };
-
     GX2Texture texture;
 
     texture.surface.dim = pSurface->dim;
@@ -116,7 +99,7 @@ void FFLiCopySurface::SetupSrcSurface(const GX2Surface* pSurface, u32 mipLevel)
     texture.viewNumMips = pSurface->mipLevels;
     texture.viewFirstSlice = 0;
     texture.viewNumSlices = pSurface->depth;
-    texture.compMap = compMap[pSurface->format & 0x3f];
+    texture.compMap = rio::TextureFormatUtil::getDefaultCompMap(rio::TextureFormat(pSurface->format));
     GX2InitTextureRegs(&texture);
 
     texture.surface.image = pSurface->image;

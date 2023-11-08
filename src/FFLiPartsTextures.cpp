@@ -6,6 +6,10 @@
 
 #include <nn/ffl/detail/FFLiCharInfo.h>
 
+#if RIO_IS_CAFE
+#include <gx2/mem.h>
+#endif // RIO_IS_CAFE
+
 namespace {
 
 static const FFLiEyeMouthTypeElement EYE_MOUTH_TYPE_ELEMENT[FFL_EXPRESSION_MAX] = {
@@ -39,7 +43,11 @@ void DeleteTexture_Eyebrow(FFLiPartsTextures* pPartsTextures, bool isExpand);
 void DeleteTexture_Mustache(FFLiPartsTextures* pPartsTextures, bool isExpand);
 void DeleteTexture_Mole(FFLiPartsTextures* pPartsTextures, bool isExpand);
 
-void InvalidateTextures(agl::TextureData** ppTextures, u32 count);
+#if RIO_IS_CAFE
+void InvalidateTexture(const GX2Texture& texture);
+#endif // RIO_IS_CAFE
+
+void InvalidateTextures(rio::Texture2D** ppTextures, u32 count);
 
 }
 
@@ -176,14 +184,16 @@ void FFLiInvalidatePartsTextures(FFLiPartsTextures* pPartsTextures)
     InvalidateTextures(pPartsTextures->pTexturesEye, FFLI_EYE_TEXTURE_TYPE_MAX);
     InvalidateTextures(pPartsTextures->pTexturesMouth, FFLI_MOUTH_TEXTURE_TYPE_MAX);
 
+#if RIO_IS_CAFE
     if (pPartsTextures->pTextureEyebrow != NULL)
-        pPartsTextures->pTextureEyebrow->invalidateGPUCache();
+        InvalidateTexture(pPartsTextures->pTextureEyebrow->getNativeTexture());
 
     if (pPartsTextures->pTextureMustache != NULL)
-        pPartsTextures->pTextureMustache->invalidateGPUCache();
+        InvalidateTexture(pPartsTextures->pTextureMustache->getNativeTexture());
 
     if (pPartsTextures->pTextureMole != NULL)
-        pPartsTextures->pTextureMole->invalidateGPUCache();
+        InvalidateTexture(pPartsTextures->pTextureMole->getNativeTexture());
+#endif // RIO_IS_CAFE
 }
 
 const FFLiEyeMouthTypeElement& FFLiGetEyeMouthTypeElement(FFLExpression expression)
@@ -262,11 +272,26 @@ void DeleteTexture_Mole(FFLiPartsTextures* pPartsTextures, bool isExpand)
     FFLiDeleteTexture(&pPartsTextures->pTextureMole, isExpand);
 }
 
-void InvalidateTextures(agl::TextureData** ppTextures, u32 count)
+#if RIO_IS_CAFE
+
+void InvalidateTexture(const GX2Texture& texture)
 {
+    if (texture.surface.image)
+        GX2Invalidate(GX2_INVALIDATE_MODE_TEXTURE, texture.surface.image, texture.surface.imageSize);
+
+    if (texture.surface.mipmaps)
+        GX2Invalidate(GX2_INVALIDATE_MODE_TEXTURE, texture.surface.mipmaps, texture.surface.mipmapSize);
+}
+
+#endif // RIO_IS_CAFE
+
+void InvalidateTextures(rio::Texture2D** ppTextures, u32 count)
+{
+#if RIO_IS_CAFE
     for (u32 i = 0; i < count; i++)
         if (ppTextures[i] != NULL)
-            ppTextures[i]->invalidateGPUCache();
+            InvalidateTexture(ppTextures[i]->getNativeTexture());
+#endif // RIO_IS_CAFE
 }
 
 }

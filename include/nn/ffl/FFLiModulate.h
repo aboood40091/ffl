@@ -3,28 +3,28 @@
 
 #include <nn/ffl/types.h>
 
-#include <common/aglTextureData.h>
+#include <gpu/rio_Texture.h>
 
 struct FFLModulateParam;
 
-void FFLiInitModulateMustache(FFLModulateParam* pParam, s32 color, const agl::TextureData& textureData);
-void FFLiInitModulateMouth(FFLModulateParam* pParam, s32 color, const agl::TextureData& textureData);
-void FFLiInitModulateEyebrow(FFLModulateParam* pParam, s32 color, const agl::TextureData& textureData);
-void FFLiInitModulateEye(FFLModulateParam* pParam, s32 colorGB, s32 colorR, const agl::TextureData& textureData);
-void FFLiInitModulateMole(FFLModulateParam* pParam, const agl::TextureData& textureData);
-void FFLiInitModulateFaceMake(FFLModulateParam* pParam, const agl::TextureData& textureData);
-void FFLiInitModulateFaceLine(FFLModulateParam* pParam, const agl::TextureData& textureData);
-void FFLiInitModulateFaceBeard(FFLModulateParam* pParam, s32 color, const agl::TextureData& textureData);
+void FFLiInitModulateMustache(FFLModulateParam* pParam, s32 color, const rio::Texture2D& texture2D);
+void FFLiInitModulateMouth(FFLModulateParam* pParam, s32 color, const rio::Texture2D& texture2D);
+void FFLiInitModulateEyebrow(FFLModulateParam* pParam, s32 color, const rio::Texture2D& texture2D);
+void FFLiInitModulateEye(FFLModulateParam* pParam, s32 colorGB, s32 colorR, const rio::Texture2D& texture2D);
+void FFLiInitModulateMole(FFLModulateParam* pParam, const rio::Texture2D& texture2D);
+void FFLiInitModulateFaceMake(FFLModulateParam* pParam, const rio::Texture2D& texture2D);
+void FFLiInitModulateFaceLine(FFLModulateParam* pParam, const rio::Texture2D& texture2D);
+void FFLiInitModulateFaceBeard(FFLModulateParam* pParam, s32 color, const rio::Texture2D& texture2D);
 
-void FFLiInitModulateShapeFaceline(FFLModulateParam* pParam, const agl::TextureData& textureData);
+void FFLiInitModulateShapeFaceline(FFLModulateParam* pParam, const rio::Texture2D& texture2D);
 void FFLiInitModulateShapeBeard(FFLModulateParam* pParam, s32 color);
 void FFLiInitModulateShapeNose(FFLModulateParam* pParam, s32 color);
 void FFLiInitModulateShapeForehead(FFLModulateParam* pParam, s32 color);
 void FFLiInitModulateShapeHair(FFLModulateParam* pParam, s32 color);
-void FFLiInitModulateShapeCap(FFLModulateParam* pParam, s32 color, const agl::TextureData& textureData);
-void FFLiInitModulateShapeMask(FFLModulateParam* pParam, const agl::TextureData& textureData);
-void FFLiInitModulateShapeNoseline(FFLModulateParam* pParam, const agl::TextureData& textureData);
-void FFLiInitModulateShapeGlass(FFLModulateParam* pParam, s32 color, const agl::TextureData& textureData);
+void FFLiInitModulateShapeCap(FFLModulateParam* pParam, s32 color, const rio::Texture2D& texture2D);
+void FFLiInitModulateShapeMask(FFLModulateParam* pParam, const rio::Texture2D& texture2D);
+void FFLiInitModulateShapeNoseline(FFLModulateParam* pParam, const rio::Texture2D& texture2D);
+void FFLiInitModulateShapeGlass(FFLModulateParam* pParam, s32 color, const rio::Texture2D& texture2D);
 
 void FFLiInitModulateFill(FFLModulateParam* pParam);
 

@@ -3,7 +3,7 @@
 
 #include <nn/ffl/FFLiRawMaskParts.h>
 
-#include <common/aglTextureData.h>
+#include <gpu/rio_Texture.h>
 
 struct FFLiRawMaskDrawParam
 {
@@ -18,11 +18,11 @@ NN_STATIC_ASSERT(sizeof(FFLiRawMaskDrawParam) == 0x3A8);
 
 struct FFLiRawMaskTextureDesc
 {
-    agl::TextureData*   pTexturesEye[2];
-    agl::TextureData*   pTexturesEyebrow[2];
-    agl::TextureData*   pTextureMouth;
-    agl::TextureData*   pTexturesMustache[2];
-    agl::TextureData*   pTextureMole;
+    rio::Texture2D* pTexturesEye[2];
+    rio::Texture2D* pTexturesEyebrow[2];
+    rio::Texture2D* pTextureMouth;
+    rio::Texture2D* pTexturesMustache[2];
+    rio::Texture2D* pTextureMole;
 };
 NN_STATIC_ASSERT(sizeof(FFLiRawMaskTextureDesc) == 0x20);
 

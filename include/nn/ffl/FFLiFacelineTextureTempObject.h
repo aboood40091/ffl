@@ -3,20 +3,20 @@
 
 #include <nn/ffl/FFLDrawParam.h>
 
-#include <common/aglTextureData.h>
+#include <gpu/rio_Texture.h>
 
 struct  FFLiRenderTexture;
 
 struct FFLiFacelineTextureTempObject
 {
-    agl::TextureData*   pTextureFaceLine;
-    FFLDrawParam        drawParamFaceLine;
-    agl::TextureData*   pTextureFaceMake;
-    FFLDrawParam        drawParamFaceMake;
-    agl::TextureData*   pTextureFaceBeard;
-    FFLDrawParam        drawParamFaceBeard;
-    void*               _144;   // Deleted
-    void*               _148;   // Deleted
+    rio::Texture2D* pTextureFaceLine;
+    FFLDrawParam    drawParamFaceLine;
+    rio::Texture2D* pTextureFaceMake;
+    FFLDrawParam    drawParamFaceMake;
+    rio::Texture2D* pTextureFaceBeard;
+    FFLDrawParam    drawParamFaceBeard;
+    void*           _144;   // Deleted
+    void*           _148;   // Deleted
 };
 NN_STATIC_ASSERT(sizeof(FFLiFacelineTextureTempObject) == 0x14C);
 

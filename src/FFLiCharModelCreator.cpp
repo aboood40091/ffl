@@ -23,6 +23,7 @@
 
 #if RIO_IS_CAFE
 #include <gx2/event.h>
+#include <gx2/mem.h>
 #endif // RIO_IS_CAFE
 
 union F32BitCast
@@ -644,7 +645,7 @@ void SetupDrawParam(FFLiCharModel* pModel)
     FFLCullMode hairCullMode = FFL_CULL_MODE_BACK;
 
     pModel->drawParam[FFLI_SHAPE_TYPE_OPA_FACELINE].cullMode = FFL_CULL_MODE_BACK;
-    FFLiInitModulateShapeFaceline(&pModel->drawParam[FFLI_SHAPE_TYPE_OPA_FACELINE].modulateParam, *pModel->facelineRenderTexture.pTextureData);
+    FFLiInitModulateShapeFaceline(&pModel->drawParam[FFLI_SHAPE_TYPE_OPA_FACELINE].modulateParam, *pModel->facelineRenderTexture.pTexture2D);
 
     pModel->drawParam[FFLI_SHAPE_TYPE_OPA_BEARD].cullMode = FFL_CULL_MODE_BACK;
     FFLiInitModulateShapeBeard(&pModel->drawParam[FFLI_SHAPE_TYPE_OPA_BEARD].modulateParam, pModel->charInfo.parts.beardColor);
@@ -669,7 +670,7 @@ void SetupDrawParam(FFLiCharModel* pModel)
             drawParamHair.cullMode = hairCullMode;
             FFLiInitModulateShapeHair(&drawParamHair.modulateParam, pModel->charInfo.parts.hairColor);
 
-            const agl::TextureData* pCapTexture = pModel->pCapTexture;
+            const rio::Texture2D* pCapTexture = pModel->pCapTexture;
             if (pCapTexture != NULL)
             {
                 FFLDrawParam& drawParamCap = pModel->drawParam[shapeTypeInfo.capIndex];
@@ -683,17 +684,17 @@ void SetupDrawParam(FFLiCharModel* pModel)
     if (pMaskRenderTexture != NULL)
     {
         pModel->drawParam[FFLI_SHAPE_TYPE_XLU_MASK].cullMode = FFL_CULL_MODE_BACK;
-        FFLiInitModulateShapeMask(&pModel->drawParam[FFLI_SHAPE_TYPE_XLU_MASK].modulateParam, *pMaskRenderTexture->pTextureData);
+        FFLiInitModulateShapeMask(&pModel->drawParam[FFLI_SHAPE_TYPE_XLU_MASK].modulateParam, *pMaskRenderTexture->pTexture2D);
     }
 
-    const agl::TextureData* pNoselineTexture = pModel->pNoselineTexture;
+    const rio::Texture2D* pNoselineTexture = pModel->pNoselineTexture;
     if (pNoselineTexture != NULL)
     {
         pModel->drawParam[FFLI_SHAPE_TYPE_XLU_NOSELINE].cullMode = FFL_CULL_MODE_BACK;
         FFLiInitModulateShapeNoseline(&pModel->drawParam[FFLI_SHAPE_TYPE_XLU_NOSELINE].modulateParam, *pNoselineTexture);
     }
 
-    const agl::TextureData* pGlassTexture = pModel->pGlassTexture;
+    const rio::Texture2D* pGlassTexture = pModel->pGlassTexture;
     if (pGlassTexture != NULL)
     {
         pModel->drawParam[FFLI_SHAPE_TYPE_XLU_GLASS].cullMode = FFL_CULL_MODE_NONE;
@@ -711,16 +712,31 @@ void FFLiCharModelCreator::InvalidateShapes(FFLiCharModel* pModel)
 
 namespace {
 
+#if RIO_IS_CAFE
+
+void InvalidateTexture(const GX2Texture& texture)
+{
+    if (texture.surface.image)
+        GX2Invalidate(GX2_INVALIDATE_MODE_TEXTURE, texture.surface.image, texture.surface.imageSize);
+
+    if (texture.surface.mipmaps)
+        GX2Invalidate(GX2_INVALIDATE_MODE_TEXTURE, texture.surface.mipmaps, texture.surface.mipmapSize);
+}
+
+#endif // RIO_IS_CAFE
+
 void InvalidateTextures(FFLiCharModel* pModel)
 {
+#if RIO_IS_CAFE
     if (pModel->pCapTexture != NULL)
-        pModel->pCapTexture->invalidateGPUCache();
+        InvalidateTexture(pModel->pCapTexture->getNativeTexture());
 
     if (pModel->pNoselineTexture != NULL)
-        pModel->pNoselineTexture->invalidateGPUCache();
+        InvalidateTexture(pModel->pNoselineTexture->getNativeTexture());
 
     if (pModel->pGlassTexture != NULL)
-        pModel->pGlassTexture->invalidateGPUCache();
+        InvalidateTexture(pModel->pGlassTexture->getNativeTexture());
+#endif // RIO_IS_CAFE
 }
 
 }

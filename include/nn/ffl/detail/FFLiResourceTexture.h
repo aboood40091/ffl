@@ -5,7 +5,11 @@
 
 #include <nn/ffl/detail/FFLiResourcePartsInfo.h>
 
-#include <common/aglTextureData.h>
+#if RIO_IS_WIN
+#include <ninTexUtils/gx2/gx2Enum.h>
+#elif RIO_IS_CAFE
+#include <gx2/enum.h>
+#endif
 
 enum FFLiTextureFormat
 {
