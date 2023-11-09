@@ -10,7 +10,7 @@
     #error "Host must be either big- or little-endian"
 #endif
 
-#include <types.h>
+#include <misc/rio_Types.h>
 
 #ifdef __cplusplus
     #include <type_traits>
