@@ -76,7 +76,7 @@ s32 FFLiCharInfoAndTypeToMouthIndex(const FFLiCharInfo* pCharInfo, FFLiMouthText
     switch (type)
     {
     case FFLI_MOUTH_TEXTURE_TYPE_0:
-        return pCharInfo->parts.eyeType;
+        return pCharInfo->parts.mouthType;
     case FFLI_MOUTH_TEXTURE_TYPE_1:
         return 10;
     case FFLI_MOUTH_TEXTURE_TYPE_2:
