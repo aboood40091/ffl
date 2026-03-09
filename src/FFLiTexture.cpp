@@ -68,8 +68,13 @@ FFLResult FFLiLoadTextureWithAllocate(rio::Texture2D** ppTexture2D, FFLiTextureP
     if (mipPtr == nullptr && footer.NumMips() > 1)
         mipPtr = (void*)((uintptr_t)imagePtr + surface.mipOffset[0]);
 
+#if RIO_IS_WIN
     surface.imagePtr.set(imagePtr);
     surface.mipPtr.set(mipPtr);
+#else
+    surface.imagePtr = imagePtr;
+    surface.mipPtr = mipPtr;
+#endif
 
 #if RIO_IS_WIN
     GX2Surface linearSurface;
