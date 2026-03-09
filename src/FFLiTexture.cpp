@@ -68,8 +68,8 @@ FFLResult FFLiLoadTextureWithAllocate(rio::Texture2D** ppTexture2D, FFLiTextureP
     if (mipPtr == nullptr && footer.NumMips() > 1)
         mipPtr = (void*)((uintptr_t)imagePtr + surface.mipOffset[0]);
 
-    surface.imagePtr = imagePtr;
-    surface.mipPtr = mipPtr;
+    surface.imagePtr.set(imagePtr);
+    surface.mipPtr.set(mipPtr);
 
 #if RIO_IS_WIN
     GX2Surface linearSurface;
@@ -86,11 +86,11 @@ FFLResult FFLiLoadTextureWithAllocate(rio::Texture2D** ppTexture2D, FFLiTextureP
 
     GX2CalcSurfaceSizeAndAlignment(&linearSurface);
 
-    linearSurface.imagePtr = new u8[linearSurface.imageSize];
+    linearSurface.imagePtr.set(new u8[linearSurface.imageSize]);
     if (linearSurface.mipSize > 0)
-        linearSurface.mipPtr = new u8[linearSurface.mipSize];
+        linearSurface.mipPtr.set(new u8[linearSurface.mipSize]);
     else
-        linearSurface.mipPtr = nullptr;
+        linearSurface.mipPtr.set(nullptr);
 
     GX2CopySurface(&surface, 0, 0, &linearSurface, 0, 0);
 
@@ -112,8 +112,8 @@ FFLResult FFLiLoadTextureWithAllocate(rio::Texture2D** ppTexture2D, FFLiTextureP
     texture.surface.mipmapSize = linearSurface.mipSize;
     texture.surface.mipLevelOffset[0] = 0;
     rio::MemUtil::copy(&texture.surface.mipLevelOffset[1], &linearSurface.mipOffset[1], sizeof(u32) * (13 - 1));
-    texture.surface.image = linearSurface.imagePtr;
-    texture.surface.mipmaps = linearSurface.mipPtr;
+    texture.surface.image = linearSurface.imagePtr.get();
+    texture.surface.mipmaps = linearSurface.mipPtr.get();
 
     texture.compMap = rio::TextureFormatUtil::getDefaultCompMap(texture.surface.format);
 

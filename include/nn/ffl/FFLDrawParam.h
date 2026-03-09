@@ -19,6 +19,7 @@ typedef enum FFLAttributeBufferType
     FFL_ATTRIBUTE_BUFFER_TYPE_MAX       = 5
 }
 FFLAttributeBufferType;
+NN_STATIC_ASSERT(FFL_ATTRIBUTE_BUFFER_TYPE_MAX == _FFL_ATTRIBUTE_BUFFER_TYPE_MAX);
 
 typedef struct FFLAttributeBuffer
 {
@@ -27,14 +28,16 @@ typedef struct FFLAttributeBuffer
     void*   ptr;
 }
 FFLAttributeBuffer;
-NN_STATIC_ASSERT(sizeof(FFLAttributeBuffer) == 0xC);
+NN_STATIC_ASSERT(sizeof(FFLAttributeBuffer) == FFL_ATTRIBUTE_BUFFER_SIZE);
+NN_STATIC_ASSERT(alignof(FFLAttributeBuffer) == FFL_ATTRIBUTE_BUFFER_ALIGN);
 
 typedef struct FFLAttributeBufferParam
 {
     FFLAttributeBuffer  attributeBuffers[FFL_ATTRIBUTE_BUFFER_TYPE_MAX];
 }
 FFLAttributeBufferParam;
-NN_STATIC_ASSERT(sizeof(FFLAttributeBufferParam) == 0x3C);
+NN_STATIC_ASSERT(sizeof(FFLAttributeBufferParam) == FFL_ATTRIBUTE_BUFFER_PARAM_SIZE);
+NN_STATIC_ASSERT(alignof(FFLAttributeBufferParam) == FFL_ATTRIBUTE_BUFFER_PARAM_ALIGN);
 
 typedef struct FFLPrimitiveParam
 {
@@ -44,7 +47,8 @@ typedef struct FFLPrimitiveParam
     void*                       pIndexBuffer;
 }
 FFLPrimitiveParam;
-NN_STATIC_ASSERT(sizeof(FFLPrimitiveParam) == 0x10);
+NN_STATIC_ASSERT(sizeof(FFLPrimitiveParam) == FFL_PRIMITIVE_PARAM_SIZE);
+NN_STATIC_ASSERT(alignof(FFLPrimitiveParam) == FFL_PRIMITIVE_PARAM_ALIGN);
 
 typedef enum FFLCullMode
 {
@@ -54,6 +58,7 @@ typedef enum FFLCullMode
     FFL_CULL_MODE_MAX   = 3
 }
 FFLCullMode;
+NN_STATIC_ASSERT(sizeof(FFLCullMode) == 4);
 
 typedef struct FFLDrawParam
 {
@@ -63,7 +68,8 @@ typedef struct FFLDrawParam
     FFLPrimitiveParam       primitiveParam;
 }
 FFLDrawParam;
-NN_STATIC_ASSERT(sizeof(FFLDrawParam) == 0x68);
+NN_STATIC_ASSERT(sizeof(FFLDrawParam) == FFL_DRAW_PARAM_SIZE);
+NN_STATIC_ASSERT(alignof(FFLDrawParam) == FFL_DRAW_PARAM_ALIGN);
 
 #ifdef __cplusplus
 }

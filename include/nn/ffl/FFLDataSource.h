@@ -17,6 +17,7 @@ typedef enum FFLDataSource
     FFL_DATA_SOURCE_BUFFER              = 5
 }
 FFLDataSource;
+NN_STATIC_ASSERT(sizeof(FFLDataSource) == 4);
 
 #ifdef __cplusplus
 }

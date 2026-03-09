@@ -36,7 +36,7 @@ struct FFLiPartsTextures
     rio::Texture2D* pTextureMustache;
     rio::Texture2D* pTextureMole;
 };
-NN_STATIC_ASSERT(sizeof(FFLiPartsTextures) == 0x38);
+NN_STATIC_ASSERT(sizeof(FFLiPartsTextures) == ((u32(FFLI_EYE_TEXTURE_TYPE_MAX) + u32(FFLI_MOUTH_TEXTURE_TYPE_MAX) + 3) * NN_PTR_SIZE));
 
 struct FFLiEyeMouthTypeElement
 {

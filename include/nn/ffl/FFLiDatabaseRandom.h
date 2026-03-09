@@ -25,6 +25,6 @@ private:
 private:
     FFLiRandomContext*  m_pRandomContext;
 };
-NN_STATIC_ASSERT(sizeof(FFLiDatabaseRandom) == 4);
+NN_STATIC_ASSERT(sizeof(FFLiDatabaseRandom) == NN_PTR_SIZE);
 
 #endif // FFLI_DATABASE_RANDOM_H_

@@ -15,6 +15,7 @@ typedef enum FFLModelType
     FFL_MODEL_TYPE_MAX  = 3
 }
 FFLModelType;
+NN_STATIC_ASSERT(sizeof(FFLModelType) == 4);
 
 #ifdef __cplusplus
 }

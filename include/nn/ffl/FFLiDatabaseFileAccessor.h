@@ -3,8 +3,8 @@
 
 #include <nn/ffl/types.h>
 
-class FFLiDatabaseFile;
-class FFLiFileWriteBuffer;
+struct  FFLiDatabaseFile;
+struct  FFLiFileWriteBuffer;
 
 class FFLiDatabaseFileAccessor
 {
@@ -55,6 +55,6 @@ private:
     u8                      _d9c;
     bool                    m_IsSaveHiddenNeeded;
 };
-NN_STATIC_ASSERT(sizeof(FFLiDatabaseFileAccessor) == 0xDA0);
+NN_STATIC_ASSERT(sizeof(FFLiDatabaseFileAccessor) == NN_ALIGN_FOR_PTR(NN_ALIGN_FOR_PTR(NN_PTR_SIZE + 0xA84) + 3 * NN_PTR_SIZE + 4 + 3 * FFL_PATH_MAX_LEN + 6));
 
 #endif // FFLI_DATABASE_FILE_ACCESSOR_H_

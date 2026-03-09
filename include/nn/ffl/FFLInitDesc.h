@@ -16,7 +16,7 @@ typedef struct FFLInitDesc
     BOOL                    _10;
 }
 FFLInitDesc;
-NN_STATIC_ASSERT(sizeof(FFLInitDesc) == 0x14);
+NN_STATIC_ASSERT(sizeof(FFLInitDesc) == NN_ALIGN_FOR_PTR(2 * NN_PTR_SIZE + 4 + 4 + 4));
 
 #ifdef __cplusplus
 }

@@ -13,7 +13,7 @@ typedef struct FFLResourceDesc
     u32     size[FFL_RESOURCE_TYPE_MAX];
 }
 FFLResourceDesc;
-NN_STATIC_ASSERT(sizeof(FFLResourceDesc) == 0x10);
+NN_STATIC_ASSERT(sizeof(FFLResourceDesc) == NN_ALIGN_FOR_PTR(FFL_RESOURCE_TYPE_MAX * NN_PTR_SIZE + FFL_RESOURCE_TYPE_MAX * 4));
 
 #ifdef __cplusplus
 }

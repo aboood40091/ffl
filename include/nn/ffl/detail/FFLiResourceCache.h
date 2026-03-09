@@ -26,6 +26,6 @@ private:
         u32                 size;
     }   m_Res[FFL_RESOURCE_TYPE_MAX];
 };
-NN_STATIC_ASSERT(sizeof(FFLiResourceCache) == 0x10);
+NN_STATIC_ASSERT(sizeof(FFLiResourceCache) == (FFL_RESOURCE_TYPE_MAX * NN_ALIGN_FOR_PTR(NN_PTR_SIZE + 4)));
 
 #endif // FFLI_RESOURCE_CACHE_H_

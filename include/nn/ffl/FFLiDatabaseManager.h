@@ -46,6 +46,6 @@ private:
     bool                        m_IsEnabledSpecialMii;
     void*                       _fd4;   // Deleted
 };
-NN_STATIC_ASSERT(sizeof(FFLiDatabaseManager) == 0xFD8);
+NN_STATIC_ASSERT(sizeof(FFLiDatabaseManager) == (NN_ALIGN_FOR_PTR(NN_PTR_SIZE + sizeof(FFLiDatabaseFileAccessor) + sizeof(FFLiDatabaseDefault) + sizeof(FFLiDatabaseRandom) + 1) + NN_PTR_SIZE));
 
 #endif // FFLI_DATABASE_MANAGER_H_

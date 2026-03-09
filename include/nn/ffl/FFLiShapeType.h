@@ -19,5 +19,6 @@ enum FFLiShapeType
     FFLI_SHAPE_TYPE_OPA_CAP_2       = 11,
     FFLI_SHAPE_TYPE_MAX             = 12
 };
+NN_STATIC_ASSERT(FFLI_SHAPE_TYPE_MAX == _FFLI_SHAPE_TYPE_MAX);
 
 #endif // FFLI_SHAPE_TYPE_H_

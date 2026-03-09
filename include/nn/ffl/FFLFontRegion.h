@@ -15,6 +15,7 @@ typedef enum FFLFontRegion
     FFL_FONT_REGION_3   = 3
 }
 FFLFontRegion;
+NN_STATIC_ASSERT(sizeof(FFLFontRegion) == 4);
 
 #ifdef __cplusplus
 }

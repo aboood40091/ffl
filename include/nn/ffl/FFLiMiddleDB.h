@@ -139,6 +139,6 @@ private:
     };
 };
 NN_STATIC_ASSERT_IS_POD(FFLiMiddleDB);
-NN_STATIC_ASSERT(sizeof(FFLiMiddleDB) == 0x14);
+NN_STATIC_ASSERT(sizeof(FFLiMiddleDB) == NN_ALIGN_FOR_PTR(2 * 4 + NN_PTR_SIZE + 2 * 2 + FFLI_MIDDLE_DB_PARAM_SIZE));
 
 #endif // FFLI_MIDDLE_DB_H_

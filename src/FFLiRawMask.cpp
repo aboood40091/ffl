@@ -18,6 +18,7 @@ enum
 {
     RAW_MASK_TYPE_MAX = sizeof(FFLiRawMaskDrawParam) / sizeof(FFLiRawMaskPartsDrawParam)
 };
+NN_STATIC_ASSERT(RAW_MASK_TYPE_MAX == 9);
 
 struct RawMasks
 {

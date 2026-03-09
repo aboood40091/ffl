@@ -48,6 +48,7 @@ typedef enum FFLModulateMode
                                 // Used by: ShapeCap
 }
 FFLModulateMode;
+NN_STATIC_ASSERT(sizeof(FFLModulateMode) == 4);
 
 typedef enum FFLModulateType
 {
@@ -73,6 +74,7 @@ typedef enum FFLModulateType
     FFL_MODULATE_TYPE_SHAPE_MAX         = FFL_MODULATE_TYPE_SHAPE_GLASS + 1
 }
 FFLModulateType;
+NN_STATIC_ASSERT(sizeof(FFLModulateType) == 4);
 
 typedef struct FFLColor FFLColor;
 
@@ -86,7 +88,8 @@ typedef struct FFLModulateParam
     const rio::Texture2D*   pTexture2D;
 }
 FFLModulateParam;
-NN_STATIC_ASSERT(sizeof(FFLModulateParam) == 0x18);
+NN_STATIC_ASSERT(sizeof(FFLModulateParam) == FFL_MODULATE_PARAM_SIZE);
+NN_STATIC_ASSERT(alignof(FFLModulateParam) == FFL_MODULATE_PARAM_ALIGN);
 
 #ifdef __cplusplus
 }

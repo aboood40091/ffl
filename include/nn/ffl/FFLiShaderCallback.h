@@ -41,6 +41,6 @@ public:
 private:
     const FFLShaderCallback*    m_pShaderCallback;
 };
-NN_STATIC_ASSERT(sizeof(FFLiShaderCallback) == 4);
+NN_STATIC_ASSERT(sizeof(FFLiShaderCallback) == NN_PTR_SIZE);
 
 #endif // FFLI_SHADER_CALLBACK_H_

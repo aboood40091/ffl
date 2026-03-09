@@ -13,7 +13,8 @@ typedef struct FFLBoundingBox
     FFLVec3 max;
 }
 FFLBoundingBox;
-NN_STATIC_ASSERT(sizeof(FFLBoundingBox) == 0x18);
+NN_STATIC_ASSERT(sizeof(FFLBoundingBox) == FFL_BOUNDING_BOX_SIZE);
+NN_STATIC_ASSERT(alignof(FFLBoundingBox) == FFL_BOUNDING_BOX_ALIGN);
 
 #ifdef __cplusplus
 }

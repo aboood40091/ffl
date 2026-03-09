@@ -18,6 +18,6 @@ private:
     z_stream            m_Stream;
     bool                m_IsStreamEnd;
 };
-NN_STATIC_ASSERT(sizeof(FFLiZlibInflator) == 0x44);
+NN_STATIC_ASSERT(sizeof(FFLiZlibInflator) == NN_ALIGN_FOR_PTR(NN_ALIGN_TO(sizeof(FFLiZlibInterface) + 4, alignof(z_stream)) + sizeof(z_stream) + 1));
 
 #endif // FFLI_ZLIB_INFLATOR_H_

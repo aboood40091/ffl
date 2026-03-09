@@ -26,8 +26,8 @@ void FFLiMiiDataOfficial::SwapEndian()
 
 void FFLiStoreData::SetCRC()
 {
-    FFLiPutCRC16(this, FFL_STOREDATA_SIZE);
-    RIO_ASSERT(FFLiIsValidCRC16(this, FFL_STOREDATA_SIZE));
+    FFLiPutCRC16(this, FFL_MIIDATA_PACKET_SIZE);
+    RIO_ASSERT(FFLiIsValidCRC16(this, FFL_MIIDATA_PACKET_SIZE));
 }
 
 void FFLiStoreData::SwapEndian()

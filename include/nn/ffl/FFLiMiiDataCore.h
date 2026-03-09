@@ -988,8 +988,6 @@ private:
 NN_STATIC_ASSERT_IS_POD(FFLiMiiDataOfficial);
 NN_STATIC_ASSERT(sizeof(FFLiMiiDataOfficial) == 0x5C);
 
-#define FFL_STOREDATA_SIZE  (0x60)
-
 class FFLiStoreData : public FFLiMiiDataOfficial
 {
 public:
@@ -1001,13 +999,13 @@ private:
     u16 m_Crc;
 };
 NN_STATIC_ASSERT_IS_POD(FFLiStoreData);
-NN_STATIC_ASSERT(sizeof(FFLiStoreData) == FFL_STOREDATA_SIZE);
+NN_STATIC_ASSERT(sizeof(FFLiStoreData) == FFL_MIIDATA_PACKET_SIZE);
 
 struct FFLiStoreDataCFL : FFLStoreData
 {
 };
 NN_STATIC_ASSERT_IS_POD(FFLiStoreDataCFL);
-NN_STATIC_ASSERT(sizeof(FFLiStoreDataCFL) == FFL_STOREDATA_SIZE);
+NN_STATIC_ASSERT(sizeof(FFLiStoreDataCFL) == FFL_MIIDATA_PACKET_SIZE);
 
 class FFLiMiiDataHidden : public FFLiMiiDataCore
 {

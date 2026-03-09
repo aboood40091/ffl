@@ -5,7 +5,7 @@
 
 struct  FFLiCharInfo;
 class   FFLiMiiDataCore;
-struct  FFLiMiiDataCoreRFL;
+class   FFLiMiiDataCoreRFL;
 class   FFLiMiiDataOfficial;
 struct  FFLiStoreDataCFL;
 

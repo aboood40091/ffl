@@ -8,7 +8,7 @@
 
 #include <nn/ffl/detail/FFLiResourceCache.h>
 
-struct  FFLiResourceHeader;
+class   FFLiResourceHeader;
 struct  FFLiResourceMultiHeader;
 
 class FFLiResourceManager
@@ -58,6 +58,6 @@ private:
     FFLiResourceCache           m_ResourceCache;
     char                        m_Path[FFL_RESOURCE_TYPE_MAX][FFL_PATH_MAX_LEN];
 };
-NN_STATIC_ASSERT(sizeof(FFLiResourceManager) == 0x218);
+NN_STATIC_ASSERT(sizeof(FFLiResourceManager) == NN_ALIGN_FOR_PTR(2 * NN_PTR_SIZE + sizeof(FFLiResourceCache) + u32(FFL_RESOURCE_TYPE_MAX) * u32(FFL_PATH_MAX_LEN)));
 
 #endif // FFLI_RESOURCE_MANAGER_H_

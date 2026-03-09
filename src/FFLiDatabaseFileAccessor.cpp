@@ -472,9 +472,11 @@ FFLiFsResult SaveDatabaseHidden(const FFLiDatabaseFileHidden& hidden, FFLiFileWr
 #if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
     return WriteFile(&hidden, sizeof(FFLiDatabaseFileHidden), pWriteBuffer, pPath);
 #else
-    FFLiDatabaseFileHidden hiddenBE = hidden;
-    hiddenBE.SwapEndian(true);
-    return WriteFile(&hiddenBE, sizeof(FFLiDatabaseFileHidden), pWriteBuffer, pPath);
+    FFLiDatabaseFileHidden* pHiddenBE = new FFLiDatabaseFileHidden(hidden);
+    pHiddenBE->SwapEndian(true);
+    FFLiFsResult result = WriteFile(pHiddenBE, sizeof(FFLiDatabaseFileHidden), pWriteBuffer, pPath);
+    delete pHiddenBE;
+    return result;
 #endif // __BYTE_ORDER__
 }
 
@@ -496,9 +498,11 @@ FFLiFsResult SaveDatabaseOfficial(const FFLiDatabaseFileOfficial& official, FFLi
 #if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
     return WriteFile(&official, sizeof(FFLiDatabaseFileOfficial), pWriteBuffer, pPath);
 #else
-    FFLiDatabaseFileOfficial officialBE = official;
-    officialBE.SwapEndian(true);
-    return WriteFile(&officialBE, sizeof(FFLiDatabaseFileOfficial), pWriteBuffer, pPath);
+    FFLiDatabaseFileOfficial* pOfficialBE = new FFLiDatabaseFileOfficial(official);
+    pOfficialBE->SwapEndian(true);
+    FFLiFsResult result = WriteFile(pOfficialBE, sizeof(FFLiDatabaseFileOfficial), pWriteBuffer, pPath);
+    delete pOfficialBE;
+    return result;
 #endif // __BYTE_ORDER__
 }
 

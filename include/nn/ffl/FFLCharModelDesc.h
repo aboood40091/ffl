@@ -17,7 +17,8 @@ typedef struct FFLCharModelDesc
     BOOL            _10;    // Deleted
 }
 FFLCharModelDesc;
-NN_STATIC_ASSERT(sizeof(FFLCharModelDesc) == 0x14);
+NN_STATIC_ASSERT(sizeof(FFLCharModelDesc) == FFL_CHAR_MODEL_DESC_SIZE);
+NN_STATIC_ASSERT(alignof(FFLCharModelDesc) == FFL_CHAR_MODEL_DESC_ALIGN);
 
 #ifdef __cplusplus
 }

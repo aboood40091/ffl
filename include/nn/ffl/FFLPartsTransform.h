@@ -18,7 +18,8 @@ typedef struct FFLPartsTransform
     FFLVec3 _48;
 }
 FFLPartsTransform;
-NN_STATIC_ASSERT(sizeof(FFLPartsTransform) == 0x54);
+NN_STATIC_ASSERT(sizeof(FFLPartsTransform) == FFL_PARTS_TRANSFORM_SIZE);
+NN_STATIC_ASSERT(alignof(FFLPartsTransform) == FFL_PARTS_TRANSFORM_ALIGN);
 
 #ifdef __cplusplus
 }

@@ -324,7 +324,7 @@ FFLResult FFLiStoreDataCFLToCharInfo(FFLiCharInfo* pCharInfo, const FFLiStoreDat
         return FFL_RESULT_FILE_INVALID;
 
     FFLiStoreData storeData;
-    rio::MemUtil::copy((char*)&storeData, (char*)&storeDataCFL, FFL_STOREDATA_SIZE);
+    rio::MemUtil::copy((char*)&storeData, (char*)&storeDataCFL, FFL_MIIDATA_PACKET_SIZE);
 #if __BYTE_ORDER__ != __ORDER_LITTLE_ENDIAN__
     storeData.SwapEndian();
 #endif // __BYTE_ORDER__
@@ -343,13 +343,13 @@ FFLResult FFLiCharInfoToStoreDataCFL(FFLiStoreDataCFL* pStoreDataCFL, const FFLi
 void FFLiMiiDataOfficialToStoreDataCFL(FFLiStoreDataCFL& storeDataCFL, const FFLiMiiDataOfficial& miiDataOfficial)
 {
     FFLiStoreData storeData;
-    rio::MemUtil::set(&storeData, 0, FFL_STOREDATA_SIZE);
+    rio::MemUtil::set(&storeData, 0, FFL_MIIDATA_PACKET_SIZE);
     static_cast<FFLiMiiDataOfficial&>(storeData) = miiDataOfficial;
     storeData.SetCRC();
 #if __BYTE_ORDER__ != __ORDER_LITTLE_ENDIAN__
     storeData.SwapEndian();
 #endif // __BYTE_ORDER__
-    rio::MemUtil::copy(&storeDataCFL, &storeData, FFL_STOREDATA_SIZE);
+    rio::MemUtil::copy(&storeDataCFL, &storeData, FFL_MIIDATA_PACKET_SIZE);
 }
 
 namespace {

@@ -9,18 +9,18 @@
 extern "C" {
 #endif
 
-#define FFL_CHAR_MODEL_SIZE (0x778)
-
 typedef struct FFLCharModel
 {
     union
     {
         u8 data[FFL_CHAR_MODEL_SIZE];
         u32 data32[FFL_CHAR_MODEL_SIZE / sizeof(u32)];
+        uintptr_t dataPtr[FFL_CHAR_MODEL_SIZE / NN_PTR_SIZE];
     };
 }
 FFLCharModel;
 NN_STATIC_ASSERT(sizeof(FFLCharModel) == FFL_CHAR_MODEL_SIZE);
+NN_STATIC_ASSERT(alignof(FFLCharModel) == FFL_CHAR_MODEL_ALIGN);
 
 typedef struct FFLCharModelDesc FFLCharModelDesc;
 typedef struct FFLCharModelSource FFLCharModelSource;

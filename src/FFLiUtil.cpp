@@ -2,22 +2,22 @@
 
 u32 FFLiRoundUp(u32 value, u32 alignment)
 {
-    return (value + alignment - 1) & ~(alignment - 1);
+    return FFLiRoundUpT<u32>(value, alignment);
 }
 
 void* FFLiRoundUpPtr(void* ptr, u32 alignment)
 {
-    return (void*)FFLiRoundUp((u32)ptr, alignment);
+    return (void*)FFLiRoundUpT<uintptr_t>((uintptr_t)ptr, alignment);
 }
 
 bool FFLiCheckAlign(u32 value, u32 alignment)
 {
-    return (value & (alignment - 1)) == 0;
+    return FFLiCheckAlignT<u32>(value, alignment);
 }
 
 bool FFLiCheckAlignPtr(const void* ptr, u32 alignment)
 {
-    return FFLiCheckAlign((u32)ptr, alignment);
+    return FFLiCheckAlignT<uintptr_t>((uintptr_t)ptr, alignment);
 }
 
 void FFLiCopyWcharT2U16(u16* dst, u32 size, const wchar_t* src)

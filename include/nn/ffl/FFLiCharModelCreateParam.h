@@ -44,6 +44,6 @@ private:
     FFLiCoordinate          m_Coordinate;
     bool                    _18;    // Deleted
 };
-NN_STATIC_ASSERT(sizeof(FFLiCharModelCreateParam) == 0x1C);
+NN_STATIC_ASSERT(sizeof(FFLiCharModelCreateParam) == NN_ALIGN_FOR_PTR(3 * NN_PTR_SIZE + sizeof(FFLiCoordinate) + 1));
 
 #endif // FFLI_CHAR_MODEL_CREATE_PARAM_H_

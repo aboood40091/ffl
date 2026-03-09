@@ -33,6 +33,7 @@ private:
     FFLiRandomContext   m_RandomContext;
     FFLiAuthorID        m_AuthorID;
     FFLiCreateIDBase    m_CreateIDBase;
+    u8                  _padding[6];
     u64                 m_TitleID;
 };
 NN_STATIC_ASSERT(sizeof(FFLiSystemContext) == 0x28);

@@ -18,6 +18,6 @@ struct FFLiFacelineTextureTempObject
     void*           _144;   // Deleted
     void*           _148;   // Deleted
 };
-NN_STATIC_ASSERT(sizeof(FFLiFacelineTextureTempObject) == 0x14C);
+NN_STATIC_ASSERT(sizeof(FFLiFacelineTextureTempObject) == (3 * (NN_ALIGN_TO(NN_PTR_SIZE, FFL_DRAW_PARAM_ALIGN) + FFL_DRAW_PARAM_SIZE) + 2 * NN_PTR_SIZE));
 
 #endif // FFLI_FACELINE_TEXTURE_TEMP_OBJECT_H_

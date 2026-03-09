@@ -14,7 +14,7 @@ typedef struct FFLCharModelSource
     u16             index;
 }
 FFLCharModelSource;
-NN_STATIC_ASSERT(sizeof(FFLCharModelSource) == 0xC);
+NN_STATIC_ASSERT(sizeof(FFLCharModelSource) == NN_ALIGN_FOR_PTR(NN_ALIGN_FOR_PTR(4) + NN_PTR_SIZE + 2));
 
 #ifdef __cplusplus
 }

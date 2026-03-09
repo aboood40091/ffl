@@ -83,7 +83,8 @@ typedef struct FFLiCharInfo
     FFLiAuthorID        authorID;
 }
 FFLiCharInfo;
-NN_STATIC_ASSERT(sizeof(FFLiCharInfo) == 0x120);
+NN_STATIC_ASSERT(sizeof(FFLiCharInfo) == FFL_CHAR_INFO_SIZE);
+NN_STATIC_ASSERT(alignof(FFLiCharInfo) == FFL_CHAR_INFO_ALIGN);
 
 typedef enum FFLiVerifyCharInfoReason
 {

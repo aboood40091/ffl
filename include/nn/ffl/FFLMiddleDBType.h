@@ -16,6 +16,7 @@ typedef enum FFLMiddleDBType
     FFL_MIDDLE_DB_TYPE_NET_PARAM                        = 4
 }
 FFLMiddleDBType;
+NN_STATIC_ASSERT(sizeof(FFLMiddleDBType) == 4);
 
 #ifdef __cplusplus
 }

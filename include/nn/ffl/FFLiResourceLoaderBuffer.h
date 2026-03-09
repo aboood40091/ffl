@@ -23,6 +23,6 @@ private:
     FFLiResourceUncompressBuffer    m_ResourceUncompressBuffer;
     void*                           _8; // Deleted
 };
-NN_STATIC_ASSERT(sizeof(FFLiResourceLoaderBuffer) == 0xC);
+NN_STATIC_ASSERT(sizeof(FFLiResourceLoaderBuffer) == (NN_ALIGN_FOR_PTR(sizeof(FFLiResourceUncompressBuffer)) + NN_PTR_SIZE));
 
 #endif // FFLI_RESOURCE_LOADER_BUFFER_H_

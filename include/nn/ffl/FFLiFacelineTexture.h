@@ -11,7 +11,7 @@ struct  FFLiCharInfo;
 class   FFLiCopySurface;
 #endif // RIO_IS_CAFE
 struct  FFLiFacelineTextureTempObject;
-class   FFLiRenderTexture;
+struct  FFLiRenderTexture;
 class   FFLiResourceLoader;
 class   FFLiResourceManager;
 class   FFLiShaderCallback;

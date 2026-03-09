@@ -17,6 +17,6 @@ private:
     void*   m_pBuffer;
     void*   _4; // Deleted
 };
-NN_STATIC_ASSERT(sizeof(FFLiResourceUncompressBuffer) == 8);
+NN_STATIC_ASSERT(sizeof(FFLiResourceUncompressBuffer) == (2 * NN_PTR_SIZE));
 
 #endif // FFLI_RESOURCE_UNCOMPRESS_BUFFER_H_
