@@ -6,8 +6,6 @@
 extern "C" {
 #endif
 
-#define FFL_MIIDATA_PACKET_SIZE (0x60)
-
 typedef struct FFLStoreData
 {
     union

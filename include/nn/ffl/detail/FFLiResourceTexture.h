@@ -5,7 +5,7 @@
 
 #include <nn/ffl/detail/FFLiResourcePartsInfo.h>
 
-#if RIO_IS_WIN
+#if RIO_IS_DESKTOP
 #include <ninTexUtils/gx2/gx2Enum.h>
 #elif RIO_IS_CAFE
 #include <gx2/enum.h>

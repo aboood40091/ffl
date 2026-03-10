@@ -3,23 +3,16 @@
 #if RIO_IS_CAFE
 #include <coreinit/time.h>
 #else
-#if RIO_IS_WIN
-#include <misc/win/rio_Windows.h>
-#endif // RIO_IS_WIN
+#include <chrono>
 #include <ctime>
-#endif
+#endif // RIO_IS_CAFE
 
 s64 FFLiGetTick()
 {
 #if RIO_IS_CAFE
     return OSGetTime();
-#elif RIO_IS_WIN
-    LARGE_INTEGER ticks;
-    [[maybe_unused]] WINBOOL success = QueryPerformanceFrequency(&ticks);
-    RIO_ASSERT(success);
-    return ticks.QuadPart;
 #else
-    return 0;
+    return std::chrono::steady_clock::now().time_since_epoch().count();
 #endif
 }
 

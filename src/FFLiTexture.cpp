@@ -3,7 +3,7 @@
 #include <nn/ffl/FFLiResourceManager.h>
 #include <nn/ffl/FFLiTexture.h>
 
-#if RIO_IS_WIN
+#if RIO_IS_DESKTOP
 #include <ninTexUtils/gx2/gx2Surface.h>
 #elif RIO_IS_CAFE
 #define numMips mipLevels
@@ -43,7 +43,7 @@ FFLResult FFLiLoadTextureWithAllocate(rio::Texture2D** ppTexture2D, FFLiTextureP
 
     rio::NativeTexture2D texture;
 
-#if RIO_IS_WIN
+#if RIO_IS_DESKTOP
     GX2Surface surface;
 #else
     GX2Surface& surface = texture.surface;
@@ -68,7 +68,7 @@ FFLResult FFLiLoadTextureWithAllocate(rio::Texture2D** ppTexture2D, FFLiTextureP
     if (mipPtr == nullptr && footer.NumMips() > 1)
         mipPtr = (void*)((uintptr_t)imagePtr + surface.mipOffset[0]);
 
-#if RIO_IS_WIN
+#if RIO_IS_DESKTOP
     surface.imagePtr.set(imagePtr);
     surface.mipPtr.set(mipPtr);
 #else
@@ -76,7 +76,7 @@ FFLResult FFLiLoadTextureWithAllocate(rio::Texture2D** ppTexture2D, FFLiTextureP
     surface.mipPtr = mipPtr;
 #endif
 
-#if RIO_IS_WIN
+#if RIO_IS_DESKTOP
     GX2Surface linearSurface;
     linearSurface.dim = GX2_SURFACE_DIM_2D;
     linearSurface.width = footer.Width();
@@ -133,7 +133,7 @@ FFLResult FFLiLoadTextureWithAllocate(rio::Texture2D** ppTexture2D, FFLiTextureP
     texture.viewNumSlices = surface.depth;
     texture.compMap = rio::TextureFormatUtil::getDefaultCompMap(rio::TextureFormat(surface.format));
     GX2InitTextureRegs(&texture);
-#endif // RIO_IS_WIN
+#endif // RIO_IS_DESKTOP
 
     *ppTexture2D = new rio::Texture2D(texture);
 
@@ -144,7 +144,7 @@ void FFLiDeleteTexture(rio::Texture2D** ppTexture2D, bool isExpand)
 {
     rio::Texture2D*& pTexture2D = *ppTexture2D;
 
-#if RIO_IS_WIN
+#if RIO_IS_DESKTOP
     u8* imagePtr = (u8*)pTexture2D->getNativeTexture().surface.image;
     u8* mipPtr = (u8*)pTexture2D->getNativeTexture().surface.mipmaps;
 

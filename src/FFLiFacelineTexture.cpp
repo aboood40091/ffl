@@ -181,7 +181,7 @@ void FFLiRenderFacelineTexture(FFLiRenderTexture* pRenderTexture, const FFLiChar
 
     if (renderTexture.pTexture2D->getNumMips() > 1)
     {
-#if RIO_IS_WIN
+#if RIO_IS_DESKTOP
         RIO_GL_CALL(glBindTexture(GL_TEXTURE_2D, renderTexture.pTexture2D->getNativeTextureHandle()));
         RIO_GL_CALL(glGenerateMipmap(GL_TEXTURE_2D));
 #elif RIO_IS_CAFE

@@ -190,7 +190,7 @@ void FFLiCharModelCreator::Delete(FFLiCharModel* pModel)
 {
 #if RIO_IS_CAFE
     GX2DrawDone();
-#elif RIO_IS_WIN
+#elif RIO_IS_DESKTOP
     RIO_GL_CALL(glFinish());
 #endif
 
@@ -756,7 +756,7 @@ void FFLiCharModelCreator::AfterExecuteGPUStep(FFLiCharModel* pModel)
 
 #if RIO_IS_CAFE
     GX2DrawDone();
-#elif RIO_IS_WIN
+#elif RIO_IS_DESKTOP
     RIO_GL_CALL(glFinish());
 #endif
 }

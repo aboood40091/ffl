@@ -103,7 +103,7 @@ void FFLiSetupRenderTexture(FFLiRenderTexture* pRenderTexture, const FFLColor* p
 #if RIO_IS_CAFE
         GX2ColorBuffer* pGX2ColorBuffer = &pColorTarget->getNativeColorBuffer();
         GX2ClearColor(pGX2ColorBuffer, pClearColor->r, pClearColor->g, pClearColor->b, pClearColor->a);
-#elif RIO_IS_WIN
+#elif RIO_IS_DESKTOP
         RIO_GL_CALL(glClearColor(pClearColor->r, pClearColor->g, pClearColor->b, pClearColor->a));
         RIO_GL_CALL(glClear(GL_COLOR_BUFFER_BIT));
 #endif
@@ -113,7 +113,7 @@ void FFLiSetupRenderTexture(FFLiRenderTexture* pRenderTexture, const FFLColor* p
 #if RIO_IS_CAFE
             GX2DepthBuffer* pGX2DepthBuffer = &pDepthTarget->getNativeDepthBuffer();
             GX2ClearDepthStencilEx(pGX2DepthBuffer, pGX2DepthBuffer->depthClear, pGX2DepthBuffer->stencilClear, GX2_CLEAR_FLAGS_BOTH);
-#elif RIO_IS_WIN
+#elif RIO_IS_DESKTOP
             RIO_GL_CALL(glDepthMask(GL_TRUE));
             RIO_GL_CALL(glClearDepth(1.0f));
             RIO_GL_CALL(glClear(GL_DEPTH_BUFFER_BIT));
