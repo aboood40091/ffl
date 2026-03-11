@@ -18,7 +18,7 @@ u32 TypeToSize(FFLiSwapEndianType type)
 
 }
 
-u32 FFLiSwapEndianGroup(void* ptr, const FFLiSwapEndianDesc* pDesc, u32 num)
+void FFLiSwapEndianGroup(void* ptr, const FFLiSwapEndianDesc* pDesc, u32 num)
 {
     void* pPtr = ptr;
 
@@ -41,6 +41,4 @@ u32 FFLiSwapEndianGroup(void* ptr, const FFLiSwapEndianDesc* pDesc, u32 num)
 
         pPtr = static_cast<u8*>(pPtr) + TypeToSize(desc.type) * desc.size;
     }
-
-    return static_cast<u8*>(pPtr) - static_cast<u8*>(ptr);
 }

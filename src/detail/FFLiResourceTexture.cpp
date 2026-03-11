@@ -31,19 +31,24 @@ GX2SurfaceFormat FFLiResourceTextureFooter::SurfaceFormat() const
     return FFLiGetResourceSurfaceFormat(FFLiTextureFormat(m_TextureFormat));
 }
 
-FFLiResourceTextureFooter& FFLiResourceTextureFooter::GetFooterImpl(const void* pData, u32 size)
+const FFLiResourceTextureFooter& FFLiResourceTextureFooter::GetFooterImpl(const void* pData, u32 size)
+{
+    return ((const FFLiResourceTextureFooter*)((const u8*)pData + size))[-1];
+}
+
+FFLiResourceTextureFooter& FFLiResourceTextureFooter::GetFooterImpl(void* pData, u32 size)
 {
     return ((FFLiResourceTextureFooter*)((u8*)pData + size))[-1];
 }
 
-void* FFLiResourceTextureFooter::GetImagePtrImpl(u32 size) const
+const void* FFLiResourceTextureFooter::GetImagePtrImpl(u32 size) const
 {
-    return (u8*)(this + 1) - size;
+    return (const u8*)(this + 1) - size;
 }
 
-void* FFLiResourceTextureFooter::GetMipPtrImpl(u32 size) const
+const void* FFLiResourceTextureFooter::GetMipPtrImpl(u32 size) const
 {
-    return m_MipOffset != 0 ? ((u8*)(this + 1) - size + m_MipOffset) : NULL;
+    return m_MipOffset != 0 ? ((const u8*)(this + 1) - size + m_MipOffset) : NULL;
 }
 
 void FFLiResourceTextureFooter::SwapEndian()

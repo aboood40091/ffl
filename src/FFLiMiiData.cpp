@@ -324,7 +324,7 @@ FFLResult FFLiStoreDataCFLToCharInfo(FFLiCharInfo* pCharInfo, const FFLiStoreDat
         return FFL_RESULT_FILE_INVALID;
 
     FFLiStoreData storeData;
-    rio::MemUtil::copy((char*)&storeData, (char*)&storeDataCFL, FFL_MIIDATA_PACKET_SIZE);
+    rio::MemUtil::copy(&storeData, &storeDataCFL, FFL_MIIDATA_PACKET_SIZE);
 #if __BYTE_ORDER__ != __ORDER_LITTLE_ENDIAN__
     storeData.SwapEndian();
 #endif // __BYTE_ORDER__

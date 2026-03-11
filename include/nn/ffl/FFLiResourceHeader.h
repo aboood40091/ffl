@@ -13,7 +13,6 @@
 struct  FFLiResourcePartsInfo;
 struct  FFLiResourceShapeHeader;
 struct  FFLiResourceTextureHeader;
-enum    FFLiResourceWindowBits;
 
 u32 FFLiGetTextureResourceNum(FFLiTexturePartsType partsType);
 u32 FFLiGetShapeResourceNum(FFLiShapePartsType partsType);

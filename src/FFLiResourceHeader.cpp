@@ -2,34 +2,32 @@
 #include <nn/ffl/FFLiSwapEndian.h>
 #include <nn/ffl/FFLiUtil.h>
 
-#define SIZE_OF_MEMBER(cls, member) sizeof( ((cls*)0)->member )
-
 u32 FFLiGetTextureResourceNum(FFLiTexturePartsType partsType)
 {
     switch (partsType)
     {
     case FFLI_TEXTURE_PARTS_TYPE_BEARD:
-        return SIZE_OF_MEMBER(FFLiResourceTextureHeader, partsInfoBeard) / sizeof(FFLiResourcePartsInfo);
+        return sizeof(FFLiResourceTextureHeader::partsInfoBeard) / sizeof(FFLiResourcePartsInfo);
     case FFLI_TEXTURE_PARTS_TYPE_CAP:
-        return SIZE_OF_MEMBER(FFLiResourceTextureHeader, partsInfoCap) / sizeof(FFLiResourcePartsInfo);
+        return sizeof(FFLiResourceTextureHeader::partsInfoCap) / sizeof(FFLiResourcePartsInfo);
     case FFLI_TEXTURE_PARTS_TYPE_EYE:
-        return SIZE_OF_MEMBER(FFLiResourceTextureHeader, partsInfoEye) / sizeof(FFLiResourcePartsInfo);
+        return sizeof(FFLiResourceTextureHeader::partsInfoEye) / sizeof(FFLiResourcePartsInfo);
     case FFLI_TEXTURE_PARTS_TYPE_EYEBROW:
-        return SIZE_OF_MEMBER(FFLiResourceTextureHeader, partsInfoEyebrow) / sizeof(FFLiResourcePartsInfo);
+        return sizeof(FFLiResourceTextureHeader::partsInfoEyebrow) / sizeof(FFLiResourcePartsInfo);
     case FFLI_TEXTURE_PARTS_TYPE_FACELINE:
-        return SIZE_OF_MEMBER(FFLiResourceTextureHeader, partsInfoFaceline) / sizeof(FFLiResourcePartsInfo);
+        return sizeof(FFLiResourceTextureHeader::partsInfoFaceline) / sizeof(FFLiResourcePartsInfo);
     case FFLI_TEXTURE_PARTS_TYPE_FACE_MAKEUP:
-        return SIZE_OF_MEMBER(FFLiResourceTextureHeader, partsInfoFaceMakeup) / sizeof(FFLiResourcePartsInfo);
+        return sizeof(FFLiResourceTextureHeader::partsInfoFaceMakeup) / sizeof(FFLiResourcePartsInfo);
     case FFLI_TEXTURE_PARTS_TYPE_GLASS:
-        return SIZE_OF_MEMBER(FFLiResourceTextureHeader, partsInfoGlass) / sizeof(FFLiResourcePartsInfo);
+        return sizeof(FFLiResourceTextureHeader::partsInfoGlass) / sizeof(FFLiResourcePartsInfo);
     case FFLI_TEXTURE_PARTS_TYPE_MOLE:
-        return SIZE_OF_MEMBER(FFLiResourceTextureHeader, partsInfoMole) / sizeof(FFLiResourcePartsInfo);
+        return sizeof(FFLiResourceTextureHeader::partsInfoMole) / sizeof(FFLiResourcePartsInfo);
     case FFLI_TEXTURE_PARTS_TYPE_MOUTH:
-        return SIZE_OF_MEMBER(FFLiResourceTextureHeader, partsInfoMouth) / sizeof(FFLiResourcePartsInfo);
+        return sizeof(FFLiResourceTextureHeader::partsInfoMouth) / sizeof(FFLiResourcePartsInfo);
     case FFLI_TEXTURE_PARTS_TYPE_MUSTACHE:
-        return SIZE_OF_MEMBER(FFLiResourceTextureHeader, partsInfoMustache) / sizeof(FFLiResourcePartsInfo);
+        return sizeof(FFLiResourceTextureHeader::partsInfoMustache) / sizeof(FFLiResourcePartsInfo);
     case FFLI_TEXTURE_PARTS_TYPE_NOSELINE:
-        return SIZE_OF_MEMBER(FFLiResourceTextureHeader, partsInfoNoseline) / sizeof(FFLiResourcePartsInfo);
+        return sizeof(FFLiResourceTextureHeader::partsInfoNoseline) / sizeof(FFLiResourcePartsInfo);
     default:
         return 0;
     }
@@ -40,29 +38,29 @@ u32 FFLiGetShapeResourceNum(FFLiShapePartsType partsType)
     switch (partsType)
     {
     case FFLI_SHAPE_PARTS_TYPE_BEARD:
-        return SIZE_OF_MEMBER(FFLiResourceShapeHeader, partsInfoBeard) / sizeof(FFLiResourcePartsInfo);
+        return sizeof(FFLiResourceShapeHeader::partsInfoBeard) / sizeof(FFLiResourcePartsInfo);
     case FFLI_SHAPE_PARTS_TYPE_CAP_1:
-        return SIZE_OF_MEMBER(FFLiResourceShapeHeader, partsInfoCap1) / sizeof(FFLiResourcePartsInfo);
+        return sizeof(FFLiResourceShapeHeader::partsInfoCap1) / sizeof(FFLiResourcePartsInfo);
     case FFLI_SHAPE_PARTS_TYPE_CAP_2:
-        return SIZE_OF_MEMBER(FFLiResourceShapeHeader, partsInfoCap2) / sizeof(FFLiResourcePartsInfo);
+        return sizeof(FFLiResourceShapeHeader::partsInfoCap2) / sizeof(FFLiResourcePartsInfo);
     case FFLI_SHAPE_PARTS_TYPE_FACELINE:
-        return SIZE_OF_MEMBER(FFLiResourceShapeHeader, partsInfoFaceline) / sizeof(FFLiResourcePartsInfo);
+        return sizeof(FFLiResourceShapeHeader::partsInfoFaceline) / sizeof(FFLiResourcePartsInfo);
     case FFLI_SHAPE_PARTS_TYPE_GLASS:
-        return SIZE_OF_MEMBER(FFLiResourceShapeHeader, partsInfoGlass) / sizeof(FFLiResourcePartsInfo);
+        return sizeof(FFLiResourceShapeHeader::partsInfoGlass) / sizeof(FFLiResourcePartsInfo);
     case FFLI_SHAPE_PARTS_TYPE_MASK:
-        return SIZE_OF_MEMBER(FFLiResourceShapeHeader, partsInfoMask) / sizeof(FFLiResourcePartsInfo);
+        return sizeof(FFLiResourceShapeHeader::partsInfoMask) / sizeof(FFLiResourcePartsInfo);
     case FFLI_SHAPE_PARTS_TYPE_NOSELINE:
-        return SIZE_OF_MEMBER(FFLiResourceShapeHeader, partsInfoNoseline) / sizeof(FFLiResourcePartsInfo);
+        return sizeof(FFLiResourceShapeHeader::partsInfoNoseline) / sizeof(FFLiResourcePartsInfo);
     case FFLI_SHAPE_PARTS_TYPE_NOSE:
-        return SIZE_OF_MEMBER(FFLiResourceShapeHeader, partsInfoNose) / sizeof(FFLiResourcePartsInfo);
+        return sizeof(FFLiResourceShapeHeader::partsInfoNose) / sizeof(FFLiResourcePartsInfo);
     case FFLI_SHAPE_PARTS_TYPE_HAIR_1:
-        return SIZE_OF_MEMBER(FFLiResourceShapeHeader, partsInfoHair1) / sizeof(FFLiResourcePartsInfo);
+        return sizeof(FFLiResourceShapeHeader::partsInfoHair1) / sizeof(FFLiResourcePartsInfo);
     case FFLI_SHAPE_PARTS_TYPE_HAIR_2:
-        return SIZE_OF_MEMBER(FFLiResourceShapeHeader, partsInfoHair2) / sizeof(FFLiResourcePartsInfo);
+        return sizeof(FFLiResourceShapeHeader::partsInfoHair2) / sizeof(FFLiResourcePartsInfo);
     case FFLI_SHAPE_PARTS_TYPE_FOREHEAD_1:
-        return SIZE_OF_MEMBER(FFLiResourceShapeHeader, partsInfoForehead1) / sizeof(FFLiResourcePartsInfo);
+        return sizeof(FFLiResourceShapeHeader::partsInfoForehead1) / sizeof(FFLiResourcePartsInfo);
     case FFLI_SHAPE_PARTS_TYPE_FOREHEAD_2:
-        return SIZE_OF_MEMBER(FFLiResourceShapeHeader, partsInfoForehead2) / sizeof(FFLiResourcePartsInfo);
+        return sizeof(FFLiResourceShapeHeader::partsInfoForehead2) / sizeof(FFLiResourcePartsInfo);
     default:
         return 0;
     }

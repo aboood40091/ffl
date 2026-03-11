@@ -124,7 +124,7 @@ void SwapEndianAttribute(void* pShapeData, u32 pos, u32 size)
     if (size == 0)
         return;
 
-    FFLiSwapEndianArrayImpl<u32>((u32*)((const u8*)pShapeData + pos), size / sizeof(u32));
+    FFLiSwapEndianArrayImpl<u32>((u32*)((u8*)pShapeData + pos), size / sizeof(u32));
 }
 
 void SwapEndianIndex(void* pShapeData, u32 pos, u32 size)
@@ -132,7 +132,7 @@ void SwapEndianIndex(void* pShapeData, u32 pos, u32 size)
     if (size == 0)
         return;
 
-    FFLiSwapEndianArrayImpl<u16>((u16*)((const u8*)pShapeData + pos), size);
+    FFLiSwapEndianArrayImpl<u16>((u16*)((u8*)pShapeData + pos), size);
 }
 
 void SwapEndianVec3(FFLVec3* pVec)

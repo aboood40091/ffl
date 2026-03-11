@@ -14,8 +14,8 @@ u16 FFLiGetCRC16(const void* pData, u32 size)
             else
                 crc = crc << 1;
         }
-        crc = crc ^ *(u8*)pData;
-        pData = (u8*)pData + 1;
+        crc = crc ^ *(const u8*)pData;
+        pData = (const u8*)pData + 1;
     }
     return crc;
 }

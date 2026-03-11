@@ -19,7 +19,7 @@ struct FFLiSwapEndianDesc
 };
 NN_STATIC_ASSERT(sizeof(FFLiSwapEndianDesc) == 8);
 
-u32 FFLiSwapEndianGroup(void* ptr, const FFLiSwapEndianDesc* pDesc, u32 num);
+void FFLiSwapEndianGroup(void* ptr, const FFLiSwapEndianDesc* pDesc, u32 num);
 
 #ifdef __ghs__
 #pragma ghs nowarning 186

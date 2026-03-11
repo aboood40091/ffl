@@ -428,25 +428,25 @@ FFLiFsResult WriteFile(const void* pSrc, u32 size, FFLiFileWriteBuffer* pWriteBu
             return FFLiFsResult { FFLI_FS_FILE_RESULT_OK, status };
     }
 
-    rio::RawErrorCode status = WriteFileImpl(fileHandle, pSrc, size, pWriteBuffer);
-    if (status == 0)
+    rio::RawErrorCode writeStatus = WriteFileImpl(fileHandle, pSrc, size, pWriteBuffer);
+    if (writeStatus == 0)
     {
         fileHandle.tryClose();
 
         return FFLiFsResult { FFLI_FS_FILE_RESULT_WRITE_BUFFER_EMPTY };
     }
-    else if (status < 0)
+    else if (writeStatus < 0)
     {
         fileHandle.tryClose();
 
-        return FFLiFsResult { FFLI_FS_FILE_RESULT_OK, status };
+        return FFLiFsResult { FFLI_FS_FILE_RESULT_OK, writeStatus };
     }
     else
     {
         if (!fileHandle.tryClose())
         {
             rio::RawErrorCode status = device->getLastRawError();
-            RIO_ASSERT(status != rio::RAW_ERROR_OK);
+            RIO_ASSERT(status < 0);
             return FFLiFsResult { FFLI_FS_FILE_RESULT_OK, status };
         }
     }
@@ -457,14 +457,14 @@ FFLiFsResult WriteFile(const void* pSrc, u32 size, FFLiFileWriteBuffer* pWriteBu
 FFLiFsResult LoadDatabaseHidden(FFLiDatabaseFileHidden* pHidden, const char* pPath)
 {
     FFLiFsResult result = ReadFile(pHidden, sizeof(FFLiDatabaseFileHidden), pPath);
-    if (!CheckFFLiFsResult(result))
-        return result;
-
+    if (CheckFFLiFsResult(result))
+    {
 #if __BYTE_ORDER__ != __ORDER_BIG_ENDIAN__
-    pHidden->SwapEndian(false);
+        pHidden->SwapEndian(false);
 #endif // __BYTE_ORDER__
-
-    return FFLiFsResult { FFLI_FS_FILE_RESULT_OK, rio::RAW_ERROR_OK };
+        result = { FFLI_FS_FILE_RESULT_OK, rio::RAW_ERROR_OK };
+    }
+    return result; 
 }
 
 FFLiFsResult SaveDatabaseHidden(const FFLiDatabaseFileHidden& hidden, FFLiFileWriteBuffer* pWriteBuffer, const char* pPath)
@@ -483,14 +483,14 @@ FFLiFsResult SaveDatabaseHidden(const FFLiDatabaseFileHidden& hidden, FFLiFileWr
 FFLiFsResult LoadDatabaseOfficial(FFLiDatabaseFileOfficial* pOfficial, const char* pPath)
 {
     FFLiFsResult result = ReadFile(pOfficial, sizeof(FFLiDatabaseFileOfficial), pPath);
-    if (!CheckFFLiFsResult(result))
-        return result;
-
+    if (CheckFFLiFsResult(result))
+    {
 #if __BYTE_ORDER__ != __ORDER_BIG_ENDIAN__
-    pOfficial->SwapEndian(false);
+        pOfficial->SwapEndian(false);
 #endif // __BYTE_ORDER__
-
-    return FFLiFsResult { FFLI_FS_FILE_RESULT_OK, rio::RAW_ERROR_OK };
+        result = { FFLI_FS_FILE_RESULT_OK, rio::RAW_ERROR_OK };
+    }
+    return result; 
 }
 
 FFLiFsResult SaveDatabaseOfficial(const FFLiDatabaseFileOfficial& official, FFLiFileWriteBuffer* pWriteBuffer, const char* pPath)

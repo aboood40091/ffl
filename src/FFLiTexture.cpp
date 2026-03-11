@@ -61,10 +61,10 @@ FFLResult FFLiLoadTextureWithAllocate(rio::Texture2D** ppTexture2D, FFLiTextureP
 
     GX2CalcSurfaceSizeAndAlignment(&surface);
 
-    void* imagePtr = footer.GetImagePtrImpl(size);
+    void* imagePtr = const_cast<void*>(footer.GetImagePtrImpl(size));
     RIO_ASSERT(imagePtr == pData);
 
-    void* mipPtr = footer.GetMipPtrImpl(size);
+    void* mipPtr = const_cast<void*>(footer.GetMipPtrImpl(size));
     if (mipPtr == nullptr && footer.NumMips() > 1)
         mipPtr = (void*)((uintptr_t)imagePtr + surface.mipOffset[0]);
 

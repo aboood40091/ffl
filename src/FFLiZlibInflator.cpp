@@ -18,7 +18,7 @@ s32 FFLiZlibInflator::Process(void** ppDst, u32* pDstSize, const void** ppSrc, u
 {
     m_Stream.next_out = (Bytef*)*ppDst;
     m_Stream.avail_out = *pDstSize;
-    m_Stream.next_in = (Bytef*)*ppSrc;
+    m_Stream.next_in = (Bytef*)const_cast<void*>(*ppSrc);
     m_Stream.avail_in = *pSrcSize;
 
     s32 ret = inflate(&m_Stream, flush);

@@ -1023,7 +1023,8 @@ void FFLiDatabaseRandom::Get(FFLiCharInfo* pCharInfo, FFLGender gender, FFLAge a
             randomBeardType = true;
             break;
         case 2:
-            randomBeardType = true; // fall-through
+            randomBeardType = true;
+            [[fallthrough]];
         case 1:
             mustacheType = m_pRandomContext->Random(5) + 1;
             break;

@@ -59,10 +59,11 @@ public:
 
     GX2SurfaceFormat SurfaceFormat() const;
 
-    static FFLiResourceTextureFooter& GetFooterImpl(const void* pData, u32 size);
+    static const FFLiResourceTextureFooter& GetFooterImpl(const void* pData, u32 size);
+    static FFLiResourceTextureFooter& GetFooterImpl(void* pData, u32 size);
 
-    void* GetImagePtrImpl(u32 size) const;
-    void* GetMipPtrImpl(u32 size) const;
+    const void* GetImagePtrImpl(u32 size) const;
+    const void* GetMipPtrImpl(u32 size) const;
 
     void SwapEndian();  // Deleted in NSMBU
 

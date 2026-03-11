@@ -43,13 +43,13 @@ FFLResult FFLiResourceCache::Attach(void* pData, u32 size, FFLResourceType resou
         for (u32 j = 0; j < num; j++)
         {
             const FFLiResourcePartsInfo& partsInfo = pPartsInfo[j];
-            u32 size = partsInfo.dataSize;
-            if (size == 0 || partsInfo.strategy != FFLI_RESOURCE_STRATEGY_UNCOMPRESSED)
+            u32 partsSize = partsInfo.dataSize;
+            if (partsSize == 0 || partsInfo.strategy != FFLI_RESOURCE_STRATEGY_UNCOMPRESSED)
                 continue;
 
-            u8* pData = (u8*)pHeader + partsInfo.dataPos;
+            u8* pPartsData = (u8*)pHeader + partsInfo.dataPos;
 
-            FFLiResourceTextureFooter& footer = FFLiResourceTextureFooter::GetFooterImpl(pData, size);
+            FFLiResourceTextureFooter& footer = FFLiResourceTextureFooter::GetFooterImpl(pPartsData, partsSize);
             footer.SwapEndian();
         }
     }
@@ -62,13 +62,13 @@ FFLResult FFLiResourceCache::Attach(void* pData, u32 size, FFLResourceType resou
         for (u32 j = 0; j < num; j++)
         {
             const FFLiResourcePartsInfo& partsInfo = pPartsInfo[j];
-            u32 size = partsInfo.dataSize;
-            if (size == 0 || partsInfo.strategy != FFLI_RESOURCE_STRATEGY_UNCOMPRESSED)
+            u32 partsSize = partsInfo.dataSize;
+            if (partsSize == 0 || partsInfo.strategy != FFLI_RESOURCE_STRATEGY_UNCOMPRESSED)
                 continue;
 
-            u8* pData = (u8*)pHeader + partsInfo.dataPos;
+            u8* pPartsData = (u8*)pHeader + partsInfo.dataPos;
 
-            FFLiSwapEndianResourceShapeElement(pData, FFLiShapePartsType(i), false);
+            FFLiSwapEndianResourceShapeElement(pPartsData, FFLiShapePartsType(i), false);
         }
     }
 #endif // __BYTE_ORDER__
