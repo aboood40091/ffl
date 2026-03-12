@@ -3,6 +3,7 @@
 
 #include <nn/ffl/types.h>
 
+bool FFLiGetOffScreenSrgbFetch();
 bool FFLiUseOffScreenSrgbFetch();
 
 struct FFLColor;
@@ -52,8 +53,6 @@ void FFLiGetColor(FFLColor* pColor, FFLiColorType type, u32 index);
 
 void FFLiSetColorContainer(const FFLiColorContainer* pContainer, FFLiContainerType type);
 void FFLiGetColorContainer(FFLiColorContainer* pContainer, FFLiContainerType type);
-
-??? FFLiGetOffScreenSrgbFetch();
 */
 
 #endif // FFLI_COLOR_H_

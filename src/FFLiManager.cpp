@@ -12,7 +12,7 @@
 
 // --------------------------------------------------------------------------
 
-static void SetResultIfError(FFLResult* pDst, FFLResult src)
+static void FFLiUpdateResult(FFLResult* pDst, FFLResult src)
 {
     if (*pDst == FFL_RESULT_OK || *pDst == FFL_RESULT_ODB_EMPTY)
         if (src != FFL_RESULT_OK)
@@ -172,7 +172,7 @@ FFLResult FFLiManager::AfterConstruct(const FFLInitDesc* pInitDesc, const FFLRes
 FFLResult FFLiManager::BeforeDestruct()
 {
     FFLResult result = FFL_RESULT_OK;
-    SetResultIfError(&result, m_DatabaseManager.BeforeDestruct());
+    FFLiUpdateResult(&result, m_DatabaseManager.BeforeDestruct());
     return result;
 }
 
