@@ -370,7 +370,7 @@ void DeleteShape_Mask(FFLiCharModel* pModel)
 
 void DeleteShape_Glass(FFLiCharModel* pModel)
 {
-    if (pModel->charInfo.parts.glassType > 0)
+    if (pModel->charInfo.parts.glassType != 0)
         DeleteShape(pModel, FFLI_SHAPE_PARTS_TYPE_GLASS);
 }
 
@@ -387,7 +387,7 @@ FFLResult InitShapes(FFLiCharModel* pModel, FFLiResourceLoader * pResLoader, con
     {
         const ModelTypeShapePartsInfo* modelTypeShapePartsInfo = GetModelTypeShapePartsInfo(modelFlag);
 
-        bool flipHair = pModel->charInfo.parts.hairDir > 0;
+        bool flipHair = pModel->charInfo.parts.hairDir != 0;
 
         for (u32 i = 0; i < 2 * 3; i++)
         {
@@ -455,7 +455,7 @@ FFLResult InitShapes(FFLiCharModel* pModel, FFLiResourceLoader * pResLoader, con
         return result;
     }
 
-    if (pModel->charInfo.parts.glassType > 0)
+    if (pModel->charInfo.parts.glassType != 0)
     {
         f32 glassScale = pModel->charInfo.parts.glassScale * 0.15f + 0.4f;
 
@@ -508,7 +508,7 @@ void DeleteTexture_Noseline(FFLiCharModel* pModel, bool isExpand)
 
 void DeleteTexture_Glass(FFLiCharModel* pModel, bool isExpand)
 {
-    if (pModel->charInfo.parts.glassType > 0)
+    if (pModel->charInfo.parts.glassType != 0)
         FFLiDeleteTexture(&pModel->pGlassTexture, isExpand);
 }
 
@@ -532,7 +532,7 @@ FFLResult InitTextures(FFLiCharModel* pModel, FFLiResourceLoader* pResLoader)
         }
     }
 
-    if (pModel->charInfo.parts.glassType > 0)
+    if (pModel->charInfo.parts.glassType != 0)
     {
         FFLResult result = FFLiLoadTextureWithAllocate(&pModel->pGlassTexture, FFLI_TEXTURE_PARTS_TYPE_GLASS, pModel->charInfo.parts.glassType, pResLoader);
         if (result != FFL_RESULT_OK)
@@ -628,7 +628,7 @@ void SetupDrawParam(FFLiCharModel* pModel)
     pModel->drawParam[FFLI_SHAPE_TYPE_OPA_NOSE].cullMode = FFL_CULL_MODE_BACK;
     FFLiInitModulateShapeNose(&pModel->drawParam[FFLI_SHAPE_TYPE_OPA_NOSE].modulateParam, pModel->charInfo.parts.facelineColor);
 
-    if (pModel->charInfo.parts.hairDir > 0)
+    if (pModel->charInfo.parts.hairDir != 0)
         hairCullMode = FFL_CULL_MODE_FRONT;
 
     for (u32 i = 0; i < 2; i++)
