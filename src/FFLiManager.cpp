@@ -153,9 +153,12 @@ FFLResult FFLiManager::AfterConstruct(const FFLInitDesc* pInitDesc, const FFLRes
     {
         for (u32 i = 0; i < FFL_RESOURCE_TYPE_MAX; i++)
         {
-            result = m_ResourceManager.AttachCache(pResDesc->pData[i], pResDesc->size[i], FFLResourceType(i));
-            if (result != FFL_RESULT_OK)
-                return result;
+            if (pResDesc->pData[i] != NULL)
+            {
+                result = m_ResourceManager.AttachCache(pResDesc->pData[i], pResDesc->size[i], FFLResourceType(i));
+                if (result != FFL_RESULT_OK)
+                    return result;
+            }
         }
     }
 
