@@ -8,8 +8,6 @@
 
 #include <misc/rio_MemUtil.h>
 
-static u32 GetMiiDataNum();
-
 const FFLiMiiDataOfficial& FFLiDatabaseFileOfficial::GetImpl(u16 index) const
 {
     return m_MiiDataOfficial[index];
@@ -65,14 +63,14 @@ bool FFLiDatabaseFileOfficial::IsValid() const
     return IsValidIdentifier() && IsValidCrc();
 }
 
-static u32 GetMiiDataNum()
+u32 FFLiDatabaseFileOfficial::Num() const
 {
     return 3000;
 }
 
 bool FFLiDatabaseFileOfficial::Get(FFLiCharInfo* pCharInfo, u16 miiDataIndex, bool checkSpecial, bool allowSpecial) const
 {
-    if (miiDataIndex >= GetMiiDataNum())
+    if (miiDataIndex >= Num())
         return false;
 
     const FFLiMiiDataOfficial& official = GetImpl(miiDataIndex);
@@ -108,7 +106,7 @@ bool FFLiDatabaseFileOfficial::IsAvailable(u16 miiDataIndex, bool checkSpecial, 
 
 bool FFLiDatabaseFileOfficial::Search(u16* pMiiDataIndex, const FFLCreateID& createID) const
 {
-    for (u16 i = 0; i < GetMiiDataNum(); i++)
+    for (u16 i = 0; i < Num(); i++)
     {
         const FFLiMiiDataOfficial& official = GetImpl(i);
         const FFLCreateID* pCreateID = &official.CreatorID();

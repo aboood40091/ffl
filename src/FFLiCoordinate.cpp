@@ -19,7 +19,7 @@ FFLiCoordinate::~FFLiCoordinate()
 
 void FFLiCoordinate::Transform(FFLVec3* pVec) const
 {
-    TransformCommon<FFLVec3, f32>(pVec);
+    TransformImpl<FFLVec3, f32>(pVec);
     pVec->x *= m_Scale;
     pVec->y *= m_Scale;
     pVec->z *= m_Scale;
@@ -42,7 +42,7 @@ f32 FFLiCoordinate::FlipValue(FFLVec4*, f32 value)
 
 void FFLiCoordinate::TransformWithoutScale(FFLVec3* pVec) const
 {
-    TransformCommon<FFLVec3, f32>(pVec);
+    TransformImpl<FFLVec3, f32>(pVec);
 }
 
 void FFLiCoordinate::TransformWithoutScale(FFLVec4* pVec) const
@@ -52,12 +52,12 @@ void FFLiCoordinate::TransformWithoutScale(FFLVec4* pVec) const
 
 void FFLiCoordinate::TransformWithoutScale(FFLiSnorm10_10_10_2* pVec) const
 {
-    TransformCommon<FFLiSnorm10_10_10_2, u32>(pVec);
+    TransformImpl<FFLiSnorm10_10_10_2, u32>(pVec);
 }
 
 void FFLiCoordinate::TransformWithoutScale(FFLiSnorm8_8_8_8* pVec) const
 {
-    TransformCommon<FFLiSnorm8_8_8_8, s8>(pVec);
+    TransformImpl<FFLiSnorm8_8_8_8, s8>(pVec);
 }
 
 u32 FFLiCoordinate::FlipValue(FFLiSnorm10_10_10_2* pVec, u32 value)

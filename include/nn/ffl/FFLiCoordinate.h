@@ -33,7 +33,7 @@ public:
 
 private:
     template <typename T, typename ValueT>
-    void TransformCommon(T* pVec) const
+    void TransformImpl(T* pVec) const
     {
         ValueT x = pVec->x;
         ValueT y = pVec->y;

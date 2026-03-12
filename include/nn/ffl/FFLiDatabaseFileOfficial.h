@@ -39,6 +39,8 @@ public:
 
     void SwapEndian(bool save);
 
+    u32 Num() const;
+
 private:
     u32                 m_Magic;
     u32                 _4;

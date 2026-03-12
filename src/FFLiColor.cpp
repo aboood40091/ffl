@@ -43,14 +43,14 @@ bool s_IsIntializedColorContainer = false;
 
 }
 
-static bool UseOffScreenSrgbFetch()
+bool FFLiGetOffScreenSrgbFetch()
 {
     return s_UseOffScreenSrgbFetch;
 }
 
 bool FFLiUseOffScreenSrgbFetch()
 {
-    return UseOffScreenSrgbFetch() && s_ContainerType == FFLI_CONTAINER_TYPE_SRGB;
+    return FFLiGetOffScreenSrgbFetch() && s_ContainerType == FFLI_CONTAINER_TYPE_SRGB;
 }
 
 namespace {
