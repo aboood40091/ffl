@@ -3,7 +3,7 @@
 
 #include <nn/ffl/types.h>
 
-#include <cstddef>
+#include <numeric>
 
 enum FFLiSwapEndianType
 {
@@ -21,20 +21,51 @@ NN_STATIC_ASSERT(sizeof(FFLiSwapEndianDesc) == 8);
 
 void FFLiSwapEndianGroup(void* ptr, const FFLiSwapEndianDesc* pDesc, u32 num);
 
+template <typename T, std::size_t N>
+struct SwapEndianHelper
+{
+    static T swap(T value) = delete;
+};
+
+template <typename T>
+struct SwapEndianHelper<T, 1>
+{
+    static T swap(T value)
+    {
+        return value;
+    }
+};
+
+template <typename T>
+struct SwapEndianHelper<T, 2>
+{
+    static T swap(T value)
+    {
+        u16 tmp = std::bit_cast<u16>(value);
+        tmp = __builtin_bswap16(tmp);
+        value = std::bit_cast<T>(tmp);
+        return value;
+    }
+};
+
+template <typename T>
+struct SwapEndianHelper<T, 4>
+{
+    static T swap(T value)
+    {
+        u32 tmp = std::bit_cast<u32>(value);
+        tmp = __builtin_bswap32(tmp);
+        value = std::bit_cast<T>(tmp);
+        return value;
+    }
+};
+
 template <typename T>
 T FFLiSwapEndianImpl(T value)
 {
     constexpr std::size_t count = sizeof(T);
-    NN_STATIC_ASSERT(count == 1 || count == 2 || count == 4 || count == 8);
-
-    if constexpr (count == 2)
-        return __builtin_bswap16(value);
-    else if constexpr (count == 4)
-        return __builtin_bswap32(value);
-    else if constexpr (count == 8)
-        return __builtin_bswap64(value);
-    else
-        return value;
+    NN_STATIC_ASSERT(count == 1 || count == 2 || count == 4);
+    return SwapEndianHelper<T, count>::swap(value);
 }
 
 template <typename T>
