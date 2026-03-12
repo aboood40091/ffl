@@ -158,12 +158,12 @@ FFLResult FFLiResourceLoader::LoadFromFile(void* pData, const FFLiResourcePartsI
 
     if (partsInfo.strategy == FFLI_RESOURCE_STRATEGY_UNCOMPRESSED)
     {
-        if (ReadWithPos(pData, partsInfo.dataPos, partsInfo.dataSize) != 1)
+        if (ReadWithPos(pData, partsInfo.dataPos, partsInfo.dataSize) != rio::RAW_ERROR_OK)
             return FFL_RESULT_RES_FS_ERROR;
     }
     else
     {
-        if (ReadWithPos(m_pBuffer->GetUncompressBuffer().Buffer(), partsInfo.dataPos, partsInfo.compressedSize) != 1)
+        if (ReadWithPos(m_pBuffer->GetUncompressBuffer().Buffer(), partsInfo.dataPos, partsInfo.compressedSize) != rio::RAW_ERROR_OK)
             return FFL_RESULT_RES_FS_ERROR;
 
         if (!Uncompress(pData, m_pBuffer->GetUncompressBuffer().Buffer(), &m_pBuffer->GetUncompressBuffer(), partsInfo))
