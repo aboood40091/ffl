@@ -3,7 +3,7 @@
 
 #include <nn/ffl/types.h>
 
-#include <algorithm>
+#include <cstddef>
 
 enum FFLiSwapEndianType
 {
@@ -21,31 +21,21 @@ NN_STATIC_ASSERT(sizeof(FFLiSwapEndianDesc) == 8);
 
 void FFLiSwapEndianGroup(void* ptr, const FFLiSwapEndianDesc* pDesc, u32 num);
 
-#ifdef __ghs__
-#pragma ghs nowarning 186
-#endif
-
 template <typename T>
 T FFLiSwapEndianImpl(T value)
 {
-    const u32 count = sizeof(T);
-    NN_STATIC_ASSERT(count == 1 || count % 2 == 0);
-    const u32 count_2 = count / 2;
+    constexpr std::size_t count = sizeof(T);
+    NN_STATIC_ASSERT(count == 1 || count == 2 || count == 4 || count == 8);
 
-    union {
-        T   value;
-        u8  data[count];
-    } value_ = { .value = value };
-
-    for (u32 i = 0; i < count_2; i++)
-        std::swap(value_.data[i], value_.data[count - 1 - i]);
-
-    return value_.value;
+    if constexpr (count == 2)
+        return __builtin_bswap16(value);
+    else if constexpr (count == 4)
+        return __builtin_bswap32(value);
+    else if constexpr (count == 8)
+        return __builtin_bswap64(value);
+    else
+        return value;
 }
-
-#ifdef __ghs__
-#pragma ghs endnowarning
-#endif
 
 template <typename T>
 void FFLiSwapEndianArrayImpl(T* pArray, u32 size)
