@@ -12,32 +12,7 @@
 #include <gx2/mem.h>
 #endif // RIO_IS_CAFE
 
-union F32BitCast
-{
-    f32 f;
-    u32 u;
-    struct
-    {
-#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-        u32 sign        : 1;    // (MSB)
-        u32 exponent    : 8;
-        u32 mantissa    : 23;   // (LSB)
-#else
-        u32 mantissa    : 23;   // (LSB)
-        u32 exponent    : 8;
-        u32 sign        : 1;    // (MSB)
-#endif // __BYTE_ORDER__
-    };
-};
-NN_STATIC_ASSERT(sizeof(F32BitCast) == 4);
-
-static bool IsNaN(f32 value)
-{
-    F32BitCast x = { value };
-    // Basically:
-    // return x.exponent == 0xff && x.mantissa > 0;
-    return (x.u << 1) > 0xff000000;
-}
+#include <cmath>
 
 namespace {
 
@@ -179,7 +154,7 @@ void FFLiAdjustShape(FFLDrawParam* pDrawParam, FFLBoundingBox* pBoundingBox, f32
         pCoordinate
     );
 
-    if (!IsNaN(pBoundingBox->min.x))
+    if (!std::isnan(pBoundingBox->min.x))
         AdjustAttribute<FFLVec3>(
             &pBoundingBox->min,
             2,
